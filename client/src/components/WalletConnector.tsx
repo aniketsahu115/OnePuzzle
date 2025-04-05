@@ -68,7 +68,7 @@ const WalletConnector: React.FC = () => {
   }, []);
 
   // For development purposes, use a simulation mode to bypass wallet connectivity issues
-  const simulationMode = false; // Set to true for simulation mode, false for actual wallet connections
+  const simulationMode = true; // Set to true for simulation mode, false for actual wallet connections
   
   // Function to handle wallet selection
   const handleWalletSelect = async (walletName: string) => {

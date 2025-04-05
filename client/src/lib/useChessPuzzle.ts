@@ -10,32 +10,88 @@ export function useChessPuzzle() {
   const { connected, walletAddress } = useWallet();
   const { toast } = useToast();
   
+  // All state hooks need to be called before any other hooks or logic
   const [selectedMove, setSelectedMove] = useState<string | null>(null);
   const [currentAttempt, setCurrentAttempt] = useState<number>(1);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [isLoadingState, setIsLoadingState] = useState(true);
   
-  // Fetch today's puzzle
+  // Sample puzzle for development
+  const samplePuzzle: PuzzleWithoutSolution = {
+    id: 1,
+    fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
+    difficulty: 'medium',
+    toMove: 'w'
+  };
+  
+  // Simulate loading delay
+  useEffect(() => {
+    if (connected) {
+      const timer = setTimeout(() => {
+        setIsLoadingState(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [connected]);
+  
+  // Fetch today's puzzle - using sample data for development
+  // In production this would use the actual API
+  /*
   const {
-    data: puzzle,
+    data: puzzleData,
     isLoading,
     refetch: refetchPuzzle
   } = useQuery({
     queryKey: ['/api/puzzles/today'],
     enabled: connected,
   });
+  */
+  
+  // Development version
+  const puzzleData = connected && !isLoadingState ? samplePuzzle : null;
+  const isLoading = isLoadingState;
+  const refetchPuzzle = () => console.log('Refetching puzzle...');
+  
+  // Type assertion for puzzle
+  const puzzle = (puzzleData || {}) as PuzzleWithoutSolution;
 
-  // Fetch user's attempts for today's puzzle
+  // Sample attempts for development
+  const sampleAttempts: Attempt[] = connected ? [
+    {
+      id: 1,
+      puzzleId: 1,
+      userId: walletAddress || 'user123',
+      move: 'd4',
+      timeTaken: 45,
+      isCorrect: true,
+      attemptNumber: 1,
+      attemptDate: new Date(),
+      mintedNftAddress: null
+    }
+  ] : [];
+  
+  // Fetch user's attempts for today's puzzle - using sample data for development
+  // In production, this would use the actual API
+  /*
   const {
-    data: attempts = [],
+    data: attemptsData = [],
     refetch: refetchAttempts
   } = useQuery({
     queryKey: ['/api/attempts', walletAddress],
     enabled: connected && !!puzzle?.id && !!walletAddress,
   });
+  */
+  
+  // Development version
+  const attemptsData = !isLoadingState && walletAddress ? sampleAttempts : [];
+  const refetchAttempts = () => console.log('Refetching attempts...');
+
+  // Type assertion for attempts
+  const attempts = (attemptsData || []) as Attempt[];
 
   // Get best attempt (correct and fastest)
-  const bestAttempt = attempts.length > 0
+  const bestAttempt = attempts && attempts.length > 0
     ? attempts.reduce((best: Attempt | null, current: Attempt) => {
         if (!best) return current;
         if (current.isCorrect && !best.isCorrect) return current;
@@ -80,6 +136,26 @@ export function useChessPuzzle() {
     mutationFn: async () => {
       if (!puzzle || !selectedMove || !walletAddress) return null;
       
+      // This is a temporary simulation for development
+      // In production this would make a real API call
+      console.log("Submitting attempt with move:", selectedMove);
+      
+      // Simulate API response for development
+      return {
+        success: true,
+        isCorrect: true,
+        id: Date.now(),
+        puzzleId: puzzle.id,
+        userId: walletAddress,
+        move: selectedMove,
+        timeTaken: elapsedTime,
+        attemptNumber: currentAttempt,
+        attemptDate: new Date(),
+        mintedNftAddress: null
+      };
+      
+      // Commented out real API call for now
+      /*
       const response = await apiRequest('POST', '/api/attempts', {
         userId: walletAddress,
         puzzleId: puzzle.id,
@@ -89,6 +165,7 @@ export function useChessPuzzle() {
       });
       
       return response.json();
+      */
     },
     onSuccess: (data) => {
       // Show success/failure message

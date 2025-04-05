@@ -113,7 +113,7 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-          ) : puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle && 'difficulty' in puzzle && 'toMove' in puzzle ? (
+          ) : puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle ? (
             <div className="animate-fade-in">
               <PuzzleCard
                 puzzle={puzzle as PuzzleWithoutSolution}
@@ -172,7 +172,7 @@ export default function Home() {
         {connected && walletAddress && (
           <section className="py-16 mt-16 bg-white rounded-lg shadow-sm animate-slide-up">
             <div className="container-solana">
-              <h2 className="text-3xl font-bold text-center mb-12">Your Chess Journey</h2>
+              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Your Chess Journey</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                 <div className="p-6 rounded-lg bg-gray-50 hover:shadow-md transition-all duration-300 animate-slide-up delay-100">
                   <div className="w-16 h-16 mx-auto bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mb-4">
@@ -191,7 +191,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {Array.isArray(attempts) ? attempts.filter(a => a.isCorrect).length : 0}
+                    {attempts && Array.isArray(attempts) ? 
+                      attempts.filter(a => a.isCorrect).length : 0}
                   </h3>
                   <p className="text-gray-600">Correct Solutions</p>
                 </div>
@@ -203,7 +204,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {Array.isArray(attempts) ? attempts.filter(a => a.mintedNftAddress).length : 0}
+                    {attempts && Array.isArray(attempts) ? 
+                      attempts.filter(a => a.mintedNftAddress).length : 0}
                   </h3>
                   <p className="text-gray-600">NFTs Earned</p>
                 </div>
