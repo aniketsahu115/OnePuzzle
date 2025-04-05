@@ -16,8 +16,15 @@ const HowItWorks: React.FC = () => {
           {/* Step 1 */}
           <div className="card-solana p-8 text-center animate-slide-up delay-100">
             <div className="relative mb-6">
-              <div className="w-20 h-20 bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl font-bold text-solana-purple">1</span>
+              <div className="w-24 h-24 bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#9945FF" strokeWidth="1.5" className="w-12 h-12">
+                  <path d="M8 6h13" />
+                  <path d="M8 12h13" />
+                  <path d="M8 18h13" />
+                  <path d="M3 6h.01" />
+                  <path d="M3 12h.01" />
+                  <path d="M3 18h.01" />
+                </svg>
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-purple rounded-full flex items-center justify-center text-white animate-pulse-slow">
                 ♟
@@ -32,8 +39,13 @@ const HowItWorks: React.FC = () => {
           {/* Step 2 */}
           <div className="card-solana p-8 text-center animate-slide-up delay-200">
             <div className="relative mb-6">
-              <div className="w-20 h-20 bg-solana-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl font-bold text-solana-green">2</span>
+              <div className="w-24 h-24 bg-solana-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#14F195" strokeWidth="1.5" className="w-12 h-12">
+                  <path d="M7.75 8.75l2.25 2.25-4.5 4.5-2.25-2.25L7.75 8.75z"></path>
+                  <path d="M12.75 3.75l2.25 2.25-8.5 8.5-2.25-2.25L12.75 3.75z"></path>
+                  <path d="M17.75 8.75l2.25 2.25-8.5 8.5-2.25-2.25L17.75 8.75z"></path>
+                  <path d="M17.75 15.75l-1.5 6h-9.5l-1.5-6"></path>
+                </svg>
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-green rounded-full flex items-center justify-center text-white animate-pulse-slow">
                 ♟
@@ -48,8 +60,17 @@ const HowItWorks: React.FC = () => {
           {/* Step 3 */}
           <div className="card-solana p-8 text-center animate-slide-up delay-300">
             <div className="relative mb-6">
-              <div className="w-20 h-20 bg-solana-blue bg-opacity-10 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl font-bold text-solana-blue">3</span>
+              <div className="w-24 h-24 bg-solana-blue bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#03A9F4" strokeWidth="1.5" className="w-12 h-12">
+                  <path d="M17 7a5 5 0 0 0-5-5c-2.76 0-5 2.24-5 5s2.24 5 5 5c.42 0 .83-.05 1.22-.15"></path>
+                  <path d="M18.18 15.18A5 5 0 1 0 22 19"></path>
+                  <path d="M19 15 17 8l-2 7"></path>
+                  <path d="m7 18-2 4"></path>
+                  <path d="m9 18 2 4"></path>
+                  <path d="M8 22v-5"></path>
+                  <path d="m2 19 4-7"></path>
+                  <path d="m14 19-4-7"></path>
+                </svg>
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-blue rounded-full flex items-center justify-center text-white animate-pulse-slow">
                 ♟

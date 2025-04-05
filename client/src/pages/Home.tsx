@@ -49,7 +49,7 @@ export default function Home() {
   const attemptResult = bestAttempt ? bestAttempt.isCorrect : null;
 
   return (
-    <main className="py-10 bg-solana-light animate-fade-in">
+    <main className="py-10 bg-gradient-to-b from-[#1C1929] to-[#282256] text-white animate-fade-in">
       <div className="container-solana">
         {/* Hero Section with Puzzle of the Day */}
         <section className="text-center mb-12 animate-slide-up">
