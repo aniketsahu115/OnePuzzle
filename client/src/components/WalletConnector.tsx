@@ -70,6 +70,17 @@ const WalletConnector: React.FC = () => {
   // For development purposes, use a simulation mode to bypass wallet connectivity issues
   const simulationMode = true; // Set to true for simulation mode, false for actual wallet connections
   
+  // Generate a random Solana-like address for simulation (remains the same during the session)
+  const getSimulatedAddress = (walletName: string) => {
+    // Create 32 random bytes (like a Solana address) 
+    let addr = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+      addr += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return addr;
+  };
+  
   // Function to handle wallet selection
   const handleWalletSelect = async (walletName: string) => {
     try {
@@ -96,23 +107,8 @@ const WalletConnector: React.FC = () => {
         // The context will be updated directly here instead of through the provider
         // In a real application, this should be properly handled through the wallet context
         
-        // Generate truly unique addresses for each wallet type with timestamp
-        const timestamp = Date.now().toString();
-        const randomSuffix = Math.random().toString(36).substring(2, 10);
-        let simulatedAddress = '';
-        switch(walletName) {
-          case 'Phantom':
-            simulatedAddress = `Phantom_${timestamp}_${randomSuffix}`;
-            break;
-          case 'Solflare':
-            simulatedAddress = `Solflare_${timestamp}_${randomSuffix}`;
-            break;
-          case 'Backpack':
-            simulatedAddress = `Backpack_${timestamp}_${randomSuffix}`;
-            break;
-          default:
-            simulatedAddress = `${walletName}_${timestamp}_${randomSuffix}`;
-        }
+        // Generate a proper Solana-like address for the simulation
+        const simulatedAddress = getSimulatedAddress(walletName);
         
         setIsLocalConnecting(false);
         

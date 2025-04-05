@@ -102,9 +102,19 @@ export function useChessPuzzle() {
 
   // Start timer when puzzle is loaded and wallet is connected
   useEffect(() => {
+    console.log('Timer state check:', { 
+      connected, 
+      puzzleLoaded: !!puzzle, 
+      attemptsLeft: attempts.length < 3, 
+      bestCorrect: bestAttempt?.isCorrect 
+    });
+    
+    // Always start the timer if connected and puzzle is loaded and no correct solution yet
     if (connected && puzzle && attempts.length < 3 && !bestAttempt?.isCorrect) {
+      console.log('Starting timer for puzzle solving');
       setIsTimerRunning(true);
     } else {
+      console.log('Stopping timer');
       setIsTimerRunning(false);
     }
     
@@ -116,20 +126,36 @@ export function useChessPuzzle() {
     }
   }, [connected, puzzle, attempts, bestAttempt]);
 
-  // Timer logic
+  // Timer logic with more reliable timing
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
+    let previousTime = Date.now();
+    let accumulatedTime = elapsedTime;
     
     if (isTimerRunning) {
+      console.log('Timer started running with initial time:', elapsedTime);
+      
+      // Use requestAnimationFrame for more precise timing
       interval = setInterval(() => {
-        setElapsedTime(time => time + 1);
-      }, 1000);
+        const currentTime = Date.now();
+        const deltaTime = (currentTime - previousTime) / 1000;
+        previousTime = currentTime;
+        
+        // Add the elapsed time to our accumulator
+        accumulatedTime += deltaTime;
+        
+        // Update the state with the integer value
+        setElapsedTime(Math.floor(accumulatedTime));
+      }, 200); // Run frequently to keep the timer smooth
     }
     
     return () => {
-      if (interval) clearInterval(interval);
+      if (interval) {
+        console.log('Clearing timer interval, final time:', Math.floor(accumulatedTime));
+        clearInterval(interval);
+      }
     };
-  }, [isTimerRunning]);
+  }, [isTimerRunning, elapsedTime]);
 
   // Mutation for submitting an attempt
   const { mutate: submitAttempt, isPending: isCheckingMove } = useMutation({
