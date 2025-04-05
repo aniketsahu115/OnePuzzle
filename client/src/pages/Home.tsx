@@ -152,6 +152,7 @@ export default function Home() {
                 isCheckingMove={isCheckingMove}
                 currentAttempt={currentAttempt || 0}
                 result={attemptResult}
+                attempts={Array.isArray(attempts) ? attempts : []}
               />
             </div>
             <div className="animate-slide-right">
@@ -172,8 +173,13 @@ export default function Home() {
         {connected && walletAddress && (
           <section className="py-16 mt-16 bg-white rounded-lg shadow-sm animate-slide-up">
             <div className="container-solana">
-              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Your Chess Journey</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <h2 className="text-3xl font-bold text-center mb-2 text-gray-800">Your Chess Journey</h2>
+              <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+                Track your progress and achievements on your chess puzzle journey
+              </p>
+              
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-16">
                 <div className="p-6 rounded-lg bg-gray-50 hover:shadow-md transition-all duration-300 animate-slide-up delay-100">
                   <div className="w-16 h-16 mx-auto bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mb-4">
                     <svg className="w-8 h-8 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -210,6 +216,73 @@ export default function Home() {
                   <p className="text-gray-600">NFTs Earned</p>
                 </div>
               </div>
+              
+              {/* Recent Activity */}
+              {Array.isArray(attempts) && attempts.length > 0 && (
+                <div className="max-w-4xl mx-auto">
+                  <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">Recent Puzzle Activity</h3>
+                  <div className="overflow-hidden bg-white shadow-sm rounded-lg">
+                    <div className="divide-y divide-gray-200">
+                      {attempts.slice(0, 5).map((attempt, index) => (
+                        <div key={attempt.id || index} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-center space-x-4">
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                              attempt.isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                            }`}>
+                              {attempt.isCorrect ? (
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                              ) : (
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {attempt.isCorrect ? 'Correct Solution' : 'Incorrect Attempt'}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(attempt.attemptDate).toLocaleDateString()} - Move: {attempt.move}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {formatTime(attempt.timeTaken)}
+                            </span>
+                            {attempt.mintedNftAddress && (
+                              <span className="text-xs text-gray-500 mt-1">
+                                NFT Minted ✓
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {Array.isArray(attempts) && attempts.length === 0 && (
+                        <div className="p-6 text-center">
+                          <p className="text-gray-500">No puzzle activity yet. Start solving puzzles to build your journey!</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Empty state if no attempts */}
+              {Array.isArray(attempts) && attempts.length === 0 && (
+                <div className="max-w-md mx-auto text-center p-6 bg-gray-50 rounded-lg">
+                  <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Start Your Chess Journey</h3>
+                  <p className="text-gray-600">Complete your first puzzle attempt to begin building your chess journey stats.</p>
+                </div>
+              )}
             </div>
           </section>
         )}

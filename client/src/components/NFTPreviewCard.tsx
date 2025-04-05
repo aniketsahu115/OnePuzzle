@@ -94,13 +94,47 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
             <div className="border-2 border-accent rounded-lg p-6 mb-4 flex flex-col items-center">
               <div className="w-full max-w-[200px] aspect-square border border-slate-200 flex items-center justify-center mb-4 relative overflow-hidden">
                 <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <rect width="100" height="100" fill="#1a365d" />
-                  <text x="50" y="30" fontSize="10" textAnchor="middle" fill="white">OnePuzzle NFT</text>
-                  <text x="50" y="45" fontSize="7" textAnchor="middle" fill="white">Move: {bestAttempt?.move || '—'}</text>
-                  <text x="50" y="55" fontSize="7" textAnchor="middle" fill="white">Time: {bestAttempt ? formatTime(bestAttempt.timeTaken) : '—'}</text>
-                  <text x="50" y="65" fontSize="7" textAnchor="middle" fill="white">Result: {bestAttempt?.isCorrect ? 'Correct' : 'Incorrect'}</text>
-                  <text x="50" y="75" fontSize="7" textAnchor="middle" fill="white">Attempt: {bestAttempt?.attemptNumber || '—'}/3</text>
-                  <text x="50" y="90" fontSize="5" textAnchor="middle" fill="#f59e0b">Solana cNFT</text>
+                  {/* Dynamic background gradient based on attempt difficulty */}
+                  <defs>
+                    <linearGradient id="nftBackground" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#1a365d" />
+                      <stop offset="100%" stopColor={bestAttempt?.isCorrect ? "#4c1d95" : "#1e3a8a"} />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* NFT Background */}
+                  <rect width="100" height="100" fill="url(#nftBackground)" />
+                  
+                  {/* NFT Card Frame */}
+                  <rect x="5" y="5" width="90" height="90" fill="none" stroke="#f8fafc" strokeWidth="0.5" rx="2" />
+                  
+                  {/* NFT Content */}
+                  <text x="50" y="18" fontSize="8" fontWeight="bold" textAnchor="middle" fill="white">CHESS PUZZLE NFT</text>
+                  <text x="50" y="26" fontSize="4" textAnchor="middle" fill="#94a3b8">DATE: {new Date().toLocaleDateString()}</text>
+                  
+                  {/* Difficulty Badge */}
+                  <rect x="30" y="30" width="40" height="8" rx="4" fill={
+                    bestAttempt?.isCorrect ? 
+                      (bestAttempt.timeTaken < 30 ? "#22c55e" : 
+                       bestAttempt.timeTaken < 60 ? "#eab308" : 
+                       "#f97316") : "#64748b"
+                  } />
+                  <text x="50" y="36" fontSize="5" fontWeight="bold" textAnchor="middle" fill="white">
+                    {bestAttempt?.isCorrect ? 
+                      (bestAttempt.timeTaken < 30 ? "EXCELLENT" : 
+                       bestAttempt.timeTaken < 60 ? "GREAT" : 
+                       "GOOD") : "ATTEMPT"}
+                  </text>
+                  
+                  {/* Move Info */}
+                  <text x="50" y="50" fontSize="7" textAnchor="middle" fill="white">Move: {bestAttempt?.move || '—'}</text>
+                  <text x="50" y="60" fontSize="7" textAnchor="middle" fill="white">Time: {bestAttempt ? formatTime(bestAttempt.timeTaken) : '—'}</text>
+                  <text x="50" y="70" fontSize="7" textAnchor="middle" fill="white">Result: {bestAttempt?.isCorrect ? 'Correct' : 'Incorrect'}</text>
+                  <text x="50" y="80" fontSize="7" textAnchor="middle" fill="white">Attempt: {bestAttempt?.attemptNumber || '—'}/3</text>
+                  
+                  {/* Solana Logo & Info */}
+                  <circle cx="50" cy="90" r="5" fill="#14f195" opacity="0.3" />
+                  <text x="50" y="92" fontSize="4" textAnchor="middle" fill="#ffffff">Solana cNFT</text>
                 </svg>
               </div>
               <p className="text-slate-700 text-sm mb-1">Your best attempt is ready to mint!</p>

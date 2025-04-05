@@ -17,13 +17,57 @@ export function useChessPuzzle() {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [isLoadingState, setIsLoadingState] = useState(true);
   
-  // Sample puzzle for development
-  const samplePuzzle: PuzzleWithoutSolution = {
-    id: 1,
-    fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
-    difficulty: 'medium',
-    toMove: 'w'
+  // Various chess positions for a more dynamic experience
+  const chessPuzzles = [
+    {
+      id: 1,
+      fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
+      difficulty: 'medium',
+      toMove: 'w'
+    },
+    {
+      id: 2,
+      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',
+      difficulty: 'easy',
+      toMove: 'w'
+    },
+    {
+      id: 3,
+      fen: 'rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4',
+      difficulty: 'hard',
+      toMove: 'w'
+    },
+    {
+      id: 4,
+      fen: 'r1bqk2r/ppp2ppp/2n1pn2/3p4/1bPP4/2NBP3/PP3PPP/R1BQK1NR b KQkq - 1 5',
+      difficulty: 'medium',
+      toMove: 'b'
+    },
+    {
+      id: 5,
+      fen: 'r3kb1r/pp3ppp/2pp1n2/4p3/8/3P1N2/PPP2PPP/R1B1K2R b KQkq - 0 10',
+      difficulty: 'hard',
+      toMove: 'b'
+    },
+  ];
+  
+  // Generate a dynamic puzzle based on wallet address
+  const generatePuzzle = (): PuzzleWithoutSolution => {
+    if (!walletAddress) {
+      return chessPuzzles[0];
+    }
+    
+    // Use the wallet address to get a consistent puzzle (but different per user)
+    const addressSeed = walletAddress ? 
+      parseInt(walletAddress.substring(walletAddress.length - 4), 16) : 0;
+    
+    // Choose a puzzle based on the wallet address
+    const puzzleIndex = addressSeed % chessPuzzles.length;
+    return chessPuzzles[puzzleIndex];
   };
+  
+  // Dynamic puzzle based on wallet address
+  const samplePuzzle: PuzzleWithoutSolution = generatePuzzle();
   
   // Simulate loading delay
   useEffect(() => {
@@ -56,20 +100,49 @@ export function useChessPuzzle() {
   // Type assertion for puzzle
   const puzzle = (puzzleData || {}) as PuzzleWithoutSolution;
 
-  // Sample attempts for development
-  const sampleAttempts: Attempt[] = connected ? [
-    {
-      id: 1,
-      puzzleId: 1,
-      userId: walletAddress || 'user123',
-      move: 'd4',
-      timeTaken: 45,
-      isCorrect: true,
-      attemptNumber: 1,
-      attemptDate: new Date(),
-      mintedNftAddress: null
+  // Get a random difficulty for testing purposes
+  const getRandomDifficulty = (): 'easy' | 'medium' | 'hard' => {
+    const difficulties: ('easy' | 'medium' | 'hard')[] = ['easy', 'medium', 'hard'];
+    return difficulties[Math.floor(Math.random() * difficulties.length)];
+  };
+  
+  // Generate dynamic attempts for development based on connected wallet
+  const generateAttempts = (): Attempt[] => {
+    if (!connected || !walletAddress) return [];
+    
+    // Use the wallet address to get a consistent number (but different per user)
+    const addressSeed = walletAddress ? 
+      parseInt(walletAddress.substring(walletAddress.length - 6), 16) : 0;
+    
+    // Determine number of attempts (0-3) based on the wallet address
+    const numAttempts = addressSeed % 4; // 0, 1, 2, or 3 attempts
+    
+    // Generate attempts
+    const attempts: Attempt[] = [];
+    
+    for (let i = 0; i < numAttempts; i++) {
+      const isCorrect = i === numAttempts - 1; // Last attempt is correct
+      const possibleMoves = ['d4', 'e5', 'Nf3', 'Qh5', 'Bc4'];
+      
+      attempts.push({
+        id: i + 1,
+        puzzleId: 1,
+        userId: walletAddress,
+        move: possibleMoves[i % possibleMoves.length],
+        timeTaken: 20 + (i * 15), // Progressively longer times
+        isCorrect: isCorrect,
+        attemptNumber: i + 1,
+        attemptDate: new Date(Date.now() - (3600000 * (numAttempts - i))), // Spaced out in the past
+        mintedNftAddress: isCorrect && (addressSeed % 7 === 0) ? 
+          `solana${walletAddress.substring(5, 15)}` : null // 1/7 chance of having a minted NFT
+      });
     }
-  ] : [];
+    
+    return attempts;
+  };
+  
+  // Dynamic attempts based on wallet address
+  const sampleAttempts: Attempt[] = generateAttempts();
   
   // Fetch user's attempts for today's puzzle - using sample data for development
   // In production, this would use the actual API
