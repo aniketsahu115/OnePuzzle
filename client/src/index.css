@@ -11,3 +11,92 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Solana-inspired gradient */
+.bg-solana-gradient {
+  background: linear-gradient(to right, #9945FF, #14F195);
+}
+
+.text-solana-gradient {
+  background: linear-gradient(to right, #9945FF, #14F195);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.2) 50%, 
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Additional button styles with Solana colors */
+.btn-solana-primary {
+  @apply bg-[#9945FF] text-white hover:bg-[#8034DB] transition-colors;
+}
+
+.btn-solana-secondary {
+  @apply bg-[#14F195] text-[#2D2D3A] hover:bg-[#0DD584] transition-colors;
+}
+
+.btn-solana-gradient {
+  background: linear-gradient(to right, #9945FF, #14F195);
+  @apply text-white transition-all duration-300;
+}
+
+.btn-solana-gradient:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Card and border accent colors */
+.border-solana-accent {
+  border-color: #9945FF;
+}
+
+.ring-solana-glow {
+  box-shadow: 0 0 10px rgba(153, 69, 255, 0.4);
+}

@@ -64,12 +64,44 @@ const WalletConnector: React.FC = () => {
   }, []);
 
   // Function to handle wallet selection
-  const handleWalletSelect = (walletName: string) => {
-    // In a real implementation, this would connect to the specific wallet
-    // For now, we'll just call the generic connect function and show which wallet was selected
-    console.log(`Selected wallet: ${walletName}`);
-    connectWallet();
-    setIsWalletMenuOpen(false);
+  const handleWalletSelect = async (walletName: string) => {
+    try {
+      console.log(`Selected wallet: ${walletName}`);
+      
+      // Check if wallet exists in window
+      const hasPhantom = window?.phantom?.solana;
+      const hasSolflare = window?.solflare;
+      const hasBackpack = window?.backpack;
+      
+      let walletProvider;
+      
+      if (walletName === 'Phantom' && hasPhantom) {
+        walletProvider = window.phantom?.solana;
+      } else if (walletName === 'Solflare' && hasSolflare) {
+        walletProvider = window.solflare;
+      } else if (walletName === 'Backpack' && hasBackpack) {
+        walletProvider = window.backpack;
+      }
+      
+      if (!walletProvider) {
+        // If wallet doesn't exist, open the wallet website
+        const walletUrls: Record<string, string> = {
+          'Phantom': 'https://phantom.app/',
+          'Solflare': 'https://solflare.com/',
+          'Backpack': 'https://www.backpack.app/'
+        };
+        
+        window.open(walletUrls[walletName], '_blank');
+        return;
+      }
+      
+      // Connect to the wallet
+      // We need to cast the wallet provider to any because the types might not match perfectly
+      await connectWallet(walletProvider as any);
+      setIsWalletMenuOpen(false);
+    } catch (error) {
+      console.error(`Error connecting to ${walletName}:`, error);
+    }
   };
 
   return (
@@ -85,7 +117,7 @@ const WalletConnector: React.FC = () => {
         <div>
           <Button 
             onClick={() => setIsWalletMenuOpen(!isWalletMenuOpen)} 
-            className="px-4 py-2 bg-primary text-white rounded-lg flex items-center hover:bg-primary-dark transition-colors"
+            className="btn-solana-gradient rounded-lg flex items-center animate-fade-in"
             disabled={isConnecting}
           >
             {isConnecting ? (
@@ -104,28 +136,28 @@ const WalletConnector: React.FC = () => {
           
           {/* Wallet Selection Menu */}
           {isWalletMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg overflow-hidden z-10">
-              <div className="p-3 border-b border-gray-200">
+            <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg overflow-hidden z-10 animate-slide-up">
+              <div className="p-3 border-b border-gray-200 bg-gray-50">
                 <h3 className="text-sm font-medium">Select a wallet</h3>
               </div>
               <div className="p-2">
                 <button
                   onClick={() => handleWalletSelect('Phantom')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   <PhantomIcon />
                   <span className="ml-3 text-sm font-medium">Phantom</span>
                 </button>
                 <button
                   onClick={() => handleWalletSelect('Solflare')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   <SolflareIcon />
                   <span className="ml-3 text-sm font-medium">Solflare</span>
                 </button>
                 <button
                   onClick={() => handleWalletSelect('Backpack')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   <BackpackIcon />
                   <span className="ml-3 text-sm font-medium">Backpack</span>
@@ -141,13 +173,13 @@ const WalletConnector: React.FC = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2"
+              className="btn-solana-gradient rounded-lg flex items-center space-x-2 animate-fade-in"
             >
               <span className="w-2 h-2 rounded-full bg-white"></span>
               <span>Connected</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 animate-slide-up">
             <DropdownMenuItem className="font-mono text-xs text-gray-500 cursor-default">
               {truncatedAddress}
             </DropdownMenuItem>
