@@ -46,21 +46,27 @@ export default function Home() {
     await makeAttempt();
   };
 
-  // Simplified page logic by removing type assertions
-  const attemptResult = bestAttempt ? bestAttempt.isCorrect : null;
+  // Add type assertion to handle TypeScript error
+  const attemptResult = bestAttempt ? (bestAttempt as Attempt).isCorrect : null;
 
   return (
-    <main className="py-10 bg-gradient-to-b from-[#1C1929] to-[#282256] text-white animate-fade-in">
+    <main className="py-10 bg-gradient-to-b from-[#1C1929] via-[#231e3e] to-[#282256] text-white animate-fade-in">
       <div className="container-solana">
         {/* Hero Section with Puzzle of the Day */}
-        <section className="text-center mb-12 animate-slide-up">
-          <div className="inline-block mb-4">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
-              Daily Chess <span className="text-solana-gradient">Puzzle</span>
-            </h1>
-            <div className="h-1 w-32 bg-solana-gradient mx-auto rounded-full"></div>
+        <section className="text-center mb-16 animate-slide-up relative">
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute top-10 left-10 w-32 h-32 bg-purple-500 opacity-10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-10 w-48 h-48 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
           </div>
-          <p className="text-lg text-gray-600 mb-6 animate-fade-in">{currentDate}</p>
+          
+          <div className="inline-block mb-6 relative">
+            <h1 className="text-4xl md:text-7xl font-extrabold mb-6 leading-tight">
+              Daily Chess <span className="text-solana-gradient font-black">Puzzle</span>
+            </h1>
+            <div className="h-1.5 w-48 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full"></div>
+          </div>
+          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-xl mx-auto">{currentDate} • Challenge your chess skills and earn NFTs with each correct solution</p>
         </section>
 
         {/* Chess Puzzle Card */}
@@ -73,20 +79,37 @@ export default function Home() {
               </div>
             </div>
           ) : !connected ? (
-            <div className="card-solana p-8 animate-fade-in">
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="text-8xl mb-6 animate-pulse-slow">♟</div>
-                <h3 className="text-2xl font-bold mb-4 text-solana-purple">Connect Your Wallet</h3>
-                <p className="mb-6 text-center max-w-md text-gray-600">
+            <div className="card-solana p-8 shadow-xl border border-purple-600/20 animate-fade-in relative overflow-hidden backdrop-blur-sm">
+              {/* Decorative background elements */}
+              <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-600 to-indigo-800 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-600 to-indigo-800 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+                <div className="w-full h-full bg-indigo-900/10 backdrop-blur-3xl"></div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center py-12 relative z-10">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-8 shadow-lg">
+                  <div className="text-7xl animate-pulse-slow">♟</div>
+                </div>
+                
+                <h3 className="text-3xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">
+                  Connect Your Wallet
+                </h3>
+                
+                <p className="mb-8 text-center max-w-md text-indigo-100">
                   Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess skills!
                 </p>
-                <Button className="btn-solana-gradient px-8 py-6 text-lg">
-                  <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                
+                <Button 
+                  className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl"
+                  onClick={() => document.getElementById('wallet-connector')?.querySelector('button')?.click()}
+                >
+                  <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" />
                     <path d="M22 10H4" stroke="currentColor" strokeWidth="2" />
                     <path d="M20 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" strokeWidth="2" />
                   </svg>
-                  Connect Wallet
+                  <span className="group-hover:translate-x-1 transition-transform">Connect Wallet</span>
                 </Button>
               </div>
             </div>
