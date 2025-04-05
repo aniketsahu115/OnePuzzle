@@ -15,20 +15,43 @@ interface NFTPreviewCardProps {
 const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }) => {
   const { connected } = useWallet();
   const [isMinting, setIsMinting] = React.useState(false);
+  const [mintedNftAddress, setMintedNftAddress] = React.useState<string | null>(bestAttempt?.mintedNftAddress || null);
+  
+  // Update mintedNftAddress when bestAttempt changes
+  React.useEffect(() => {
+    if (bestAttempt?.mintedNftAddress) {
+      setMintedNftAddress(bestAttempt.mintedNftAddress);
+    }
+  }, [bestAttempt]);
   
   const hasCorrectAttempt = attempts.some(attempt => attempt.isCorrect);
-  const canMintNFT = connected && hasCorrectAttempt && !bestAttempt?.mintedNftAddress;
+  const canMintNFT = connected && hasCorrectAttempt && !mintedNftAddress;
   
   const handleMintNFT = async () => {
     if (!bestAttempt) return;
     
     try {
       setIsMinting(true);
-      const tx = await mintNFT(bestAttempt);
+      
+      console.log('Minting NFT with attempt:', bestAttempt);
+      
+      // Use the mintNFT function from solana.ts
+      // This is now set up to simulate a successful mint in development
+      const txSignature = await mintNFT(bestAttempt);
+      
       toast({
-        title: 'NFT Minted!',
-        description: `Your puzzle attempt has been minted as an NFT. Transaction: ${tx.substring(0, 8)}...`,
+        title: 'NFT Minted! (Simulation)',
+        description: `Your puzzle attempt has been minted as an NFT. Transaction: ${txSignature.substring(0, 12)}...`,
       });
+      
+      // Manually update the component state to show the minted NFT
+      if (bestAttempt) {
+        bestAttempt.mintedNftAddress = txSignature;
+      }
+      
+      // Update our local state to trigger re-render
+      setMintedNftAddress(txSignature);
+      
     } catch (error) {
       toast({
         title: 'Minting failed',
@@ -47,7 +70,7 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
         <span className="text-xs bg-white/20 rounded px-2 py-1">cNFT on Solana</span>
       </div>
       <CardContent className="p-4 text-center">
-        {bestAttempt?.mintedNftAddress ? (
+        {mintedNftAddress ? (
           <div className="p-4">
             <div className="mb-4 flex flex-col items-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mb-3 text-green-500">
@@ -56,12 +79,12 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
               <h4 className="font-bold mb-2">NFT Successfully Minted!</h4>
               <p className="text-sm text-slate-600 mb-2">Your daily puzzle attempt has been recorded on Solana</p>
               <div className="font-mono text-xs bg-slate-100 p-2 rounded break-all">
-                {bestAttempt.mintedNftAddress}
+                {mintedNftAddress}
               </div>
             </div>
             <Button 
               className="w-full px-4 py-2 bg-primary text-white rounded-lg"
-              onClick={() => window.open(`https://explorer.solana.com/address/${bestAttempt.mintedNftAddress}`, '_blank')}
+              onClick={() => window.open(`https://explorer.solana.com/address/${mintedNftAddress}`, '_blank')}
             >
               View on Explorer
             </Button>
