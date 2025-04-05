@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import Logo from "@/components/Logo";
-import WalletConnector from "@/components/WalletConnector";
 import PuzzleCard from "@/components/PuzzleCard";
 import AttemptCard from "@/components/AttemptCard";
 import NFTPreviewCard from "@/components/NFTPreviewCard";
@@ -47,80 +45,58 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-slate-100 min-h-screen font-sans text-slate-800">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* App Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <Logo />
-          <WalletConnector />
-        </header>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Welcome / Date Section */}
+      <section className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-primary mb-2">Today's Chess Puzzle</h2>
+        <p className="text-gray-600">{currentDate}</p>
+      </section>
 
-        {/* Main Content */}
-        <main>
-          {/* Welcome / Date Section */}
-          <section className="text-center mb-8">
-            <h2 className="text-2xl font-serif font-bold text-primary mb-2">Today's Chess Puzzle</h2>
-            <p className="text-slate-600">{currentDate}</p>
-          </section>
+      {/* Chess Puzzle Card */}
+      {isLoading ? (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
+          <p>Loading today's puzzle...</p>
+        </div>
+      ) : !connected ? (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
+          <p className="mb-4">Connect your wallet to see today's puzzle</p>
+        </div>
+      ) : puzzle ? (
+        <PuzzleCard
+          puzzle={puzzle}
+          selectedMove={selectedMove}
+          setSelectedMove={setSelectedMove}
+          onReset={resetBoard}
+          onSubmit={handleSubmitMove}
+          elapsedTime={elapsedTime}
+          currentAttempt={currentAttempt}
+          isCheckingMove={isCheckingMove}
+        />
+      ) : (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
+          <p>No puzzle available for today. Please check back tomorrow!</p>
+        </div>
+      )}
 
-          {/* Chess Puzzle Card */}
-          {isLoading ? (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
-              <p>Loading today's puzzle...</p>
-            </div>
-          ) : !connected ? (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
-              <p className="mb-4">Connect your wallet to see today's puzzle</p>
-            </div>
-          ) : puzzle ? (
-            <PuzzleCard
-              puzzle={puzzle}
-              selectedMove={selectedMove}
-              setSelectedMove={setSelectedMove}
-              onReset={resetBoard}
-              onSubmit={handleSubmitMove}
-              elapsedTime={elapsedTime}
-              currentAttempt={currentAttempt}
-              isCheckingMove={isCheckingMove}
-            />
-          ) : (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-8 text-center">
-              <p>No puzzle available for today. Please check back tomorrow!</p>
-            </div>
-          )}
+      {/* Results & History Section */}
+      {connected && puzzle && (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <AttemptCard 
+            selectedMove={selectedMove} 
+            elapsedTime={elapsedTime}
+            isCheckingMove={isCheckingMove}
+            currentAttempt={currentAttempt}
+            result={currentAttempt?.isCorrect}
+          />
+          <NFTPreviewCard 
+            bestAttempt={bestAttempt} 
+            attempts={attempts}
+          />
+        </section>
+      )}
 
-          {/* Results & History Section */}
-          {connected && puzzle && (
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <AttemptCard 
-                selectedMove={selectedMove} 
-                elapsedTime={elapsedTime}
-                isCheckingMove={isCheckingMove}
-                currentAttempt={currentAttempt}
-                result={currentAttempt?.isCorrect}
-              />
-              <NFTPreviewCard 
-                bestAttempt={bestAttempt} 
-                attempts={attempts}
-              />
-            </section>
-          )}
-
-          {/* How It Works Section */}
-          <HowItWorks />
-
-          {/* Footer */}
-          <footer className="mt-12 text-center text-slate-500 text-sm">
-            <p>OnePuzzle &copy; {new Date().getFullYear()} - Consistency through simplicity</p>
-            <div className="mt-2 flex justify-center space-x-4">
-              <a href="#" className="hover:text-primary">About</a>
-              <a href="#" className="hover:text-primary">FAQ</a>
-              <a href="#" className="hover:text-primary">Privacy</a>
-              <a href="#" className="hover:text-primary">Terms</a>
-            </div>
-          </footer>
-        </main>
-      </div>
+      {/* How It Works Section */}
+      <HowItWorks />
     </div>
   );
 }
