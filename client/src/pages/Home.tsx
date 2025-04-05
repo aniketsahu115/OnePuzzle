@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Attempt, PuzzleWithoutSolution } from '@shared/schema';
+import { formatTime } from '@/lib/utils';
 
 export default function Home() {
   const { toast } = useToast();
