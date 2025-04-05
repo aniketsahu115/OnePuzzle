@@ -48,15 +48,56 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       let publicKey: string;
       
       try {
+        // Safety check - ensure the wallet object is valid
+        if (!activeWallet) {
+          throw new Error('Wallet provider is not available');
+        }
+        
+        console.log('Wallet provider details:', activeWallet);
+        
         // First, check if the wallet is already connected
-        if (activeWallet?.isConnected && activeWallet?.publicKey) {
+        if (activeWallet.isConnected && activeWallet.publicKey && typeof activeWallet.publicKey.toString === 'function') {
           publicKey = activeWallet.publicKey.toString();
           console.log('Wallet already connected:', publicKey);
         } else {
           // Connect to the wallet
           console.log('Connecting to wallet...');
-          const response = await activeWallet!.connect();
-          publicKey = response.publicKey.toString();
+          
+          // Add defensive check for connect method
+          if (typeof activeWallet.connect !== 'function') {
+            throw new Error('Wallet connect method is not available');
+          }
+          
+          try {
+            const response = await activeWallet.connect();
+            
+            // Add defensive check for response
+            if (!response) {
+              throw new Error('Wallet returned empty connection response');
+            }
+            
+            // Handle when publicKey is missing
+            if (!response.publicKey) {
+              throw new Error('Wallet response missing publicKey');
+            }
+            
+            // Handle when toString method is missing
+            if (typeof response.publicKey.toString !== 'function') {
+              console.warn('Wallet returned publicKey without toString method, using string conversion');
+              // Try to convert publicKey to string using different methods
+              if (typeof response.publicKey === 'string') {
+                publicKey = response.publicKey;
+              } else {
+                publicKey = String(response.publicKey);
+              }
+            } else {
+              // Normal case - use toString()
+              publicKey = response.publicKey.toString();
+            }
+          } catch (connectError) {
+            console.error('Error during wallet connect call:', connectError);
+            throw new Error(`Wallet connect failed: ${connectError instanceof Error ? connectError.message : String(connectError)}`);
+          }
           console.log('Connected with wallet address:', publicKey);
         }
         

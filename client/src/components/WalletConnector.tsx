@@ -88,12 +88,12 @@ const WalletConnector: React.FC = () => {
       setIsWalletMenuOpen(false);
       
       console.log(`Selected wallet: ${walletName}`);
+      setIsLocalConnecting(true);
       
       if (simulationMode) {
         console.log('Using simulation mode for development');
         
         // Simulate loading with local state
-        setIsLocalConnecting(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Update the UI state directly
@@ -110,8 +110,6 @@ const WalletConnector: React.FC = () => {
         // Generate a proper Solana-like address for the simulation
         const simulatedAddress = getSimulatedAddress(walletName);
         
-        setIsLocalConnecting(false);
-        
         // Now call the real connectWallet function but with a mock wallet
         const mockWallet = {
           publicKey: { toString: () => simulatedAddress },
@@ -121,7 +119,7 @@ const WalletConnector: React.FC = () => {
         };
         
         await connectWallet(mockWallet);
-        
+        setIsLocalConnecting(false);
         return;
       }
       
@@ -135,41 +133,131 @@ const WalletConnector: React.FC = () => {
                   `Solflare (${hasSolflare ? 'available' : 'not available'}), ` +
                   `Backpack (${hasBackpack ? 'available' : 'not available'})`);
       
-      let walletProvider;
+      let walletProvider: SolanaWalletProvider | undefined = undefined;
       
-      if (walletName === 'Phantom' && hasPhantom) {
-        walletProvider = window.phantom?.solana;
-        console.log('Using Phantom wallet provider');
-      } else if (walletName === 'Solflare' && hasSolflare) {
-        walletProvider = window.solflare;
-        console.log('Using Solflare wallet provider');
-      } else if (walletName === 'Backpack' && hasBackpack) {
-        walletProvider = window.backpack;
-        console.log('Using Backpack wallet provider');
-      }
-      
-      if (!walletProvider) {
-        console.log(`${walletName} wallet provider not found, redirecting to download page`);
-        // If wallet doesn't exist, open the wallet website
-        const walletUrls: Record<string, string> = {
-          'Phantom': 'https://phantom.app/',
-          'Solflare': 'https://solflare.com/',
-          'Backpack': 'https://www.backpack.app/'
+      try {
+        let selectedWalletProvider: SolanaWalletProvider | undefined = undefined;
+        
+        if (walletName === 'Phantom' && hasPhantom) {
+          selectedWalletProvider = window.phantom?.solana as SolanaWalletProvider;
+          console.log('Using Phantom wallet provider:', selectedWalletProvider);
+        } else if (walletName === 'Solflare' && hasSolflare) {
+          selectedWalletProvider = window.solflare as SolanaWalletProvider;
+          console.log('Using Solflare wallet provider:', selectedWalletProvider);
+        } else if (walletName === 'Backpack' && hasBackpack) {
+          selectedWalletProvider = window.backpack as SolanaWalletProvider;
+          console.log('Using Backpack wallet provider:', selectedWalletProvider);
+        }
+        
+        // Ensure we have a valid wallet provider
+        if (!selectedWalletProvider) {
+          console.log(`${walletName} wallet provider not found, redirecting to download page`);
+          // If wallet doesn't exist, open the wallet website
+          const walletUrls: Record<string, string> = {
+            'Phantom': 'https://phantom.app/',
+            'Solflare': 'https://solflare.com/',
+            'Backpack': 'https://www.backpack.app/'
+          };
+          
+          window.open(walletUrls[walletName], '_blank');
+          
+          toast({
+            title: "Wallet Not Detected",
+            description: `${walletName} wallet is not installed. Please install it and try again.`,
+            variant: "destructive"
+          });
+          
+          setIsLocalConnecting(false);
+          return;
+        }
+        
+        // Assign to the outer variable after validation
+        walletProvider = selectedWalletProvider;
+        
+        // Create a properly formatted wallet object with extra safety checks
+        const walletWrapper = {
+          // Safely handle publicKey property which might be undefined
+          publicKey: walletProvider.publicKey,
+          
+          // Make sure isConnected is a boolean
+          isConnected: !!walletProvider.isConnected,
+          
+          // Enhanced connect method with additional error handling
+          connect: async () => {
+            try {
+              console.log('Calling connect on wallet provider');
+              
+              // Check if wallet provider exists
+              if (!walletProvider || typeof walletProvider.connect !== 'function') {
+                throw new Error('Wallet provider not available or missing connect method');
+              }
+              
+              // Call the wallet's connect method
+              const result = await walletProvider.connect();
+              console.log('Connect result:', result);
+              
+              // Validate the result
+              if (!result || !result.publicKey) {
+                throw new Error('Wallet connection failed: Invalid response from wallet');
+              }
+              
+              // Make sure result.publicKey has toString method
+              if (typeof result.publicKey.toString !== 'function') {
+                console.warn('Wallet returned publicKey without toString method, creating a wrapper');
+                // Create a wrapper with toString
+                return {
+                  publicKey: {
+                    toString: () => {
+                      // If we can access it as a string property, use that
+                      if (typeof result.publicKey === 'string') {
+                        return result.publicKey;
+                      }
+                      // Otherwise use object notation and convert to string
+                      return String(result.publicKey);
+                    }
+                  }
+                };
+              }
+              
+              return result;
+            } catch (err) {
+              console.error('Error in wallet connect wrapper:', err);
+              throw err;
+            }
+          },
+          
+          // Enhanced disconnect method
+          disconnect: async () => {
+            try {
+              // Use a local reference to eliminate the TypeScript error
+              const provider = walletProvider;
+              
+              // Check if wallet provider exists
+              if (!provider || typeof provider.disconnect !== 'function') {
+                console.warn('Wallet provider not available or missing disconnect method');
+                return;
+              }
+              return await provider.disconnect();
+            } catch (err) {
+              console.error('Error in wallet disconnect wrapper:', err);
+              throw err;
+            }
+          }
         };
         
-        window.open(walletUrls[walletName], '_blank');
-        
+        // Connect to the wallet
+        console.log('Connecting to wallet with wrapper:', walletWrapper);
+        await connectWallet(walletWrapper);
+      } catch (err) {
+        console.error('Error setting up wallet provider:', err);
         toast({
-          title: "Wallet Not Detected",
-          description: `${walletName} wallet is not installed. Please install it and try again.`,
+          title: `${walletName} Connection Error`,
+          description: `Error setting up wallet provider: ${err instanceof Error ? err.message : String(err)}`,
           variant: "destructive"
         });
-        
-        return;
+      } finally {
+        setIsLocalConnecting(false);
       }
-      
-      // Connect to the wallet
-      await connectWallet(walletProvider as any);
       
     } catch (error) {
       console.error(`Error connecting to ${walletName}:`, error);
