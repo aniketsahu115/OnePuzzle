@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { truncateString } from '@/lib/utils';
+import { MockWallet, createMockWalletProvider } from '@/lib/mockWallet';
 
 // Icons for different wallets
 const PhantomIcon = () => (
@@ -69,6 +71,41 @@ const WalletConnector: React.FC = () => {
 
   // For development purposes, use a simulation mode to bypass wallet connectivity issues
   const simulationMode = false; // Set to false to use actual wallet connections, true for simulation
+  
+  // Handle demo wallet connection
+  const handleDemoWallet = async () => {
+    try {
+      // Close the menu immediately to avoid multiple clicks
+      setIsWalletMenuOpen(false);
+      
+      console.log('Using demo wallet mode');
+      setIsLocalConnecting(true);
+      
+      // Simulate loading with local state
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Use the mockWallet implementation
+      const mockWalletProvider = createMockWalletProvider();
+      
+      // Connect to the mock wallet
+      await connectWallet(mockWalletProvider);
+      
+      toast({
+        title: "Demo Mode Active",
+        description: "You're connected with a demo wallet. Features have the same behavior but no real transactions occur.",
+      });
+      
+    } catch (error) {
+      console.error('Error connecting to demo wallet:', error);
+      toast({
+        title: "Demo Connection Error",
+        description: error instanceof Error ? error.message : "Failed to connect demo wallet",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLocalConnecting(false);
+    }
+  };
   
   // Generate a random Solana-like address for simulation (remains the same during the session)
   const getSimulatedAddress = (walletName: string) => {
@@ -327,8 +364,29 @@ const WalletConnector: React.FC = () => {
                   <BackpackIcon />
                   <span className="ml-3 text-sm font-medium dark:text-gray-200">Backpack</span>
                 </button>
+                
+                {/* Demo Mode Option */}
+                <button
+                  onClick={() => handleDemoWallet()}
+                  className="w-full flex items-center p-3 mt-2 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-300 dark:border-gray-600"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="M6 8h.01" />
+                    <path d="M12 8h.01" />
+                    <path d="M18 8h.01" />
+                    <path d="M12 12h.01" />
+                    <path d="M12 16h.01" />
+                    <path d="M6 12h.01" />
+                    <path d="M6 16h.01" />
+                    <path d="M18 12h.01" />
+                    <path d="M18 16h.01" />
+                  </svg>
+                  <span className="ml-3 text-sm font-medium dark:text-gray-200">Demo Mode</span>
+                </button>
+                
                 <div className="p-2 text-xs text-gray-500 dark:text-gray-400 text-center border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
-                  More wallets coming soon
+                  Demo mode lets you try the app without a real wallet
                 </div>
               </div>
             </div>
@@ -348,9 +406,26 @@ const WalletConnector: React.FC = () => {
             <DropdownMenuItem className="font-mono text-xs text-gray-500 cursor-default">
               {truncatedAddress}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => window.open(`https://explorer.solana.com/address/${walletAddress}`, '_blank')}>
-              View on Explorer
-            </DropdownMenuItem>
+            
+            {/* Show a demo indicator if using a mock wallet */}
+            {walletAddress && walletAddress.length > 10 && !walletAddress.startsWith('demo') && (
+              <DropdownMenuItem onClick={() => window.open(`https://explorer.solana.com/address/${walletAddress}`, '_blank')}>
+                View on Explorer
+              </DropdownMenuItem>
+            )}
+            
+            {/* Show a demo indicator if using a demo wallet */}
+            {walletAddress && walletAddress.includes('mock') && (
+              <DropdownMenuItem className="bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 cursor-default">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+                Demo Mode Active
+              </DropdownMenuItem>
+            )}
+            
             <DropdownMenuItem onClick={disconnectWallet} className="text-red-500">
               Disconnect
             </DropdownMenuItem>
