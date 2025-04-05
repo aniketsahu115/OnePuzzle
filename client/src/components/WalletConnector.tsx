@@ -95,7 +95,23 @@ const WalletConnector: React.FC = () => {
         // Set connected state for the UI
         // The context will be updated directly here instead of through the provider
         // In a real application, this should be properly handled through the wallet context
-        const simulatedAddress = `${walletName}SimulatedAddress123456789`;
+        
+        // Generate unique addresses for each wallet type
+        let simulatedAddress = '';
+        switch(walletName) {
+          case 'Phantom':
+            simulatedAddress = 'PhantomWallet1234567890ABCDEFabcdef';
+            break;
+          case 'Solflare':
+            simulatedAddress = 'SolflareWallet9876543210XYZxyzABCabc';
+            break;
+          case 'Backpack':
+            simulatedAddress = 'BackpackWallet55667788AABBEEFF00112233';
+            break;
+          default:
+            simulatedAddress = `${walletName}${Math.random().toString(36).substring(2, 10)}`;
+        }
+        
         setIsLocalConnecting(false);
         
         // Now call the real connectWallet function but with a mock wallet

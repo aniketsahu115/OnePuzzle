@@ -70,6 +70,9 @@ const PuzzleCard: React.FC<PuzzleCardProps> = ({
         onMove={setSelectedMove}
         selectedMove={selectedMove}
         interactionEnabled={currentAttempt <= 3 && !isCheckingMove}
+        showCoordinates={true}
+        showMoveHints={true}
+        showLastMove={true}
       />
 
       {/* Action Buttons */}
