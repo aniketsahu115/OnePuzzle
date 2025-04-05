@@ -2,18 +2,21 @@ import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import WalletConnector from './WalletConnector';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '@/lib/useTheme';
 
 const NavBar: React.FC = () => {
   const [location] = useLocation();
+  const { theme } = useTheme();
 
   const isActive = (path: string) => {
     return location === path 
-      ? 'font-bold text-solana-purple border-b-2 border-solana-purple' 
-      : 'text-gray-700 hover:text-solana-purple transition-colors';
+      ? 'font-bold text-solana-purple border-b-2 border-solana-purple dark:text-purple-400 dark:border-purple-400' 
+      : 'text-gray-700 hover:text-solana-purple transition-colors dark:text-gray-300 dark:hover:text-purple-400';
   };
 
   return (
-    <header className="sticky top-0 bg-white shadow-md py-4 px-6 animate-fade-in z-50">
+    <header className="sticky top-0 bg-white dark:bg-gray-900 shadow-md py-4 px-6 animate-fade-in z-50 transition-colors duration-300">
       <div className="container-solana flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center mb-4 md:mb-0 animate-slide-right">
           <Link href="/" className="flex items-center group unstyled">
@@ -22,7 +25,7 @@ const NavBar: React.FC = () => {
             </div>
             <div className="font-bold text-xl tracking-tight">
               <span className="text-solana-gradient">One</span>
-              <span className="text-solana-dark">Puzzle</span>
+              <span className="text-solana-dark dark:text-gray-200">Puzzle</span>
             </div>
           </Link>
         </div>
@@ -47,6 +50,7 @@ const NavBar: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-3 animate-slide-left">
+            <ThemeToggle />
             <WalletConnector />
           </div>
         </div>

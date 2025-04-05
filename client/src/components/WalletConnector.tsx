@@ -68,7 +68,7 @@ const WalletConnector: React.FC = () => {
   }, []);
 
   // For development purposes, use a simulation mode to bypass wallet connectivity issues
-  const simulationMode = true; // Set to true for simulation mode, false for actual wallet connections
+  const simulationMode = false; // Set to false to use actual wallet connections, true for simulation
   
   // Generate a random Solana-like address for simulation (remains the same during the session)
   const getSimulatedAddress = (walletName: string) => {
@@ -184,7 +184,7 @@ const WalletConnector: React.FC = () => {
   return (
     <div id="wallet-connector" className="flex items-center relative" ref={menuRef}>
       {connected && (
-        <div className="hidden sm:flex items-center mr-3 text-sm font-medium text-slate-600">
+        <div className="hidden sm:flex items-center mr-3 text-sm font-medium text-slate-600 dark:text-slate-300">
           <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
           <span className="wallet-address font-mono">{truncatedAddress}</span>
         </div>
@@ -213,33 +213,33 @@ const WalletConnector: React.FC = () => {
           
           {/* Wallet Selection Menu */}
           {isWalletMenuOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg overflow-hidden z-10 animate-slide-up">
-              <div className="p-3 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-sm font-medium">Select a wallet</h3>
+            <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 animate-slide-up">
+              <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                <h3 className="text-sm font-medium dark:text-gray-200">Select a wallet</h3>
               </div>
               <div className="p-2">
                 <button
                   onClick={() => handleWalletSelect('Phantom')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <PhantomIcon />
-                  <span className="ml-3 text-sm font-medium">Phantom</span>
+                  <span className="ml-3 text-sm font-medium dark:text-gray-200">Phantom</span>
                 </button>
                 <button
                   onClick={() => handleWalletSelect('Solflare')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <SolflareIcon />
-                  <span className="ml-3 text-sm font-medium">Solflare</span>
+                  <span className="ml-3 text-sm font-medium dark:text-gray-200">Solflare</span>
                 </button>
                 <button
                   onClick={() => handleWalletSelect('Backpack')}
-                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <BackpackIcon />
-                  <span className="ml-3 text-sm font-medium">Backpack</span>
+                  <span className="ml-3 text-sm font-medium dark:text-gray-200">Backpack</span>
                 </button>
-                <div className="p-2 text-xs text-gray-500 text-center border-t border-gray-200 mt-2 pt-2">
+                <div className="p-2 text-xs text-gray-500 dark:text-gray-400 text-center border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                   More wallets coming soon
                 </div>
               </div>

@@ -143,6 +143,13 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Check if wallet is already connected on mount
   useEffect(() => {
+    // We're disabling auto-connection to allow users to explicitly choose a wallet
+    // This ensures a better user experience where they consciously select which wallet to use
+    
+    console.log('Auto-wallet connection disabled - waiting for user to choose a wallet');
+    
+    // If we want to re-enable auto-connection later, uncomment the code below:
+    /*
     const checkWalletConnection = async () => {
       try {
         // Check for Phantom wallet
@@ -175,6 +182,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (typeof window !== 'undefined') {
       checkWalletConnection();
     }
+    */
   }, []);
 
   return (

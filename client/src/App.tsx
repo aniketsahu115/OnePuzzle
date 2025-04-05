@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import Learn from "@/pages/Learn";
 import Resources from "@/pages/Resources";
 import { WalletProvider } from "./lib/useWallet";
+import { ThemeProvider } from "./lib/useTheme";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 
@@ -28,16 +29,18 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WalletProvider>
-        <div className="flex flex-col min-h-screen">
-          <NavBar />
-          <div className="flex-grow">
-            <Router />
+      <ThemeProvider>
+        <WalletProvider>
+          <div className="flex flex-col min-h-screen dark:bg-gray-900 dark:text-white transition-colors duration-300">
+            <NavBar />
+            <div className="flex-grow">
+              <Router />
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-        <Toaster />
-      </WalletProvider>
+          <Toaster />
+        </WalletProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
