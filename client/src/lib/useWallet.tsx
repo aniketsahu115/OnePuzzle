@@ -16,7 +16,6 @@ interface WalletContextType {
   connectWallet: (wallet?: SolanaWallet) => Promise<void>;
   disconnectWallet: () => Promise<void>;
   isConnecting: boolean;
-  setIsConnecting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -25,7 +24,6 @@ const WalletContext = createContext<WalletContextType>({
   connectWallet: async () => {},
   disconnectWallet: async () => {},
   isConnecting: false,
-  setIsConnecting: () => {},
 });
 
 export const useWallet = () => useContext(WalletContext);
@@ -185,8 +183,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       walletAddress,
       connectWallet,
       disconnectWallet,
-      isConnecting,
-      setIsConnecting
+      isConnecting
     }}>
       {children}
     </WalletContext.Provider>

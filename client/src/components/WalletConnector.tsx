@@ -40,9 +40,10 @@ const WalletConnector: React.FC = () => {
     walletAddress, 
     connectWallet, 
     disconnectWallet, 
-    isConnecting,
-    setIsConnecting 
+    isConnecting
   } = useWallet();
+  // For the simulation we'll create a local state
+  const [isLocalConnecting, setIsLocalConnecting] = useState(false);
   const { toast } = useToast();
   const [isWalletMenuOpen, setIsWalletMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -80,8 +81,8 @@ const WalletConnector: React.FC = () => {
       if (simulationMode) {
         console.log('Using simulation mode for development');
         
-        // Simulate loading
-        setIsConnecting(true);
+        // Simulate loading with local state
+        setIsLocalConnecting(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Update the UI state directly
@@ -95,7 +96,7 @@ const WalletConnector: React.FC = () => {
         // The context will be updated directly here instead of through the provider
         // In a real application, this should be properly handled through the wallet context
         const simulatedAddress = `${walletName}SimulatedAddress123456789`;
-        setIsConnecting(false);
+        setIsLocalConnecting(false);
         
         // Now call the real connectWallet function but with a mock wallet
         const mockWallet = {
@@ -180,9 +181,9 @@ const WalletConnector: React.FC = () => {
           <Button 
             onClick={() => setIsWalletMenuOpen(!isWalletMenuOpen)} 
             className="btn-solana-gradient rounded-lg flex items-center animate-fade-in"
-            disabled={isConnecting}
+            disabled={isConnecting || isLocalConnecting}
           >
-            {isConnecting ? (
+            {(isConnecting || isLocalConnecting) ? (
               <span className="animate-pulse">Connecting...</span>
             ) : (
               <>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import PuzzleCard from "@/components/PuzzleCard";
 import AttemptCard from "@/components/AttemptCard";
 import NFTPreviewCard from "@/components/NFTPreviewCard";
@@ -8,6 +8,7 @@ import { useChessPuzzle } from "@/lib/useChessPuzzle";
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Attempt, PuzzleWithoutSolution } from '@shared/schema';
 
 export default function Home() {
   const { toast } = useToast();
@@ -26,7 +27,7 @@ export default function Home() {
     bestAttempt
   } = useChessPuzzle();
 
-  const [currentDate, setCurrentDate] = useState('');
+  const [currentDate, setCurrentDate] = useState<string>('');
 
   useEffect(() => {
     setCurrentDate(format(new Date(), 'MMMM d, yyyy'));
@@ -89,10 +90,10 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-          ) : puzzle ? (
+          ) : puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle && 'difficulty' in puzzle && 'toMove' in puzzle ? (
             <div className="animate-fade-in">
               <PuzzleCard
-                puzzle={puzzle || {}}
+                puzzle={puzzle as PuzzleWithoutSolution}
                 selectedMove={selectedMove}
                 setSelectedMove={setSelectedMove}
                 onReset={resetBoard}
@@ -119,7 +120,7 @@ export default function Home() {
         </section>
 
         {/* Results & History Section */}
-        {connected && puzzle && (
+        {connected && puzzle && typeof puzzle === 'object' && puzzle !== null && (
           <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
             <div className="animate-slide-left">
               <AttemptCard 
@@ -133,7 +134,7 @@ export default function Home() {
             <div className="animate-slide-right">
               <NFTPreviewCard 
                 bestAttempt={bestAttempt} 
-                attempts={attempts || []}
+                attempts={Array.isArray(attempts) ? attempts : []}
               />
             </div>
           </section>
