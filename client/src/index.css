@@ -2,26 +2,164 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Solana Foundation Colors */
+:root {
+  --solana-purple: #9945FF;
+  --solana-green: #14F195;
+  --solana-blue: #00C2FF;
+  --solana-teal: #19FB9B;
+  --solana-dark: #121825;
+  --solana-purple-dark: #7A29F9;
+  --solana-green-dark: #0DD584;
+  --solana-light-bg: #F7F8FA;
+  --solana-navy: #232D42;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background: var(--solana-light-bg);
+    color: var(--solana-dark);
+  }
+
+  /* Styling for common HTML elements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold animate-fade-in;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl mb-6;
+    background: linear-gradient(to right, var(--solana-purple), var(--solana-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl mb-4;
+    color: var(--solana-purple);
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl mb-3;
+    color: var(--solana-navy);
+  }
+
+  a:not(.unstyled) {
+    color: var(--solana-purple);
+    transition: all 0.3s ease;
+    @apply relative inline-block;
+  }
+
+  a:not(.unstyled):after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-[#9945FF] transition-all duration-300;
+  }
+
+  a:not(.unstyled):hover:after {
+    @apply w-full;
+  }
+
+  header {
+    @apply shadow-sm bg-white z-10 relative animate-fade-in;
+  }
+
+  main {
+    @apply py-8 animate-fade-in;
+  }
+
+  section {
+    @apply py-10 animate-slide-up;
+  }
+
+  article {
+    @apply p-6 bg-white rounded-lg shadow-sm mb-6 animate-fade-in;
+  }
+
+  aside {
+    @apply p-4 bg-[#F0F2F5] rounded-lg animate-slide-up;
+  }
+
+  footer {
+    @apply py-8 bg-[#232D42] text-white mt-12 animate-fade-in;
+  }
+
+  /* Form elements styling */
+  input, textarea, select {
+    @apply border-2 border-gray-200 rounded-md p-2 focus:border-[#9945FF] focus:ring-[#9945FF] focus:ring-opacity-50 focus:outline-none transition-all;
+  }
+
+  button {
+    @apply transition-all duration-300;
   }
 }
 
-/* Solana-inspired gradient */
+/* Solana-inspired gradients */
 .bg-solana-gradient {
-  background: linear-gradient(to right, #9945FF, #14F195);
+  background: linear-gradient(to right, var(--solana-purple), var(--solana-green));
 }
 
+.bg-solana-gradient-alt {
+  background: linear-gradient(to right, var(--solana-blue), var(--solana-teal));
+}
+
+.bg-solana-purple {
+  background-color: var(--solana-purple);
+}
+
+.bg-solana-green {
+  background-color: var(--solana-green);
+}
+
+.bg-solana-blue {
+  background-color: var(--solana-blue);
+}
+
+.bg-solana-dark {
+  background-color: var(--solana-dark);
+}
+
+.bg-solana-navy {
+  background-color: var(--solana-navy);
+}
+
+.bg-solana-light {
+  background-color: var(--solana-light-bg);
+}
+
+/* Gradient text effects */
 .text-solana-gradient {
-  background: linear-gradient(to right, #9945FF, #14F195);
+  background: linear-gradient(to right, var(--solana-purple), var(--solana-green));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.text-solana-gradient-alt {
+  background: linear-gradient(to right, var(--solana-blue), var(--solana-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-solana-purple {
+  color: var(--solana-purple);
+}
+
+.text-solana-green {
+  color: var(--solana-green);
+}
+
+.text-solana-blue {
+  color: var(--solana-blue);
+}
+
+.text-solana-dark {
+  color: var(--solana-dark);
 }
 
 /* Animations */
@@ -41,6 +179,28 @@
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -52,6 +212,18 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes rotateGlow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Animation classes */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -60,8 +232,24 @@
   animation: slideInUp 0.5s ease-out;
 }
 
+.animate-slide-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
 .animate-pulse-slow {
   animation: pulse 2s infinite ease-in-out;
+}
+
+.animate-float {
+  animation: float 4s infinite ease-in-out;
+}
+
+.animate-glow {
+  animation: rotateGlow 8s infinite linear;
 }
 
 .shimmer {
@@ -73,13 +261,38 @@
   animation: shimmer 2s infinite;
 }
 
-/* Additional button styles with Solana colors */
+/* Delay utilities */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Button styles with Solana colors */
 .btn-solana-primary {
-  @apply bg-[#9945FF] text-white hover:bg-[#8034DB] transition-colors;
+  @apply bg-[#9945FF] text-white hover:bg-[#7A29F9] transition-all;
 }
 
 .btn-solana-secondary {
-  @apply bg-[#14F195] text-[#2D2D3A] hover:bg-[#0DD584] transition-colors;
+  @apply bg-[#14F195] text-[#232D42] hover:bg-[#0DD584] transition-all;
+}
+
+.btn-solana-blue {
+  @apply bg-[#00C2FF] text-white hover:bg-[#00A3DF] transition-all;
 }
 
 .btn-solana-gradient {
@@ -92,11 +305,156 @@
   transform: translateY(-1px);
 }
 
-/* Card and border accent colors */
+.btn-solana-gradient-alt {
+  background: linear-gradient(to right, #00C2FF, #19FB9B);
+  @apply text-white transition-all duration-300;
+}
+
+.btn-solana-gradient-alt:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Card and container styling */
+.card-solana {
+  @apply bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-all duration-300;
+}
+
+.card-solana:hover {
+  @apply shadow-md;
+  transform: translateY(-2px);
+}
+
+.card-solana-accent {
+  @apply border-l-4 border-l-[#9945FF];
+}
+
+.container-solana {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Visual effects */
 .border-solana-accent {
   border-color: #9945FF;
 }
 
 .ring-solana-glow {
-  box-shadow: 0 0 10px rgba(153, 69, 255, 0.4);
+  box-shadow: 0 0 15px rgba(153, 69, 255, 0.4);
+}
+
+.ring-solana-glow-green {
+  box-shadow: 0 0 15px rgba(20, 241, 149, 0.4);
+}
+
+.ring-solana-glow-blue {
+  box-shadow: 0 0 15px rgba(0, 194, 255, 0.4);
+}
+
+/* NFT Card specific styles */
+.nft-card {
+  @apply relative overflow-hidden rounded-xl bg-white shadow-md border border-gray-100;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+}
+
+.nft-card:hover {
+  transform: rotateY(10deg) translateZ(10px);
+  box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nft-card-image {
+  @apply relative overflow-hidden;
+  height: 240px;
+}
+
+.nft-card-image img {
+  @apply w-full h-full object-cover;
+  transition: transform 0.5s ease;
+}
+
+.nft-card:hover .nft-card-image img {
+  transform: scale(1.05);
+}
+
+.nft-card-badge {
+  @apply absolute top-3 right-3 z-10 px-2 py-1 text-xs rounded-full font-medium;
+  background: rgba(153, 69, 255, 0.9);
+  color: white;
+  box-shadow: 0 2px 10px rgba(153, 69, 255, 0.3);
+}
+
+.nft-card-content {
+  @apply p-4;
+}
+
+.nft-card-title {
+  @apply text-lg font-bold mb-2;
+  color: var(--solana-dark);
+}
+
+.nft-card-details {
+  @apply space-y-2 text-sm;
+}
+
+.nft-card-detail {
+  @apply flex justify-between items-center;
+}
+
+.nft-card-detail-label {
+  @apply text-gray-500;
+}
+
+.nft-card-detail-value {
+  @apply font-medium;
+}
+
+.nft-card-footer {
+  @apply p-4 pt-0 flex justify-between items-center;
+}
+
+/* Chess specific styles */
+.chess-move {
+  @apply px-2 py-1 rounded-md text-sm font-mono;
+  background: rgba(153, 69, 255, 0.1);
+  color: var(--solana-purple);
+  border: 1px solid rgba(153, 69, 255, 0.2);
+}
+
+.chess-move.correct {
+  background: rgba(20, 241, 149, 0.1);
+  color: var(--solana-green);
+  border: 1px solid rgba(20, 241, 149, 0.2);
+}
+
+.chess-move.incorrect {
+  background: rgba(255, 69, 69, 0.1);
+  color: #ff4545;
+  border: 1px solid rgba(255, 69, 69, 0.2);
+}
+
+.chess-board-wrapper {
+  @apply relative rounded-lg overflow-hidden shadow-md border border-gray-200;
+  transition: all 0.3s ease;
+}
+
+.chess-board-wrapper:hover {
+  @apply shadow-lg border-gray-300;
+}
+
+/* Wallet connection styles */
+.wallet-button {
+  @apply flex items-center px-4 py-2 rounded-lg font-medium transition-all;
+  background: linear-gradient(45deg, var(--solana-purple), var(--solana-blue));
+  color: white;
+  box-shadow: 0 4px 10px rgba(153, 69, 255, 0.3);
+}
+
+.wallet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(153, 69, 255, 0.4);
+}
+
+.wallet-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(153, 69, 255, 0.3);
 }

@@ -7,44 +7,51 @@ const NavBar: React.FC = () => {
   const [location] = useLocation();
 
   const isActive = (path: string) => {
-    return location === path ? 'font-bold text-accent' : 'text-gray-600 hover:text-gray-900';
+    return location === path 
+      ? 'font-bold text-solana-purple border-b-2 border-solana-purple' 
+      : 'text-gray-700 hover:text-solana-purple transition-colors';
   };
 
   return (
-    <nav className="bg-white shadow-md py-4 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-        <div className="flex items-center mb-4 md:mb-0">
-          <Link href="/" className="flex items-center">
-            <span className="font-bold text-2xl text-primary mr-2">♟</span>
-            <span className="font-bold text-xl text-primary">OnePuzzle</span>
+    <header className="sticky top-0 bg-white shadow-md py-4 px-6 animate-fade-in z-50">
+      <div className="container-solana flex flex-col md:flex-row justify-between items-center">
+        <div className="flex items-center mb-4 md:mb-0 animate-slide-right">
+          <Link href="/" className="flex items-center group unstyled">
+            <div className="mr-3 w-10 h-10 bg-solana-gradient rounded-full flex items-center justify-center text-white text-xl transition-all duration-300 group-hover:ring-solana-glow">
+              ♟
+            </div>
+            <div className="font-bold text-xl tracking-tight">
+              <span className="text-solana-gradient">One</span>
+              <span className="text-solana-dark">Puzzle</span>
+            </div>
           </Link>
         </div>
         
         <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-10 items-center">
-          <div className="flex space-x-6">
-            <Link href="/" className={`${isActive('/')} transition-colors`}>
+          <div className="flex space-x-6 animate-slide-up">
+            <Link href="/" className={`${isActive('/')} py-1`}>
               Home
             </Link>
-            <Link href="/learn" className={`${isActive('/learn')} transition-colors`}>
+            <Link href="/learn" className={`${isActive('/learn')} py-1`}>
               Learn
             </Link>
-            <Link href="/resources" className={`${isActive('/resources')} transition-colors`}>
+            <Link href="/resources" className={`${isActive('/resources')} py-1`}>
               Resources
             </Link>
-            <Link href="/dashboard" className={`${isActive('/dashboard')} transition-colors`}>
+            <Link href="/dashboard" className={`${isActive('/dashboard')} py-1`}>
               Dashboard
             </Link>
-            <Link href="/blog" className={`${isActive('/blog')} transition-colors`}>
+            <Link href="/blog" className={`${isActive('/blog')} py-1`}>
               Blog
             </Link>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 animate-slide-left">
             <WalletConnector />
           </div>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 
