@@ -7,6 +7,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 // Icons for different wallets
 const PhantomIcon = () => (
@@ -41,6 +42,7 @@ const WalletConnector: React.FC = () => {
     disconnectWallet, 
     isConnecting 
   } = useWallet();
+  const { toast } = useToast();
   const [isWalletMenuOpen, setIsWalletMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -73,17 +75,25 @@ const WalletConnector: React.FC = () => {
       const hasSolflare = window?.solflare;
       const hasBackpack = window?.backpack;
       
+      console.log(`Wallet detection: Phantom (${hasPhantom ? 'available' : 'not available'}), ` +
+                  `Solflare (${hasSolflare ? 'available' : 'not available'}), ` +
+                  `Backpack (${hasBackpack ? 'available' : 'not available'})`);
+      
       let walletProvider;
       
       if (walletName === 'Phantom' && hasPhantom) {
         walletProvider = window.phantom?.solana;
+        console.log('Using Phantom wallet provider');
       } else if (walletName === 'Solflare' && hasSolflare) {
         walletProvider = window.solflare;
+        console.log('Using Solflare wallet provider');
       } else if (walletName === 'Backpack' && hasBackpack) {
         walletProvider = window.backpack;
+        console.log('Using Backpack wallet provider');
       }
       
       if (!walletProvider) {
+        console.log(`${walletName} wallet provider not found, redirecting to download page`);
         // If wallet doesn't exist, open the wallet website
         const walletUrls: Record<string, string> = {
           'Phantom': 'https://phantom.app/',
@@ -95,12 +105,31 @@ const WalletConnector: React.FC = () => {
         return;
       }
       
+      // Verify the wallet provider has the required properties
+      if (typeof walletProvider.connect !== 'function') {
+        console.error(`${walletName} wallet provider does not have a connect function`);
+        toast({
+          title: "Connection Error",
+          description: `${walletName} wallet is not properly initialized. Please refresh the page or reinstall the extension.`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      console.log(`Attempting to connect to ${walletName} wallet...`);
+      
       // Connect to the wallet
-      // We need to cast the wallet provider to any because the types might not match perfectly
       await connectWallet(walletProvider as any);
       setIsWalletMenuOpen(false);
+      
+      console.log(`${walletName} wallet connection process complete`);
     } catch (error) {
       console.error(`Error connecting to ${walletName}:`, error);
+      toast({
+        title: `${walletName} Connection Error`,
+        description: error instanceof Error ? error.message : `Failed to connect to ${walletName}`,
+        variant: "destructive"
+      });
     }
   };
 
