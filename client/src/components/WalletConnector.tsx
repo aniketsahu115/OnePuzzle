@@ -96,20 +96,22 @@ const WalletConnector: React.FC = () => {
         // The context will be updated directly here instead of through the provider
         // In a real application, this should be properly handled through the wallet context
         
-        // Generate unique addresses for each wallet type
+        // Generate truly unique addresses for each wallet type with timestamp
+        const timestamp = Date.now().toString();
+        const randomSuffix = Math.random().toString(36).substring(2, 10);
         let simulatedAddress = '';
         switch(walletName) {
           case 'Phantom':
-            simulatedAddress = 'PhantomWallet1234567890ABCDEFabcdef';
+            simulatedAddress = `Phantom_${timestamp}_${randomSuffix}`;
             break;
           case 'Solflare':
-            simulatedAddress = 'SolflareWallet9876543210XYZxyzABCabc';
+            simulatedAddress = `Solflare_${timestamp}_${randomSuffix}`;
             break;
           case 'Backpack':
-            simulatedAddress = 'BackpackWallet55667788AABBEEFF00112233';
+            simulatedAddress = `Backpack_${timestamp}_${randomSuffix}`;
             break;
           default:
-            simulatedAddress = `${walletName}${Math.random().toString(36).substring(2, 10)}`;
+            simulatedAddress = `${walletName}_${timestamp}_${randomSuffix}`;
         }
         
         setIsLocalConnecting(false);
