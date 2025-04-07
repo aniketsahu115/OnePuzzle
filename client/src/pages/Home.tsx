@@ -12,8 +12,11 @@ import { Attempt, PuzzleWithoutSolution } from '@shared/schema';
 import { formatTime } from '@/lib/utils';
 
 export default function Home() {
+  console.log("Rendering Home component");
   const { toast } = useToast();
   const { connected, walletAddress } = useWallet();
+  console.log("Wallet state:", { connected, walletAddress });
+  
   const {
     puzzle,
     isLoading,
@@ -27,6 +30,15 @@ export default function Home() {
     isCheckingMove,
     bestAttempt
   } = useChessPuzzle();
+  
+  console.log("Chess puzzle state:", { 
+    puzzle, 
+    isLoading, 
+    currentAttempt,
+    attemptsCount: attempts?.length,
+    selectedMove,
+    elapsedTime
+  });
 
   const [currentDate, setCurrentDate] = useState<string>('');
 
