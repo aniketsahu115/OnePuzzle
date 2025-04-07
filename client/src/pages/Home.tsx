@@ -4,6 +4,7 @@ import AttemptCard from "@/components/AttemptCard";
 import NFTPreviewCard from "@/components/NFTPreviewCard";
 import { RecommendedPuzzleCard } from "@/components/RecommendedPuzzleCard";
 import HowItWorks from "@/components/HowItWorks";
+import AchievementShowcase from "@/components/AchievementShowcase";
 import { useWallet } from "@/lib/useWallet";
 import { useChessPuzzle } from "@/lib/useChessPuzzle";
 import { format } from 'date-fns';
@@ -31,7 +32,13 @@ export default function Home() {
     elapsedTime,
     isCheckingMove,
     bestAttempt,
-    getRecommendedPuzzle
+    getRecommendedPuzzle,
+    // Achievement related properties
+    showAchievement,
+    closeAchievement,
+    streakCount,
+    totalSolved,
+    latestAttempt
   } = useChessPuzzle();
   
   console.log("Chess puzzle state:", { 
@@ -424,6 +431,15 @@ export default function Home() {
           </section>
         )}
       </div>
+      
+      {/* Achievement Showcase Popup */}
+      <AchievementShowcase 
+        isVisible={showAchievement}
+        onClose={closeAchievement}
+        attempt={latestAttempt}
+        streakCount={streakCount}
+        totalSolved={totalSolved}
+      />
     </main>
   );
 }

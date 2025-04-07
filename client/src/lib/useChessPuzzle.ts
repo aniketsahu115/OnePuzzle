@@ -18,6 +18,12 @@ export function useChessPuzzle() {
   const [isLoadingState, setIsLoadingState] = useState(true);
   const [showRecommendation, setShowRecommendation] = useState<boolean>(false);
   
+  // Achievement tracking
+  const [showAchievement, setShowAchievement] = useState<boolean>(false);
+  const [streakCount, setStreakCount] = useState<number>(0);
+  const [totalSolved, setTotalSolved] = useState<number>(0);
+  const [latestAttempt, setLatestAttempt] = useState<Attempt | null>(null);
+  
   // Various chess positions for a more dynamic experience
   const chessPuzzles = [
     {
@@ -269,21 +275,38 @@ export function useChessPuzzle() {
       */
     },
     onSuccess: (data) => {
-      // Show success/failure message
-      if (data?.isCorrect) {
-        toast({
-          title: "Correct move!",
-          description: "You found the best move for this position.",
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "Incorrect move",
-          description: currentAttempt < 3 
-            ? `You have ${3 - currentAttempt} more attempts remaining.` 
-            : "You've used all your attempts for today.",
-          variant: "destructive",
-        });
+      // Store the attempt data for achievement showcase
+      if (data) {
+        setLatestAttempt(data);
+        
+        // Update tracking counters
+        if (data.isCorrect) {
+          // Increment streak count for consecutive correct solutions
+          setStreakCount(prev => prev + 1);
+          
+          // Increment total solved puzzles
+          setTotalSolved(prev => prev + 1);
+          
+          // Show achievement showcase popup
+          setShowAchievement(true);
+          
+          toast({
+            title: "Correct move!",
+            description: "You found the best move for this position.",
+            variant: "default",
+          });
+        } else {
+          // Reset streak on incorrect moves
+          setStreakCount(0);
+          
+          toast({
+            title: "Incorrect move",
+            description: currentAttempt < 3 
+              ? `You have ${3 - currentAttempt} more attempts remaining.` 
+              : "You've used all your attempts for today.",
+            variant: "destructive",
+          });
+        }
       }
       
       // Reset timer and selected move
@@ -372,6 +395,11 @@ export function useChessPuzzle() {
     */
   }, [connected, walletAddress, samplePuzzle]);
   
+  // Add function to toggle achievement showcase visibility 
+  const closeAchievement = useCallback(() => {
+    setShowAchievement(false);
+  }, []);
+  
   return {
     puzzle,
     isLoading,
@@ -388,6 +416,13 @@ export function useChessPuzzle() {
     refetchAttempts,
     showRecommendation,
     toggleRecommendation,
-    getRecommendedPuzzle
+    getRecommendedPuzzle,
+    
+    // Achievement related properties
+    showAchievement,
+    closeAchievement,
+    streakCount,
+    totalSolved,
+    latestAttempt
   };
 }
