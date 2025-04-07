@@ -88,9 +88,31 @@ export default function Home() {
                 <div className="w-full h-full bg-indigo-900/10 backdrop-blur-3xl"></div>
               </div>
 
-              <div className="flex flex-col items-center justify-center py-12 relative z-10">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-8 shadow-lg">
+              <div className="flex flex-col items-center justify-center py-8 relative z-10">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-6 shadow-lg">
                   <div className="text-7xl animate-pulse-slow">♟</div>
+                </div>
+                
+                {/* Chess board placeholder */}
+                <div className="mb-8 w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden">
+                  <div className="w-full h-full grid grid-cols-8 grid-rows-8">
+                    {Array.from({ length: 64 }).map((_, index) => {
+                      const row = Math.floor(index / 8);
+                      const col = index % 8;
+                      const isLight = (row + col) % 2 === 0;
+                      
+                      return (
+                        <div 
+                          key={index} 
+                          className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/40'} flex items-center justify-center`}
+                        >
+                          {((row === 0 || row === 7) && (col === 0 || col === 7)) && (
+                            <div className="w-6 h-6 rounded-full bg-purple-500/30 animate-pulse"></div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
                 
                 <h3 className="text-3xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">
