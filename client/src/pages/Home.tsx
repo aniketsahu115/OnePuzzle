@@ -122,7 +122,29 @@ export default function Home() {
                 
                 {/* Right side: Enhanced chess board */}
                 <div className="md:flex-1 w-full flex justify-center md:justify-end">
-                  <div className="w-full max-w-[400px] aspect-square bg-gradient-to-br from-indigo-950 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-purple-500/30">
+                  <div className="w-full max-w-[400px] relative aspect-square bg-gradient-to-br from-indigo-950 to-gray-900 rounded-xl shadow-2xl overflow-hidden border-2 border-[#9945FF]/30 animate-pulse-very-slow">
+                    {/* Add coordinate labels */}
+                    <div className="absolute top-0 left-0 right-0 flex justify-around px-4 py-1">
+                      {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(letter => (
+                        <div key={letter} className="text-xs text-purple-300/70">{letter}</div>
+                      ))}
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-around px-4 py-1">
+                      {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(letter => (
+                        <div key={letter} className="text-xs text-purple-300/70">{letter}</div>
+                      ))}
+                    </div>
+                    <div className="absolute top-0 bottom-0 left-0 flex flex-col justify-around py-4 px-1">
+                      {['8', '7', '6', '5', '4', '3', '2', '1'].map(number => (
+                        <div key={number} className="text-xs text-purple-300/70">{number}</div>
+                      ))}
+                    </div>
+                    <div className="absolute top-0 bottom-0 right-0 flex flex-col justify-around py-4 px-1">
+                      {['8', '7', '6', '5', '4', '3', '2', '1'].map(number => (
+                        <div key={number} className="text-xs text-purple-300/70">{number}</div>
+                      ))}
+                    </div>
+                    
                     <div className="w-full h-full grid grid-cols-8 grid-rows-8">
                       {Array.from({ length: 64 }).map((_, index) => {
                         const row = Math.floor(index / 8);
@@ -158,16 +180,24 @@ export default function Home() {
                         return (
                           <div 
                             key={index} 
-                            className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/50'} flex items-center justify-center`}
+                            className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/50'} flex items-center justify-center relative group cursor-pointer hover:bg-indigo-700/30 transition-colors duration-200`}
                           >
                             {piece && (
-                              <div className={`text-2xl ${row < 2 ? 'text-indigo-400' : 'text-slate-200'} opacity-80`}>
-                                {piece}
+                              <div className={`text-2xl ${row < 2 ? 'text-indigo-400' : 'text-slate-200'} opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all ${(row === 1 || row === 6) ? 'animate-float-slow' : 'animate-pulse-very-slow'} drop-shadow-md`}>
+                                <div className="relative z-10">
+                                  {piece}
+                                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-full blur-sm -z-10 group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-all"></div>
+                                </div>
                               </div>
                             )}
-                            {/* Add subtle glow effect on corner squares */}
+                            
+                            {/* Add visual cue for valid moves on hover */}
+                            {!piece && (
+                              <div className="w-2 h-2 rounded-full bg-purple-400/0 group-hover:bg-purple-400/40 transition-all duration-200"></div>
+                            )}
+                            {/* Add enhanced glow effect on corner squares */}
                             {((row === 0 || row === 7) && (col === 0 || col === 7)) && (
-                              <div className="absolute w-6 h-6 rounded-full bg-purple-500/20 animate-pulse-slow"></div>
+                              <div className="absolute w-10 h-10 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-400/10 animate-pulse-slow blur-md"></div>
                             )}
                           </div>
                         );
