@@ -100,8 +100,8 @@ export function useChessPuzzle() {
   */
   
   // Development version
-  // Always provide a puzzle, even when not connected (for visual purposes)
-  const puzzleData = !isLoadingState ? samplePuzzle : null;
+  // Provide a puzzle based on connection status
+  const puzzleData = !isLoadingState ? (connected ? samplePuzzle : null) : null;
   const isLoading = isLoadingState;
   const refetchPuzzle = () => console.log('Refetching puzzle...');
   

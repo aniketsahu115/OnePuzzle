@@ -229,7 +229,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          ) : puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle ? (
+          ) : connected && puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle ? (
             <div className="animate-fade-in">
               <PuzzleCard
                 puzzle={puzzle as PuzzleWithoutSolution}

@@ -97,7 +97,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
           </div>
         ) : recommendedPuzzle ? (
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-900">Difficulty Level</h3>
                 <Badge 
@@ -113,14 +113,19 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
               </div>
               
               {recommendedPuzzle.themes && recommendedPuzzle.themes.length > 0 && (
-                <div className="space-y-1 text-right">
+                <div className="space-y-1 sm:text-right">
                   <h3 className="font-medium text-gray-900">Puzzle Theme</h3>
-                  <div className="flex gap-1 justify-end flex-wrap">
-                    {recommendedPuzzle.themes.map((theme, i) => (
-                      <Badge key={i} variant="outline" className="capitalize bg-white">
+                  <div className="flex gap-1 sm:justify-end flex-wrap">
+                    {recommendedPuzzle.themes.slice(0, 2).map((theme, i) => (
+                      <Badge key={i} variant="outline" className="capitalize bg-white truncate max-w-[100px]">
                         {theme}
                       </Badge>
                     ))}
+                    {recommendedPuzzle.themes.length > 2 && (
+                      <Badge variant="outline" className="bg-white">
+                        +{recommendedPuzzle.themes.length - 2}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               )}
@@ -139,7 +144,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
             </div>
             
             {recommendedPuzzle.recommendationReason && (
-              <div className="p-3 bg-indigo-100/50 rounded-lg text-sm text-indigo-700 italic">
+              <div className="p-3 bg-indigo-100/50 rounded-lg text-sm text-indigo-700 italic max-h-20 overflow-y-auto">
                 {recommendedPuzzle.recommendationReason}
               </div>
             )}
