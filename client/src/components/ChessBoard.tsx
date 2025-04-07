@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Chess, Move, Square } from 'chess.js';
+import { useChessAudio } from '@/lib/useChessAudio';
 
 interface ChessBoardProps {
   fen: string;
@@ -32,6 +33,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
   const [gameOver, setGameOver] = useState<{status: string, winner?: string} | null>(null);
   const [timer, setTimer] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(false);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  
+  // Initialize audio functionality
+  const { playSound, isMuted, toggleMute } = useChessAudio();
 
   // Update the chess position when the FEN string changes
   useEffect(() => {
@@ -146,12 +151,29 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
             setMoveHistory(prevHistory => [...prevHistory, newMove]);
             setHighlightedMove(newMove);
             
+            // Play appropriate sound effect based on move type
+            if (moveResult.captured) {
+              // Piece capture sound
+              playSound('capture');
+            } else if (moveResult.san.includes('+')) {
+              // Check sound
+              playSound('check');
+            } else if (moveResult.san.includes('O-O')) {
+              // Castle sound
+              playSound('castle');
+            } else {
+              // Regular move sound
+              playSound('move');
+            }
+            
             // Call the parent's onMove callback if provided
             if (onMove) {
               onMove(`${selectedPiece}${square}`);
             }
           }
         } catch (e) {
+          // Play error sound for invalid moves
+          playSound('error');
           console.error('Invalid move:', e);
         }
         
@@ -163,6 +185,9 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
     
     // If the clicked square has a piece and it's the correct color to move
     if (piece && ((piece.color === 'w' && chess.turn() === 'w') || (piece.color === 'b' && chess.turn() === 'b'))) {
+      // Play selection sound effect (subtle move sound for piece selection)
+      playSound('move');
+      
       setSelectedPiece(square);
       
       // Find possible moves for this piece
@@ -343,6 +368,27 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
         <div className="absolute inset-0 grid grid-cols-8 grid-rows-8">
           {renderSquares()}
         </div>
+        
+        {/* Sound toggle button */}
+        <button 
+          onClick={toggleMute}
+          className="absolute -top-10 right-0 p-2 bg-slate-100 hover:bg-slate-200 rounded-full shadow-sm transition-colors"
+          title={isMuted ? "Unmute sound effects" : "Mute sound effects"}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          )}
+        </button>
         
         {/* Game over overlay */}
         {gameOver && (

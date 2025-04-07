@@ -3,6 +3,7 @@ import { formatTime, formatAlgebraicNotation } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, XCircle, Clock, MoveHorizontal, RotateCcw } from 'lucide-react';
 import { Attempt } from '@shared/schema';
+import { useChessAudio } from '@/lib/useChessAudio';
 
 interface AttemptCardProps {
   selectedMove: string | null;
@@ -23,6 +24,10 @@ const AttemptCard: React.FC<AttemptCardProps> = ({
 }) => {
   // Keep track of previous attempts to display history
   const [previousAttempts, setPreviousAttempts] = useState<Attempt[]>([]);
+  const [prevResult, setPrevResult] = useState<boolean | null | undefined>(undefined);
+  
+  // Initialize audio functionality
+  const { playSound } = useChessAudio();
   
   // Update previous attempts when the attempts prop changes
   useEffect(() => {
@@ -30,6 +35,23 @@ const AttemptCard: React.FC<AttemptCardProps> = ({
       setPreviousAttempts(attempts);
     }
   }, [attempts]);
+  
+  // Play sound effects when result changes
+  useEffect(() => {
+    // Only play sounds when result changes from undefined to a value
+    if (result !== undefined && result !== prevResult) {
+      if (result === true) {
+        // Play success sound
+        playSound('success');
+      } else if (result === false) {
+        // Play error sound
+        playSound('error');
+      }
+      
+      // Update prevResult to avoid playing the sound again
+      setPrevResult(result);
+    }
+  }, [result, prevResult, playSound]);
   
   const renderResultContent = () => {
     if (isCheckingMove) {
