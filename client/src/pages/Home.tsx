@@ -80,60 +80,101 @@ export default function Home() {
               </div>
             </div>
           ) : !connected ? (
-            <div className="card-solana p-8 shadow-xl border border-purple-600/20 animate-fade-in relative overflow-hidden backdrop-blur-sm">
-              {/* Decorative background elements */}
-              <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-600 to-indigo-800 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-600 to-indigo-800 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
-                <div className="w-full h-full bg-indigo-900/10 backdrop-blur-3xl"></div>
+            <div className="card-solana p-6 shadow-xl border border-purple-600/30 animate-fade-in relative overflow-hidden backdrop-blur-sm rounded-2xl">
+              {/* Enhanced background elements */}
+              <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30">
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-purple-800 via-indigo-900 to-transparent rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-blue-800 via-violet-900 to-transparent rounded-full blur-3xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-lg"></div>
+                {/* Animated chess piece silhouettes in background */}
+                <div className="absolute top-10 left-10 text-white/10 text-9xl opacity-20 animate-float-slow">♞</div>
+                <div className="absolute bottom-10 right-10 text-white/10 text-9xl opacity-20 animate-float-slow-reverse">♜</div>
+                <div className="absolute top-1/2 left-1/4 text-white/10 text-8xl opacity-20 animate-float">♛</div>
               </div>
 
-              <div className="flex flex-col items-center justify-center py-8 relative z-10">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-6 shadow-lg">
-                  <div className="text-7xl animate-pulse-slow">♟</div>
+              <div className="flex flex-col md:flex-row items-center justify-between py-6 relative z-10 gap-8">
+                {/* Left side content */}
+                <div className="flex flex-col items-center md:items-start md:flex-1 text-left">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-6 shadow-lg transform rotate-3">
+                    <div className="text-6xl animate-pulse-slow">♟</div>
+                  </div>
+                  
+                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300">
+                    Challenge Your Mind
+                  </h3>
+                  
+                  <p className="mb-8 text-indigo-100 text-lg max-w-md">
+                    Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess mastery!
+                  </p>
+                  
+                  <Button 
+                    className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl w-full md:w-auto"
+                    onClick={() => document.getElementById('wallet-connector')?.querySelector('button')?.click()}
+                  >
+                    <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" />
+                      <path d="M22 10H4" stroke="currentColor" strokeWidth="2" />
+                      <path d="M20 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                    <span className="group-hover:translate-x-1 transition-transform">Connect Wallet</span>
+                  </Button>
                 </div>
                 
-                {/* Chess board placeholder */}
-                <div className="mb-8 w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden">
-                  <div className="w-full h-full grid grid-cols-8 grid-rows-8">
-                    {Array.from({ length: 64 }).map((_, index) => {
-                      const row = Math.floor(index / 8);
-                      const col = index % 8;
-                      const isLight = (row + col) % 2 === 0;
-                      
-                      return (
-                        <div 
-                          key={index} 
-                          className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/40'} flex items-center justify-center`}
-                        >
-                          {((row === 0 || row === 7) && (col === 0 || col === 7)) && (
-                            <div className="w-6 h-6 rounded-full bg-purple-500/30 animate-pulse"></div>
-                          )}
-                        </div>
-                      );
-                    })}
+                {/* Right side: Enhanced chess board */}
+                <div className="md:flex-1 w-full flex justify-center md:justify-end">
+                  <div className="w-full max-w-[400px] aspect-square bg-gradient-to-br from-indigo-950 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-purple-500/30">
+                    <div className="w-full h-full grid grid-cols-8 grid-rows-8">
+                      {Array.from({ length: 64 }).map((_, index) => {
+                        const row = Math.floor(index / 8);
+                        const col = index % 8;
+                        const isLight = (row + col) % 2 === 0;
+                        
+                        // Add chess pieces to the placeholder board for better visual appeal
+                        let piece = null;
+                        // Back row pieces
+                        if (row === 0) {
+                          if (col === 0 || col === 7) piece = "♜";
+                          else if (col === 1 || col === 6) piece = "♞";
+                          else if (col === 2 || col === 5) piece = "♝";
+                          else if (col === 3) piece = "♛";
+                          else if (col === 4) piece = "♚";
+                        } 
+                        // Pawns
+                        else if (row === 1) {
+                          piece = "♟";
+                        }
+                        // White pieces
+                        else if (row === 6) {
+                          piece = "♙";
+                        }
+                        else if (row === 7) {
+                          if (col === 0 || col === 7) piece = "♖";
+                          else if (col === 1 || col === 6) piece = "♘";
+                          else if (col === 2 || col === 5) piece = "♗";
+                          else if (col === 3) piece = "♕";
+                          else if (col === 4) piece = "♔";
+                        }
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/50'} flex items-center justify-center`}
+                          >
+                            {piece && (
+                              <div className={`text-2xl ${row < 2 ? 'text-indigo-400' : 'text-slate-200'} opacity-80`}>
+                                {piece}
+                              </div>
+                            )}
+                            {/* Add subtle glow effect on corner squares */}
+                            {((row === 0 || row === 7) && (col === 0 || col === 7)) && (
+                              <div className="absolute w-6 h-6 rounded-full bg-purple-500/20 animate-pulse-slow"></div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-                
-                <h3 className="text-3xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">
-                  Connect Your Wallet
-                </h3>
-                
-                <p className="mb-8 text-center max-w-md text-indigo-100">
-                  Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess skills!
-                </p>
-                
-                <Button 
-                  className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl"
-                  onClick={() => document.getElementById('wallet-connector')?.querySelector('button')?.click()}
-                >
-                  <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2" />
-                    <path d="M22 10H4" stroke="currentColor" strokeWidth="2" />
-                    <path d="M20 16a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" strokeWidth="2" />
-                  </svg>
-                  <span className="group-hover:translate-x-1 transition-transform">Connect Wallet</span>
-                </Button>
               </div>
             </div>
           ) : puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle ? (
