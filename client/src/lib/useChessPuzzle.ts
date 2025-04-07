@@ -71,12 +71,12 @@ export function useChessPuzzle() {
   
   // Simulate loading delay
   useEffect(() => {
-    if (connected) {
-      const timer = setTimeout(() => {
-        setIsLoadingState(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
+    // Always set loading state to false after a delay, whether connected or not
+    const timer = setTimeout(() => {
+      setIsLoadingState(false);
+      console.log('Loading state set to false');
+    }, 1000);
+    return () => clearTimeout(timer);
   }, [connected]);
   
   // Fetch today's puzzle - using sample data for development
@@ -93,7 +93,8 @@ export function useChessPuzzle() {
   */
   
   // Development version
-  const puzzleData = connected && !isLoadingState ? samplePuzzle : null;
+  // Always provide a puzzle, even when not connected (for visual purposes)
+  const puzzleData = !isLoadingState ? samplePuzzle : null;
   const isLoading = isLoadingState;
   const refetchPuzzle = () => console.log('Refetching puzzle...');
   
