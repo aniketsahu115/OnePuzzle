@@ -35,6 +35,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Get personalized recommended puzzle for user
+  app.get('/api/puzzles/recommended', async (req, res) => {
+    try {
+      const walletAddress = req.query.walletAddress as string;
+      
+      if (!walletAddress) {
+        return res.status(400).json({ message: "Wallet address is required" });
+      }
+      
+      // Get a user-specific recommended puzzle
+      const recommendedPuzzle = await storage.getRecommendedPuzzleForUser(walletAddress);
+      
+      if (!recommendedPuzzle) {
+        return res.status(404).json({ message: "No recommendation available" });
+      }
+      
+      // Return puzzle without solution
+      const { solution, ...puzzleWithoutSolution } = recommendedPuzzle;
+      
+      res.json({
+        ...puzzleWithoutSolution,
+        isRecommended: true,
+        recommendationReason: recommendedPuzzle.recommendationReason || "This puzzle is recommended based on your skill level."
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to get recommended puzzle", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
 
   // Get user's attempts for today's puzzle
   app.get('/api/attempts', async (req, res) => {

@@ -11,6 +11,10 @@ export const puzzles = pgTable("puzzles", {
   solution: text("solution").notNull(), // Solution in algebraic notation
   dateAssigned: timestamp("date_assigned").notNull(),
   toMove: text("to_move").notNull(), // 'w' for white, 'b' for black
+  themes: text("themes").array(), // Chess themes (tactics) like "fork", "pin", "discovery", etc.
+  rating: integer("rating").default(1500), // Rating of the puzzle (difficulty measure)
+  popularity: integer("popularity").default(0), // How many times the puzzle has been played
+  successPercentage: integer("success_percentage").default(0), // Success rate for this puzzle
 });
 
 // User attempts table
@@ -33,6 +37,12 @@ export const users = pgTable("users", {
   username: text("username"), // Optional username
   lastPuzzleDate: timestamp("last_puzzle_date"), // Last date a puzzle was attempted
   sessionKey: text("session_key"), // Gum session key
+  skillLevel: text("skill_level").default('beginner'), // beginner, intermediate, advanced
+  preferredDifficulty: text("preferred_difficulty").default('medium'), // easy, medium, hard
+  successRate: integer("success_rate").default(0), // 0-100 percentage
+  completedPuzzles: integer("completed_puzzles").default(0), // Count of puzzles completed
+  preferredThemes: text("preferred_themes").array(), // Tactical themes the user excels at or prefers
+  lastRecommendationDate: timestamp("last_recommendation_date"), // When the last recommendation was made
 });
 
 // Daily puzzle records table
@@ -79,6 +89,12 @@ export type PuzzleWithSolution = {
   difficulty: string;
   toMove: string;
   solution: string;
+  themes?: string[];
+  rating?: number;
+  popularity?: number;
+  successPercentage?: number;
+  isRecommended?: boolean;
+  recommendationReason?: string;
 };
 
 // Type for puzzle without solution data (for client)
@@ -87,6 +103,9 @@ export type PuzzleWithoutSolution = {
   fen: string;
   difficulty: string;
   toMove: string;
+  themes?: string[];
+  isRecommended?: boolean;
+  recommendationReason?: string;
 };
 
 // Type for a complete attempt record with puzzle

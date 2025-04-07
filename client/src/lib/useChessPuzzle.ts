@@ -16,6 +16,7 @@ export function useChessPuzzle() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [isLoadingState, setIsLoadingState] = useState(true);
+  const [showRecommendation, setShowRecommendation] = useState<boolean>(false);
   
   // Various chess positions for a more dynamic experience
   const chessPuzzles = [
@@ -330,6 +331,47 @@ export function useChessPuzzle() {
     await submitAttempt();
   }, [currentAttempt, selectedMove, submitAttempt, toast]);
 
+  // Add puzzle recommendation handling
+  const toggleRecommendation = useCallback(() => {
+    setShowRecommendation(prev => !prev);
+  }, []);
+  
+  // Get recommended puzzle (simulation for development)
+  const getRecommendedPuzzle = useCallback(async (): Promise<PuzzleWithoutSolution | null> => {
+    if (!connected || !walletAddress) return null;
+    
+    // This is a temporary simulation for development
+    // In a real app, this would call the recommendation API
+    const themes = ["fork", "attack", "checkmate", "tactics"];
+    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+    const difficulties = ["easy", "medium", "hard"];
+    const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+    
+    // Return a sample recommended puzzle
+    const recommendedPuzzle: PuzzleWithoutSolution = {
+      id: 999, // Special ID for recommended puzzle
+      fen: samplePuzzle.fen, // Reuse FEN from sample puzzle
+      difficulty: randomDifficulty,
+      toMove: samplePuzzle.toMove,
+      themes: [randomTheme],
+      isRecommended: true,
+      recommendationReason: `This is a ${randomDifficulty} puzzle featuring a ${randomTheme} tactic that matches your skill level.`
+    };
+    
+    return recommendedPuzzle;
+    
+    /* In production, this would be:
+    try {
+      const response = await apiRequest('GET', `/api/puzzles/recommended?walletAddress=${walletAddress}`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Failed to get recommended puzzle:', error);
+      return null;
+    }
+    */
+  }, [connected, walletAddress, samplePuzzle]);
+  
   return {
     puzzle,
     isLoading,
@@ -343,6 +385,9 @@ export function useChessPuzzle() {
     isCheckingMove,
     bestAttempt,
     refetchPuzzle,
-    refetchAttempts
+    refetchAttempts,
+    showRecommendation,
+    toggleRecommendation,
+    getRecommendedPuzzle
   };
 }

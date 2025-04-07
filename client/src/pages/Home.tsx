@@ -2,12 +2,14 @@ import { useState, useEffect, ReactNode } from 'react';
 import PuzzleCard from "@/components/PuzzleCard";
 import AttemptCard from "@/components/AttemptCard";
 import NFTPreviewCard from "@/components/NFTPreviewCard";
+import { RecommendedPuzzleCard } from "@/components/RecommendedPuzzleCard";
 import HowItWorks from "@/components/HowItWorks";
 import { useWallet } from "@/lib/useWallet";
 import { useChessPuzzle } from "@/lib/useChessPuzzle";
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Attempt, PuzzleWithoutSolution } from '@shared/schema';
 import { formatTime } from '@/lib/utils';
 
@@ -28,7 +30,8 @@ export default function Home() {
     resetBoard,
     elapsedTime,
     isCheckingMove,
-    bestAttempt
+    bestAttempt,
+    getRecommendedPuzzle
   } = useChessPuzzle();
   
   console.log("Chess puzzle state:", { 
@@ -267,6 +270,34 @@ export default function Home() {
                 attempts={Array.isArray(attempts) ? attempts : []}
               />
             </div>
+          </section>
+        )}
+        
+        {/* Personalized Recommendation Section */}
+        {connected && walletAddress && (
+          <section className="mb-16 max-w-4xl mx-auto animate-slide-up">
+            <h2 className="text-3xl font-bold text-center mb-6 text-white">
+              <span className="inline-block relative">
+                Personalized Recommendations
+                <div className="h-1 w-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mt-2"></div>
+              </span>
+            </h2>
+            <p className="text-center text-indigo-200 mb-10 max-w-2xl mx-auto">
+              Our AI analyzes your play style and skill level to recommend puzzles that will help you improve
+            </p>
+            
+            <RecommendedPuzzleCard 
+              getRecommendedPuzzle={getRecommendedPuzzle} 
+              onSelect={(recommendedPuzzle) => {
+                toast({
+                  title: "Puzzle Selected",
+                  description: "You've selected a recommended puzzle.",
+                  variant: "default",
+                });
+                // In a full implementation, this would load the recommended puzzle
+                console.log("Selected recommended puzzle:", recommendedPuzzle);
+              }}
+            />
           </section>
         )}
 
