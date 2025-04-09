@@ -126,7 +126,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           
-          {/* Company */}
+          {/* Community */}
           <div className="col-span-1 animate-slide-up delay-200">
             <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">Company</h3>
             <ul className="space-y-3">
@@ -145,7 +145,7 @@ const Footer: React.FC = () => {
               <li className="animate-slide-up delay-300">
                 <Link href="/careers" className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center">
                   <span className="mr-2 text-solana-purple">▸</span>
-                  <span>Careers</span>
+                  <span>Support</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-400">
