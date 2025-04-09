@@ -105,7 +105,7 @@ The application uses the following tables:
 
 
 ## Contributing
-
+This Project is under developement so if you want to contribute come up and develop it together!
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
