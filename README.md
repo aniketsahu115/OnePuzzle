@@ -1,13 +1,14 @@
-![Home Page](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/home%20page.png)
-![Dashboard](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Dashboard.png)
-![Blog Section](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Blog.png.png)
-# OnePuzzle - Daily Chess Puzzles with NFT Rewards
-
 **[Play Now - Live Website](https://onepuzzle.onrender.com/)**
 
 Experience daily chess puzzles and earn NFT rewards for your solutions!
 
 OnePuzzle is a web application that combines chess training with blockchain technology, offering daily chess puzzles and minting successful solutions as NFTs on Solana.
+
+![Home Page](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/home%20page.png)
+![Dashboard](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Dashboard.png)
+![Blog Section](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Blog.png)
+# OnePuzzle - Daily Chess Puzzles with NFT Rewards
+
 
 ## Features
 
