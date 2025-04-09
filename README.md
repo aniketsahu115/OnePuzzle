@@ -1,6 +1,6 @@
-![First Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/hero%20section.png)
-![Second Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/OnePuzzle%20Blog.png)
-![First Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/OnePuzzle%20Dashboard.png)
+![Home Page](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/home%20page.png)
+![Dashboard](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Dashboard.png)
+![Blog Section](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/OnePuzzle%20Blog.png.png)
 # OnePuzzle - Daily Chess Puzzles with NFT Rewards
 
 **[Play Now - Live Website](https://onepuzzle.onrender.com/)**
