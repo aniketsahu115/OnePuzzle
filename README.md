@@ -1,7 +1,7 @@
 
 # OnePuzzle - Daily Chess Puzzles with NFT Rewards
 
-🎮 **[Play Now - Live Website](https://puzzle-game-q46r.onrender.com/)**
+**[Play Now - Live Website](https://puzzle-game-q46r.onrender.com/)**
 
 Experience daily chess puzzles and earn NFT rewards for your solutions!
 
@@ -9,12 +9,12 @@ OnePuzzle is a web application that combines chess training with blockchain tech
 
 ## Features
 
-- 📝 Daily Chess Puzzles
-- 🎮 Interactive Chess Board
-- 💎 NFT Rewards for Puzzle Solutions
-- 📊 Progress Tracking Dashboard
-- 📚 Learning Resources
-- 🎓 Educational Content
+- Daily Chess Puzzles
+- Interactive Chess Board
+- NFT Rewards for Puzzle Solutions
+- Progress Tracking Dashboard
+- Learning Resources
+- Educational Content
 
 ## Tech Stack
 
@@ -32,7 +32,37 @@ OnePuzzle is a web application that combines chess training with blockchain tech
 npm install
 ```
 
-3. Start the development server:
+3. Database Setup
+
+Create a new PostgreSQL database:
+```bash
+create database chess_puzzle
+```
+Set up your database connection by creating a `.env` file:
+```
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/chess_puzzle
+```
+## Required Database Packages
+
+```bash
+npm install pg           # PostgreSQL client for Node.js
+npm install drizzle-orm  # TypeScript ORM
+npm install drizzle-kit  # CLI tool for Drizzle ORM
+npm install dotenv       # Environment variable management
+```
+
+These packages are required for database connectivity and management:
+- `pg`: PostgreSQL driver for Node.js
+- `drizzle-orm`: Modern TypeScript ORM for better type safety
+- `drizzle-kit`: Migration and schema management tools
+- `dotenv`: Loads environment variables from .env file
+
+Initialize the database schema:
+```bash
+npx drizzle-kit push
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
@@ -62,22 +92,13 @@ The application will be available at `http://localhost:5000`
 - `POST /api/nft/mint` - Mint NFT for successful solution
 - `POST /api/auth/wallet` - Wallet authentication
 
-## Development
+## Database Schema
+The application uses the following tables:
+- `puzzles`: Stores chess puzzles
+- `attempts`: Records user attempts
+- `users`: User profiles and statistics
+- `dailyPuzzles`: Daily puzzle assignments
 
-The project uses several development tools:
-
-- TypeScript for type safety
-- ESLint for code linting
-- Prettier for code formatting
-- Vite for fast development and building
-
-## Deployment
-
-The application is deployed on Replit. To deploy:
-
-1. Click the "Deploy" button in Replit
-2. Choose "Autoscale" deployment type
-3. Your app will be live at `your-app-name.replit.app`
 
 ## Contributing
 

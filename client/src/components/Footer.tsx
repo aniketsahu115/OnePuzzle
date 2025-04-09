@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
                 </div>
               </a>
               <a 
-                href="https://github.com" 
+                href="https://github.com/aniketsahu115/OnePuzzle" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 aria-label="GitHub"

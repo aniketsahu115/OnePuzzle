@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useWallet } from '@/lib/useWallet';
-import ChessBoard from './ChessBoard';
 
 interface RecommendedPuzzleCardProps {
   getRecommendedPuzzle: () => Promise<PuzzleWithoutSolution | null>;
@@ -27,7 +26,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
   const loadRecommendation = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const puzzle = await getRecommendedPuzzle();
       setRecommendedPuzzle(puzzle);
@@ -61,9 +60,9 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl text-indigo-900">Your Recommended Puzzle</CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="text-indigo-700 border-indigo-300 hover:bg-indigo-100"
             onClick={loadRecommendation}
             disabled={isLoading}
@@ -75,9 +74,9 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
           Personalized for your skill level and playing style
         </CardDescription>
       </CardHeader>
-      
+
       <Separator className="bg-indigo-200/50" />
-      
+
       <CardContent className="pt-4">
         {isLoading ? (
           <div className="h-48 flex items-center justify-center">
@@ -86,9 +85,9 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
         ) : error ? (
           <div className="text-center p-6 text-red-500">
             <p>{error}</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="mt-4"
               onClick={loadRecommendation}
             >
@@ -100,10 +99,10 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <h3 className="font-medium text-gray-900">Difficulty Level</h3>
-                <Badge 
+                <Badge
                   variant={
-                    recommendedPuzzle.difficulty === 'easy' ? 'default' : 
-                    recommendedPuzzle.difficulty === 'medium' ? 'secondary' : 
+                    recommendedPuzzle.difficulty === 'easy' ? 'default' :
+                    recommendedPuzzle.difficulty === 'medium' ? 'secondary' :
                     'destructive'
                   }
                   className="capitalize"
@@ -111,7 +110,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
                   {recommendedPuzzle.difficulty}
                 </Badge>
               </div>
-              
+
               {recommendedPuzzle.themes && recommendedPuzzle.themes.length > 0 && (
                 <div className="space-y-1 sm:text-right">
                   <h3 className="font-medium text-gray-900">Puzzle Theme</h3>
@@ -130,19 +129,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
                 </div>
               )}
             </div>
-            
-            <div className="p-2 bg-white/50 rounded-lg">
-              <div className="w-full h-40 md:h-48">
-                <ChessBoard 
-                  fen={recommendedPuzzle.fen} 
-                  orientation={recommendedPuzzle.toMove === 'w' ? 'white' : 'black'}
-                  interactionEnabled={false}
-                  showCoordinates={true}
-                  showMoveHints={false}
-                />
-              </div>
-            </div>
-            
+
             {recommendedPuzzle.recommendationReason && (
               <div className="p-3 bg-indigo-100/50 rounded-lg text-sm text-indigo-700 italic max-h-20 overflow-y-auto">
                 {recommendedPuzzle.recommendationReason}
@@ -152,9 +139,9 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
         ) : (
           <div className="text-center p-6 text-gray-500">
             <p>No recommendation available yet</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="mt-4"
               onClick={loadRecommendation}
             >
@@ -163,10 +150,10 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
           </div>
         )}
       </CardContent>
-      
+
       {recommendedPuzzle && (
         <CardFooter className="pt-0">
-          <Button 
+          <Button
             className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
             onClick={handleSelect}
           >
