@@ -1,7 +1,7 @@
 
 # OnePuzzle - Daily Chess Puzzles with NFT Rewards
 
-**[Play Now - Live Website](https://puzzle-game-q46r.onrender.com/)**
+**[Play Now - Live Website](https://onepuzzle.onrender.com/)**
 
 Experience daily chess puzzles and earn NFT rewards for your solutions!
 
