@@ -2,6 +2,7 @@
 **[Play Now - Live Website](https://onepuzzle.onrender.com/)**
 
 Experience daily chess puzzles and earn NFT rewards for your solutions!
+
 OnePuzzle is a web application that combines chess training with blockchain technology, offering daily chess puzzles and minting successful solutions as NFTs on Solana.
 
 ![Home Page](https://github.com/aniketsahu115/OnePuzzle/blob/main/attached_assets/home%20page.png)
