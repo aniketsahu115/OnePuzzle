@@ -1,4 +1,6 @@
-
+![First Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/hero%20section.png)
+![Second Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/OnePuzzle%20Blog.png)
+![First Image](https://github.com/aniketsahu115/OnePuzzle/blob/main/OnePuzzle%20Dashboard.png)
 # OnePuzzle - Daily Chess Puzzles with NFT Rewards
 
 **[Play Now - Live Website](https://onepuzzle.onrender.com/)**
