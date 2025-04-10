@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
           
           {/* Community */}
           <div className="col-span-1 animate-slide-up delay-200">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">Company</h3>
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">Community</h3>
             <ul className="space-y-3">
               <li className="animate-slide-up delay-100">
                 <Link href="/about" className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center">
