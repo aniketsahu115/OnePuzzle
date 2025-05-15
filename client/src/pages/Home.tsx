@@ -125,7 +125,7 @@ export default function Home() {
                     Challenge Your Mind
                   </h3>
                   
-                  <p className="mb-8 text-indigo-100 text-lg max-w-md">
+                  <p className="mb-8 text-indigo-50 text-lg max-w-md">
                     Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess mastery!
                   </p>
                   
