@@ -164,7 +164,7 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 mb-8">
             Please connect your Solana wallet to view your personal dashboard, track your puzzle history, and manage your NFT collection.
           </p>
-          <Button className="bg-primary text-white px-6">Connect Wallet</Button>
+          <Button variant = "outline" className="bg-primary text-white px-6">Connect Wallet</Button>
         </div>
       </div>
     );
