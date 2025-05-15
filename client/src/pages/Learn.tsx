@@ -179,13 +179,13 @@ const Learn: React.FC = () => {
             Follow our step-by-step learning path designed to take you from beginner to advanced player with structured lessons and exercises.
           </p>
           <div className="flex space-x-4">
-            <Button className="bg-white text-gray-900 hover:bg-white/90">
+            <Button className="bg-white text-gray-900 hover:bg-white/70">
               Beginner Path
             </Button>
-            <Button className="bg-accent text-white hover:bg-accent/90">
+            <Button className="bg-accent text-white hover:bg-accent/70">
               Intermediate Path
             </Button>
-            <Button className="bg-primary text-white hover:bg-primary/90">
+            <Button className="bg-violet-500 text-white hover:bg-violet-500/70">
               Advanced Path
             </Button>
           </div>
