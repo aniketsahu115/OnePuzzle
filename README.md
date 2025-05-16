@@ -110,7 +110,3 @@ This Project is under developement so if you want to contribute come up and deve
 2. Create a new branch
 3. Make your changes
 4. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
