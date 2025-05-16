@@ -18,7 +18,6 @@ OnePuzzle is a web application that combines chess training with blockchain tech
 - NFT Rewards for Puzzle Solutions
 - Progress Tracking Dashboard
 - Learning Resources
-- Educational Content
 
 ## Tech Stack
 
