@@ -72,36 +72,6 @@ npm run dev
 
 The application will be available at `http://localhost:5000`
 
-## Project Structure
-
-```
-├── client/            # Frontend React application
-│   ├── src/
-│   │   ├── components/  # UI components
-│   │   ├── pages/      # Page components
-│   │   ├── lib/        # Utility functions
-│   │   └── hooks/      # Custom React hooks
-├── server/            # Backend Express server
-│   ├── routes.ts      # API routes
-│   ├── puzzles.ts     # Puzzle management
-│   └── solana.ts      # Blockchain integration
-└── shared/            # Shared types and schemas
-```
-
-## API Endpoints
-
-- `GET /api/puzzles/today` - Get today's puzzle
-- `POST /api/attempts` - Submit puzzle attempt
-- `POST /api/nft/mint` - Mint NFT for successful solution
-- `POST /api/auth/wallet` - Wallet authentication
-
-## Database Schema
-The application uses the following tables:
-- `puzzles`: Stores chess puzzles
-- `attempts`: Records user attempts
-- `users`: User profiles and statistics
-- `dailyPuzzles`: Daily puzzle assignments
-
 
 ## Contributing
 This Project is under developement so if you want to contribute come up and develop it together!
