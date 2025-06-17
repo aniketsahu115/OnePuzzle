@@ -86,13 +86,15 @@ export type DailyPuzzle = typeof dailyPuzzles.$inferSelect;
 export type PuzzleWithSolution = {
   id: number;
   fen: string;
+  pgn: string;
   difficulty: string;
   toMove: string;
   solution: string;
-  themes?: string[];
-  rating?: number;
-  popularity?: number;
-  successPercentage?: number;
+  dateAssigned: Date;
+  themes: string[] | null;
+  rating: number | null;
+  popularity: number | null;
+  successPercentage: number | null;
   isRecommended?: boolean;
   recommendationReason?: string;
 };
@@ -103,7 +105,7 @@ export type PuzzleWithoutSolution = {
   fen: string;
   difficulty: string;
   toMove: string;
-  themes?: string[];
+  themes: string[] | null;
   isRecommended?: boolean;
   recommendationReason?: string;
 };

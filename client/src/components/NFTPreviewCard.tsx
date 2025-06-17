@@ -13,7 +13,7 @@ interface NFTPreviewCardProps {
 }
 
 const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }) => {
-  const { connected } = useWallet();
+  const { connected, walletAddress, wallet } = useWallet();
   const [isMinting, setIsMinting] = React.useState(false);
   const [mintedNftAddress, setMintedNftAddress] = React.useState<string | null>(bestAttempt?.mintedNftAddress || null);
   
@@ -24,34 +24,21 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
     }
   }, [bestAttempt]);
   
-  const hasCorrectAttempt = attempts.some(attempt => attempt.isCorrect);
-  const canMintNFT = connected && hasCorrectAttempt && !mintedNftAddress;
-  
+  // Allow minting for any attempt (for testing)
+  const canMintNFT = connected && attempts.length > 0 && !mintedNftAddress;
+  const bestOrFirstAttempt = bestAttempt || (attempts.length > 0 ? attempts[0] : null);
+
   const handleMintNFT = async () => {
-    if (!bestAttempt) return;
-    
+    if (!bestOrFirstAttempt || !walletAddress || !wallet) return;
     try {
       setIsMinting(true);
-      
-      console.log('Minting NFT with attempt:', bestAttempt);
-      
-      // Use the mintNFT function from solana.ts
-      // This is now set up to simulate a successful mint in development
-      const txSignature = await mintNFT(bestAttempt);
-      
+      const txSignature = await mintNFT(bestOrFirstAttempt, walletAddress, wallet);
       toast({
         title: 'NFT Minted! (Simulation)',
         description: `Your puzzle attempt has been minted as an NFT. Transaction: ${txSignature.substring(0, 12)}...`,
       });
-      
-      // Manually update the component state to show the minted NFT
-      if (bestAttempt) {
-        bestAttempt.mintedNftAddress = txSignature;
-      }
-      
-      // Update our local state to trigger re-render
+      bestOrFirstAttempt.mintedNftAddress = txSignature;
       setMintedNftAddress(txSignature);
-      
     } catch (error) {
       toast({
         title: 'Minting failed',
@@ -62,7 +49,7 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
       setIsMinting(false);
     }
   };
-  
+
   return (
     <Card className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="bg-primary p-4 text-white flex justify-between items-center">
@@ -89,7 +76,7 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
               View on Explorer
             </Button>
           </div>
-        ) : hasCorrectAttempt ? (
+        ) : canMintNFT ? (
           <div className="p-4">
             <div className="border-2 border-accent rounded-lg p-6 mb-4 flex flex-col items-center">
               <div className="w-full max-w-[200px] aspect-square border border-slate-200 flex items-center justify-center mb-4 relative overflow-hidden">
@@ -98,41 +85,29 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
                   <defs>
                     <linearGradient id="nftBackground" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#1a365d" />
-                      <stop offset="100%" stopColor={bestAttempt?.isCorrect ? "#4c1d95" : "#1e3a8a"} />
+                      <stop offset="100%" stopColor={bestOrFirstAttempt?.isCorrect ? "#4c1d95" : "#1e3a8a"} />
                     </linearGradient>
                   </defs>
-                  
-                  {/* NFT Background */}
                   <rect width="100" height="100" fill="url(#nftBackground)" />
-                  
-                  {/* NFT Card Frame */}
                   <rect x="5" y="5" width="90" height="90" fill="none" stroke="#f8fafc" strokeWidth="0.5" rx="2" />
-                  
-                  {/* NFT Content */}
                   <text x="50" y="18" fontSize="8" fontWeight="bold" textAnchor="middle" fill="white">CHESS PUZZLE NFT</text>
                   <text x="50" y="26" fontSize="4" textAnchor="middle" fill="#94a3b8">DATE: {new Date().toLocaleDateString()}</text>
-                  
-                  {/* Difficulty Badge */}
                   <rect x="30" y="30" width="40" height="8" rx="4" fill={
-                    bestAttempt?.isCorrect ? 
-                      (bestAttempt.timeTaken < 30 ? "#22c55e" : 
-                       bestAttempt.timeTaken < 60 ? "#eab308" : 
+                    bestOrFirstAttempt?.isCorrect ? 
+                      (bestOrFirstAttempt.timeTaken < 30 ? "#22c55e" : 
+                       bestOrFirstAttempt.timeTaken < 60 ? "#eab308" : 
                        "#f97316") : "#64748b"
                   } />
                   <text x="50" y="36" fontSize="5" fontWeight="bold" textAnchor="middle" fill="white">
-                    {bestAttempt?.isCorrect ? 
-                      (bestAttempt.timeTaken < 30 ? "EXCELLENT" : 
-                       bestAttempt.timeTaken < 60 ? "GREAT" : 
+                    {bestOrFirstAttempt?.isCorrect ? 
+                      (bestOrFirstAttempt.timeTaken < 30 ? "EXCELLENT" : 
+                       bestOrFirstAttempt.timeTaken < 60 ? "GREAT" : 
                        "GOOD") : "ATTEMPT"}
                   </text>
-                  
-                  {/* Move Info */}
-                  <text x="50" y="50" fontSize="7" textAnchor="middle" fill="white">Move: {bestAttempt?.move || '—'}</text>
-                  <text x="50" y="60" fontSize="7" textAnchor="middle" fill="white">Time: {bestAttempt ? formatTime(bestAttempt.timeTaken) : '—'}</text>
-                  <text x="50" y="70" fontSize="7" textAnchor="middle" fill="white">Result: {bestAttempt?.isCorrect ? 'Correct' : 'Incorrect'}</text>
-                  <text x="50" y="80" fontSize="7" textAnchor="middle" fill="white">Attempt: {bestAttempt?.attemptNumber || '—'}/3</text>
-                  
-                  {/* Solana Logo & Info */}
+                  <text x="50" y="50" fontSize="7" textAnchor="middle" fill="white">Move: {bestOrFirstAttempt?.move || '—'}</text>
+                  <text x="50" y="60" fontSize="7" textAnchor="middle" fill="white">Time: {bestOrFirstAttempt ? formatTime(bestOrFirstAttempt.timeTaken) : '—'}</text>
+                  <text x="50" y="70" fontSize="7" textAnchor="middle" fill="white">Result: {bestOrFirstAttempt?.isCorrect ? 'Correct' : 'Incorrect'}</text>
+                  <text x="50" y="80" fontSize="7" textAnchor="middle" fill="white">Attempt: {bestOrFirstAttempt?.attemptNumber || '—'}/3</text>
                   <circle cx="50" cy="90" r="5" fill="#14f195" opacity="0.3" />
                   <text x="50" y="92" fontSize="4" textAnchor="middle" fill="#ffffff">Solana cNFT</text>
                 </svg>
@@ -143,13 +118,13 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
             <Button 
               className="w-full px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors"
               onClick={handleMintNFT}
-              disabled={isMinting || !canMintNFT}
+              disabled={isMinting}
             >
               {isMinting ? 'Minting...' : 'Mint as NFT'}
             </Button>
           </div>
         ) : (
-          <div>
+          <div className="p-4">
             <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 mb-4 flex flex-col items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mb-3 text-slate-400">
                 <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -158,13 +133,11 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
                 <path d="M8.5 14h7"></path>
                 <path d="M8.5 17.5h7"></path>
               </svg>
-              <p className="text-slate-500 mb-2">Complete today's puzzle to mint your daily NFT</p>
-              <p className="text-xs text-slate-400">Your NFT will include your move, time, and board position</p>
+              <h4 className="font-bold mb-2">No NFT Available</h4>
+              <p className="text-slate-500 mb-2">You must solve the puzzle correctly to mint your daily NFT.</p>
+              <p className="text-xs text-slate-400">Try again tomorrow for another chance!</p>
             </div>
-            <Button 
-              className="w-full px-4 py-2 bg-slate-200 text-slate-500 rounded-lg cursor-not-allowed" 
-              disabled
-            >
+            <Button className="w-full px-4 py-2 bg-slate-200 text-slate-500 rounded-lg cursor-not-allowed" disabled>
               Preview NFT
             </Button>
           </div>
@@ -175,3 +148,4 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
 };
 
 export default NFTPreviewCard;
+

@@ -1,35 +1,38 @@
 import { Attempt } from '@shared/schema';
 import { apiRequest } from './queryClient';
+import { Connection, PublicKey } from '@solana/web3.js';
+// import { SolanaWallet } from '@/lib/useWallet'; // SolanaWallet is no longer needed here
+import { Buffer } from 'buffer';
 
 // Function to mint an NFT from the best attempt
-export async function mintNFT(attempt: Attempt): Promise<string> {
+export async function mintNFT(attempt: Attempt, walletAddress: string): Promise<string> {
   try {
-    console.log('Minting NFT for attempt:', attempt);
+    if (!attempt.id) throw new Error('Attempt is missing a valid id');
+    if (!walletAddress) throw new Error('Wallet address is required');
     
-    // For development: simulate a successful minting
-    // This bypasses the actual API call
-    const simulatedTx = 'simulated-tx-' + Date.now().toString().substring(6);
-    console.log('Simulated transaction:', simulatedTx);
+    // Removed wallet parameter as server handles signing
+    // if (!wallet) throw new Error('Wallet not connected');
     
-    // For production, uncomment this code
-    /*
-    // This would normally interact with Solana directly
-    // For now, we'll use the server as a proxy
+    // Call the server endpoint that directly mints the NFT
     const response = await apiRequest('POST', '/api/nft/mint', {
-      attemptId: attempt.id,
+      attemptId: String(attempt.id),
+      puzzleId: String(attempt.puzzleId),
+      userWalletAddress: walletAddress
     });
     
     const data = await response.json();
     
-    if (!data.success || !data.txSignature) {
-      throw new Error(data.error || 'Failed to mint NFT');
+    // Handle already minted case
+    if (response.status === 409 && data.nftAddress) {
+      return data.nftAddress;
     }
     
-    return data.txSignature;
-    */
-    
-    // Return the simulated transaction for development
-    return simulatedTx;
+    if (!data.success || !data.nftAddress) { // Expecting nftAddress directly now
+      throw new Error(data.message || 'Failed to mint NFT');
+    }
+
+    // Server now returns the minted NFT address directly
+    return data.nftAddress;
   } catch (error) {
     console.error('Error minting NFT:', error);
     throw error;

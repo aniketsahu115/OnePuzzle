@@ -1,7 +1,7 @@
 import { 
   puzzles, users, attempts, dailyPuzzles,
   type User, type InsertUser, 
-  type Puzzle, type PuzzleWithSolution, type InsertPuzzle,
+  type Puzzle, type InsertPuzzle, type PuzzleWithSolution,
   type Attempt, type InsertAttempt,
   type DailyPuzzle, type InsertDailyPuzzle 
 } from "@shared/schema";
@@ -16,11 +16,11 @@ export interface IStorage {
   updateUserPreferences(walletAddress: string, updates: Partial<User>): Promise<User | undefined>;
   
   // Puzzle operations
-  getPuzzle(id: number): Promise<PuzzleWithSolution | undefined>;
-  getAllPuzzles(): Promise<PuzzleWithSolution[]>;
-  createPuzzle(puzzle: InsertPuzzle): Promise<PuzzleWithSolution>;
-  getPuzzlesByDifficulty(difficulty: string): Promise<PuzzleWithSolution[]>;
-  getPuzzlesByThemes(themes: string[]): Promise<PuzzleWithSolution[]>;
+  getPuzzle(id: number): Promise<Puzzle | undefined>;
+  getAllPuzzles(): Promise<Puzzle[]>;
+  createPuzzle(puzzle: InsertPuzzle): Promise<Puzzle>;
+  getPuzzlesByDifficulty(difficulty: string): Promise<Puzzle[]>;
+  getPuzzlesByThemes(themes: string[]): Promise<Puzzle[]>;
   
   // Attempt operations
   getAttempt(id: number): Promise<Attempt | undefined>;
@@ -37,7 +37,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  private puzzles: Map<number, PuzzleWithSolution>;
+  private puzzles: Map<number, Puzzle>;
   private attempts: Map<number, Attempt>;
   private dailyPuzzles: Map<string, DailyPuzzle>;
   
@@ -95,40 +95,41 @@ export class MemStorage implements IStorage {
   }
   
   // Puzzle operations
-  async getPuzzle(id: number): Promise<PuzzleWithSolution | undefined> {
+  async getPuzzle(id: number): Promise<Puzzle | undefined> {
     return this.puzzles.get(id);
   }
   
-  async getAllPuzzles(): Promise<PuzzleWithSolution[]> {
+  async getAllPuzzles(): Promise<Puzzle[]> {
     return Array.from(this.puzzles.values());
   }
   
-  async createPuzzle(insertPuzzle: InsertPuzzle): Promise<PuzzleWithSolution> {
+  async createPuzzle(insertPuzzle: InsertPuzzle): Promise<Puzzle> {
     const id = this.puzzleIdCounter++;
-    // Type assertion to handle additional properties
-    const puzzleData = insertPuzzle as any;
-    const puzzle: PuzzleWithSolution = { 
+    // Type assertion to handle additional properties like pgn correctly
+    const puzzle: Puzzle = { 
       id,
-      fen: puzzleData.fen,
-      difficulty: puzzleData.difficulty,
-      toMove: puzzleData.toMove,
-      solution: puzzleData.solution,
-      themes: puzzleData.themes || [],
-      rating: puzzleData.rating || 1500,
-      popularity: puzzleData.popularity || 0, 
-      successPercentage: puzzleData.successPercentage || 0
+      fen: insertPuzzle.fen,
+      pgn: (insertPuzzle as any).pgn || '', // Ensure pgn is handled
+      difficulty: insertPuzzle.difficulty,
+      toMove: insertPuzzle.toMove,
+      solution: insertPuzzle.solution,
+      themes: (insertPuzzle as any).themes || [],
+      rating: (insertPuzzle as any).rating || 1500,
+      popularity: (insertPuzzle as any).popularity || 0, 
+      successPercentage: (insertPuzzle as any).successPercentage || 0,
+      dateAssigned: insertPuzzle.dateAssigned
     };
     this.puzzles.set(id, puzzle);
     return puzzle;
   }
   
-  async getPuzzlesByDifficulty(difficulty: string): Promise<PuzzleWithSolution[]> {
+  async getPuzzlesByDifficulty(difficulty: string): Promise<Puzzle[]> {
     return Array.from(this.puzzles.values()).filter(
       (puzzle) => puzzle.difficulty === difficulty
     );
   }
   
-  async getPuzzlesByThemes(themes: string[]): Promise<PuzzleWithSolution[]> {
+  async getPuzzlesByThemes(themes: string[]): Promise<Puzzle[]> {
     return Array.from(this.puzzles.values()).filter(
       (puzzle) => {
         // Ensure puzzle.themes exists and is an array
@@ -248,111 +249,80 @@ export class MemStorage implements IStorage {
       }
     }
     
-    // Determine preferred difficulty based on success rate
-    let preferredDifficulty: string;
-    if (successRate >= 80) {
-      preferredDifficulty = 'hard';
-    } else if (successRate >= 40) {
-      preferredDifficulty = 'medium';
-    } else {
-      preferredDifficulty = 'easy';
-    }
-    
-    // Update user preferences
-    await this.updateUserPreferences(walletAddress, {
-      successRate,
-      completedPuzzles: completedPuzzleIds.size,
-      preferredThemes,
-      preferredDifficulty,
-      lastRecommendationDate: new Date()
-    });
-    
-    // Algorithm to select next puzzle
-    // 1. First try to find a puzzle matching their preferred difficulty and a theme they do well with
-    // 2. If none found, select a puzzle of their preferred difficulty
-    // 3. If still none, select a puzzle from a difficulty level below their preferred one
-    // 4. Finally, if all else fails, select a random puzzle they haven't completed
-    
-    // Get all puzzles
-    const allPuzzles = await this.getAllPuzzles();
-    
-    // Filter out puzzles the user has already completed
-    const uncompletedPuzzles = allPuzzles.filter(
-      puzzle => !completedPuzzleIds.has(puzzle.id)
+    // Calculate user's longest streak
+    let currentStreak = 0;
+    let longestStreak = 0;
+    const sortedAttempts = [...userAttempts].sort((a, b) => 
+      new Date(a.attemptDate).getTime() - new Date(b.attemptDate).getTime()
     );
-    
-    if (uncompletedPuzzles.length === 0) {
-      // If user has completed all puzzles, just return a random one
-      const randomIndex = Math.floor(Math.random() * allPuzzles.length);
-      const recommendedPuzzle = { ...allPuzzles[randomIndex], isRecommended: true };
-      return recommendedPuzzle;
-    }
-    
-    // Try to find a puzzle matching preferred difficulty and themes
-    if (preferredThemes.length > 0) {
-      const matchingPuzzles = uncompletedPuzzles.filter(
-        puzzle => 
-          puzzle.difficulty === preferredDifficulty && 
-          puzzle.themes && 
-          puzzle.themes.some(theme => preferredThemes.includes(theme))
-      );
-      
-      if (matchingPuzzles.length > 0) {
-        const randomIndex = Math.floor(Math.random() * matchingPuzzles.length);
-        const recommendedPuzzle = { 
-          ...matchingPuzzles[randomIndex], 
-          isRecommended: true,
-          recommendationReason: `This puzzle features a ${preferredThemes[0]} tactic that matches your strengths.`
-        };
-        return recommendedPuzzle;
+
+    if (sortedAttempts.length > 0) {
+      let lastAttemptDate: Date | null = null;
+      for (const attempt of sortedAttempts) {
+        if (attempt.isCorrect) {
+          if (lastAttemptDate) {
+            const diffDays = (new Date(attempt.attemptDate).getTime() - lastAttemptDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diffDays === 1) {
+              currentStreak++;
+            } else if (diffDays > 1) {
+              currentStreak = 1; 
+            } // else (diffDays === 0) - same day, streak continues
+          } else {
+            currentStreak = 1;
+          }
+          longestStreak = Math.max(longestStreak, currentStreak);
+          lastAttemptDate = new Date(attempt.attemptDate);
+        } else {
+          currentStreak = 0;
+          lastAttemptDate = null;
+        }
       }
     }
-    
-    // Try to find a puzzle matching just the preferred difficulty
-    const difficultyPuzzles = uncompletedPuzzles.filter(
-      puzzle => puzzle.difficulty === preferredDifficulty
+
+    // Find uncompleted puzzles based on user's skill level and preferences
+    const allPuzzles = await this.getAllPuzzles();
+    const uncompletedPuzzles = allPuzzles.filter(
+      (p) => !completedPuzzleIds.has(p.id)
     );
+
+    // Prioritize puzzles with preferred themes or similar difficulty
+    let recommendedPuzzle: PuzzleWithSolution | null = null;
+
+    // Try to find a puzzle with a preferred theme
+    if (preferredThemes.length > 0) {
+      for (const theme of preferredThemes) {
+        const themedPuzzles = uncompletedPuzzles.filter(p => p.themes?.includes(theme));
+        if (themedPuzzles.length > 0) {
+          const selectedPuzzle = themedPuzzles[Math.floor(Math.random() * themedPuzzles.length)];
+          recommendedPuzzle = { ...selectedPuzzle, isRecommended: true, recommendationReason: `Based on your success in ${theme} puzzles.` };
+          break;
+        }
+      }
+    }
+
+    // Fallback to a random uncompleted puzzle if no themed puzzle found
+    if (!recommendedPuzzle && uncompletedPuzzles.length > 0) {
+      const selectedPuzzle = uncompletedPuzzles[Math.floor(Math.random() * uncompletedPuzzles.length)];
+      recommendedPuzzle = { ...selectedPuzzle, isRecommended: true, recommendationReason: "A random puzzle suggestion based on your uncompleted puzzles." };
+    }
     
-    if (difficultyPuzzles.length > 0) {
-      const randomIndex = Math.floor(Math.random() * difficultyPuzzles.length);
-      const recommendedPuzzle = { 
-        ...difficultyPuzzles[randomIndex], 
-        isRecommended: true,
-        recommendationReason: `This ${preferredDifficulty} puzzle is a good match for your current skill level.`
+    // Ensure that all properties of PuzzleWithSolution are present, even if empty or default
+    if (recommendedPuzzle) {
+      return {
+        ...recommendedPuzzle,
+        dateAssigned: recommendedPuzzle.dateAssigned || new Date(),
+        pgn: recommendedPuzzle.pgn || '',
+        solution: recommendedPuzzle.solution || '',
+        themes: recommendedPuzzle.themes || [],
+        rating: recommendedPuzzle.rating || 1500,
+        popularity: recommendedPuzzle.popularity || 0,
+        successPercentage: recommendedPuzzle.successPercentage || 0,
+        isRecommended: recommendedPuzzle.isRecommended || false,
+        recommendationReason: recommendedPuzzle.recommendationReason || '',
       };
-      return recommendedPuzzle;
     }
-    
-    // If no matching difficulty, go one level easier
-    let easierDifficulty: string;
-    if (preferredDifficulty === 'hard') {
-      easierDifficulty = 'medium';
-    } else {
-      easierDifficulty = 'easy';
-    }
-    
-    const easierPuzzles = uncompletedPuzzles.filter(
-      puzzle => puzzle.difficulty === easierDifficulty
-    );
-    
-    if (easierPuzzles.length > 0) {
-      const randomIndex = Math.floor(Math.random() * easierPuzzles.length);
-      const recommendedPuzzle = { 
-        ...easierPuzzles[randomIndex], 
-        isRecommended: true,
-        recommendationReason: `This puzzle will help you build skills before tackling harder challenges.`
-      };
-      return recommendedPuzzle;
-    }
-    
-    // Fallback: return any uncompleted puzzle
-    const randomIndex = Math.floor(Math.random() * uncompletedPuzzles.length);
-    const recommendedPuzzle = { 
-      ...uncompletedPuzzles[randomIndex], 
-      isRecommended: true,
-      recommendationReason: `This is a new puzzle for you to try.`
-    };
-    return recommendedPuzzle;
+
+    return null;
   }
 }
 

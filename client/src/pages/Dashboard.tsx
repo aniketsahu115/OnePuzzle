@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '@/lib/useWallet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,141 +20,119 @@ import {
   Calendar as CalendarIcon,
   CheckCircle,
   XCircle,
-  Crown // Using Crown icon instead of chess pieces
+  Crown
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
-// Mock data for demonstration purposes
-const userStats = {
-  totalPuzzles: 68,
-  correctPuzzles: 42,
-  successRate: 61.8,
-  currentStreak: 12,
-  longestStreak: 16,
-  avgSolveTime: 94 // seconds
-};
+// Types
+interface Attempt {
+  id: number;
+  userId: string;
+  puzzleId: number;
+  move: string;
+  timeTaken: number;
+  isCorrect: boolean;
+  nftAddress?: string;
+  timestamp: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+}
 
-const recentAttempts = [
-  { 
-    date: "April 4, 2025", 
-    difficulty: "Hard", 
-    result: true, 
-    moves: "e4d5", 
-    time: 76, 
-    nftMinted: true,
-    nftAddress: "7zRcJ...9k8F"
-  },
-  { 
-    date: "April 3, 2025", 
-    difficulty: "Medium", 
-    result: true, 
-    moves: "Nf3g5", 
-    time: 103, 
-    nftMinted: true,
-    nftAddress: "4nUb2...3tYp"
-  },
-  { 
-    date: "April 2, 2025", 
-    difficulty: "Easy", 
-    result: true, 
-    moves: "Qh7f7", 
-    time: 65, 
-    nftMinted: true,
-    nftAddress: "9aGh4...7mPl"
-  },
-  { 
-    date: "April 1, 2025", 
-    difficulty: "Medium", 
-    result: false, 
-    moves: "d4e6", 
-    time: 118, 
-    nftMinted: false,
-    nftAddress: null
-  },
-  { 
-    date: "March 31, 2025", 
-    difficulty: "Hard", 
-    result: false, 
-    moves: "Bc4b5", 
-    time: 145, 
-    nftMinted: false,
-    nftAddress: null
-  }
-];
+interface NFT {
+  id: number;
+  timestamp: string;
+  image: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  timeTaken: number;
+  move: string;
+  mint: string;
+  rarity: 'Common' | 'Uncommon' | 'Rare';
+}
 
-const nftCollection = [
-  {
-    id: 1,
-    date: "April 4, 2025",
-    image: "https://images.unsplash.com/photo-1614107151491-6876eecbff89",
-    difficulty: "Hard",
-    time: 76,
-    move: "e4d5",
-    mint: "7zRcJ...9k8F",
-    rarity: "Rare"
-  },
-  {
-    id: 2,
-    date: "April 3, 2025",
-    image: "https://images.unsplash.com/photo-1560174038-da43ac74f01b",
-    difficulty: "Medium",
-    time: 103,
-    move: "Nf3g5",
-    mint: "4nUb2...3tYp",
-    rarity: "Common"
-  },
-  {
-    id: 3,
-    date: "April 2, 2025",
-    image: "https://images.unsplash.com/photo-1528819622765-d6bcf132f793",
-    difficulty: "Easy",
-    time: 65,
-    move: "Qh7f7",
-    mint: "9aGh4...7mPl",
-    rarity: "Common"
-  },
-  {
-    id: 4,
-    date: "March 30, 2025",
-    image: "https://images.unsplash.com/photo-1637251483904-a01e2a9a1749",
-    difficulty: "Medium",
-    time: 98,
-    move: "Rh1h8",
-    mint: "2kLp7...4vBn",
-    rarity: "Uncommon"
-  },
-  {
-    id: 5,
-    date: "March 29, 2025",
-    image: "https://images.unsplash.com/photo-1604948501466-4e9c339b9c24",
-    difficulty: "Hard",
-    time: 115,
-    move: "Bb5c6",
-    mint: "5jRt8...2mNk",
-    rarity: "Rare"
-  },
-  {
-    id: 6,
-    date: "March 27, 2025",
-    image: "https://images.unsplash.com/photo-1580541631950-7282082b03fe",
-    difficulty: "Easy",
-    time: 45,
-    move: "e2e4",
-    mint: "8vTy3...1pQr",
-    rarity: "Common"
-  }
-];
-
-// Mock performance data for the chart
-const performanceByDifficulty = {
-  easy: { total: 30, correct: 24, rate: 80 },
-  medium: { total: 25, correct: 15, rate: 60 },
-  hard: { total: 13, correct: 3, rate: 23 }
-};
+interface UserStats {
+  totalPuzzles: number;
+  correctPuzzles: number;
+  successRate: number;
+  currentStreak: number;
+  longestStreak: number;
+  avgSolveTime: number;
+}
 
 const Dashboard: React.FC = () => {
   const { connected, walletAddress } = useWallet();
   const [viewMode, setViewMode] = useState('grid');
-  
+
+  // Fetch user stats
+  const { data: userStats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ['/api/stats', walletAddress],
+    queryFn: async () => {
+      if (!walletAddress) return null;
+      const response = await apiRequest('GET', `/api/stats?walletAddress=${walletAddress}`);
+      if (!response.ok) throw new Error('Failed to fetch user stats');
+      return await response.json();
+    },
+    enabled: !!walletAddress,
+  });
+
+  // Fetch recent attempts
+  const { data: recentAttempts, isLoading: isLoadingAttempts } = useQuery({
+    queryKey: ['/api/attempts', walletAddress],
+    queryFn: async () => {
+      if (!walletAddress) return [];
+      const response = await apiRequest('GET', `/api/attempts?walletAddress=${walletAddress}`);
+      if (!response.ok) throw new Error('Failed to fetch attempts');
+      return await response.json();
+    },
+    enabled: !!walletAddress,
+  });
+
+  // Fetch NFT collection
+  const { data: nftCollection, isLoading: isLoadingNFTs } = useQuery({
+    queryKey: ['/api/nfts', walletAddress],
+    queryFn: async () => {
+      if (!walletAddress) return [];
+      const response = await apiRequest('GET', `/api/nfts?walletAddress=${walletAddress}`);
+      if (!response.ok) throw new Error('Failed to fetch NFTs');
+      return await response.json();
+    },
+    enabled: !!walletAddress,
+  });
+
+  // Calculate performance by difficulty
+  const performanceByDifficulty = React.useMemo(() => {
+    if (!recentAttempts) return {
+      easy: { total: 0, correct: 0, rate: 0 },
+      medium: { total: 0, correct: 0, rate: 0 },
+      hard: { total: 0, correct: 0, rate: 0 }
+    };
+
+    const difficultyStats = {
+      easy: { total: 0, correct: 0, rate: 0 },
+      medium: { total: 0, correct: 0, rate: 0 },
+      hard: { total: 0, correct: 0, rate: 0 }
+    };
+
+    recentAttempts.forEach((attempt: Attempt) => {
+      const difficulty = attempt.difficulty?.toLowerCase() as keyof typeof difficultyStats;
+      if (difficulty && difficultyStats[difficulty]) {
+        difficultyStats[difficulty].total++;
+        if (attempt.isCorrect) {
+          difficultyStats[difficulty].correct++;
+        }
+      }
+    });
+
+    // Calculate success rates
+    Object.keys(difficultyStats).forEach((key) => {
+      const k = key as keyof typeof difficultyStats;
+      difficultyStats[k].rate = difficultyStats[k].total > 0 
+        ? Math.round((difficultyStats[k].correct / difficultyStats[k].total) * 100) 
+        : 0;
+    });
+
+    return difficultyStats;
+  }, [recentAttempts]);
+
   if (!connected) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -164,7 +142,21 @@ const Dashboard: React.FC = () => {
           <p className="text-gray-600 mb-8">
             Please connect your Solana wallet to view your personal dashboard, track your puzzle history, and manage your NFT collection.
           </p>
-          <Button variant = "outline" className="bg-primary text-white px-6">Connect Wallet</Button>
+          <Button variant="outline" className="bg-primary text-white px-6">Connect Wallet</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoadingStats || isLoadingAttempts || isLoadingNFTs) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="max-w-lg mx-auto">
+          <div className="mb-8 text-7xl">♟️</div>
+          <h1 className="text-3xl font-bold mb-4">Loading Dashboard...</h1>
+          <p className="text-gray-600">
+            Please wait while we fetch your data.
+          </p>
         </div>
       </div>
     );
@@ -195,9 +187,9 @@ const Dashboard: React.FC = () => {
               <Badge variant="outline" className="px-2 py-1">All Time</Badge>
             </div>
             <h3 className="text-lg font-medium text-gray-500">Success Rate</h3>
-            <div className="text-3xl font-bold">{userStats.successRate}%</div>
+            <div className="text-3xl font-bold">{userStats?.successRate || 0}%</div>
             <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>{userStats.correctPuzzles} correct out of {userStats.totalPuzzles}</span>
+              <span>{userStats?.correctPuzzles || 0} correct out of {userStats?.totalPuzzles || 0}</span>
             </div>
           </CardContent>
         </Card>
@@ -211,9 +203,9 @@ const Dashboard: React.FC = () => {
               <Badge variant="outline" className="px-2 py-1">Current</Badge>
             </div>
             <h3 className="text-lg font-medium text-gray-500">Puzzle Streak</h3>
-            <div className="text-3xl font-bold">{userStats.currentStreak} days</div>
+            <div className="text-3xl font-bold">{userStats?.currentStreak || 0} days</div>
             <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>Longest: {userStats.longestStreak} days</span>
+              <span>Longest: {userStats?.longestStreak || 0} days</span>
             </div>
           </CardContent>
         </Card>
@@ -227,9 +219,9 @@ const Dashboard: React.FC = () => {
               <Badge variant="outline" className="px-2 py-1">Average</Badge>
             </div>
             <h3 className="text-lg font-medium text-gray-500">Solve Time</h3>
-            <div className="text-3xl font-bold">{formatTime(userStats.avgSolveTime)}</div>
+            <div className="text-3xl font-bold">{formatTime(userStats?.avgSolveTime || 0)}</div>
             <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>Last solve: {formatTime(recentAttempts[0].time)}</span>
+              <span>Last solve: {recentAttempts?.[0] ? formatTime(recentAttempts[0].timeTaken) : 'N/A'}</span>
             </div>
           </CardContent>
         </Card>
@@ -243,9 +235,9 @@ const Dashboard: React.FC = () => {
               <Badge variant="outline" className="px-2 py-1">Collection</Badge>
             </div>
             <h3 className="text-lg font-medium text-gray-500">NFTs Minted</h3>
-            <div className="text-3xl font-bold">{nftCollection.length}</div>
+            <div className="text-3xl font-bold">{nftCollection?.length || 0}</div>
             <div className="flex items-center mt-2 text-sm text-gray-500">
-              <span>Latest: {nftCollection[0].date}</span>
+              <span>Latest: {nftCollection?.[0]?.date || 'N/A'}</span>
             </div>
           </CardContent>
         </Card>
@@ -283,14 +275,14 @@ const Dashboard: React.FC = () => {
                   <div>NFT Status</div>
                   <div className="text-right">Actions</div>
                 </div>
-                {recentAttempts.map((attempt, idx) => (
+                {recentAttempts?.map((attempt: Attempt, idx: number) => (
                   <div 
-                    key={idx} 
+                    key={attempt.id} 
                     className={`grid grid-cols-7 p-4 text-sm ${
                       idx !== recentAttempts.length - 1 ? 'border-b' : ''
                     }`}
                   >
-                    <div className="font-medium">{attempt.date}</div>
+                    <div className="font-medium">{new Date(attempt.timestamp).toLocaleDateString()}</div>
                     <div>
                       <Badge variant={
                         attempt.difficulty === "Easy" ? "default" : 
@@ -301,7 +293,7 @@ const Dashboard: React.FC = () => {
                       </Badge>
                     </div>
                     <div>
-                      {attempt.result ? (
+                      {attempt.isCorrect ? (
                         <span className="flex items-center text-green-600">
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Correct
@@ -313,10 +305,10 @@ const Dashboard: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <div className="font-mono">{attempt.moves}</div>
-                    <div>{formatTime(attempt.time)}</div>
+                    <div className="font-mono">{attempt.move}</div>
+                    <div>{formatTime(attempt.timeTaken)}</div>
                     <div>
-                      {attempt.nftMinted ? (
+                      {attempt.nftAddress ? (
                         <span className="flex items-center text-blue-600">
                           <span className="w-2 h-2 rounded-full bg-blue-600 mr-2"></span>
                           Minted
@@ -326,7 +318,7 @@ const Dashboard: React.FC = () => {
                       )}
                     </div>
                     <div className="text-right">
-                      {attempt.nftMinted ? (
+                      {attempt.nftAddress ? (
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -335,7 +327,7 @@ const Dashboard: React.FC = () => {
                           View NFT
                           <ChevronRight className="w-4 h-4 ml-1" />
                         </Button>
-                      ) : attempt.result ? (
+                      ) : attempt.isCorrect ? (
                         <Button variant="outline" size="sm">
                           Mint NFT
                         </Button>
@@ -392,7 +384,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               {viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {nftCollection.map((nft) => (
+                  {nftCollection?.map((nft: NFT) => (
                     <Card key={nft.id} className="overflow-hidden h-full">
                       <div 
                         className="h-48 bg-gray-100 relative"
@@ -419,7 +411,7 @@ const Dashboard: React.FC = () => {
                       <CardContent className="p-4">
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="font-bold">Puzzle Solution</h3>
-                          <span className="text-xs text-gray-500">{nft.date}</span>
+                          <span className="text-xs text-gray-500">{new Date(nft.timestamp).toLocaleDateString()}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                           <div>
@@ -432,11 +424,11 @@ const Dashboard: React.FC = () => {
                           </div>
                           <div>
                             <span className="text-gray-500">Time:</span>
-                            <span className="ml-2">{formatTime(nft.time)}</span>
+                            <span className="ml-2">{formatTime(nft.timeTaken)}</span>
                           </div>
                           <div>
                             <span className="text-gray-500">Mint:</span>
-                            <span className="ml-2 font-mono text-xs">{nft.mint}</span>
+                            <span className="ml-2 font-mono text-xs">{truncateString(nft.mint, 8)}</span>
                           </div>
                         </div>
                         <Button 
@@ -461,14 +453,14 @@ const Dashboard: React.FC = () => {
                     <div>Rarity</div>
                     <div className="text-right">View</div>
                   </div>
-                  {nftCollection.map((nft, idx) => (
+                  {nftCollection?.map((nft: NFT, idx: number) => (
                     <div 
-                      key={idx} 
+                      key={nft.id} 
                       className={`grid grid-cols-6 p-4 text-sm items-center ${
                         idx !== nftCollection.length - 1 ? 'border-b' : ''
                       }`}
                     >
-                      <div className="font-medium">{nft.date}</div>
+                      <div className="font-medium">{new Date(nft.timestamp).toLocaleDateString()}</div>
                       <div>
                         <Badge variant={
                           nft.difficulty === "Easy" ? "default" : 
@@ -479,7 +471,7 @@ const Dashboard: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="font-mono">{nft.move}</div>
-                      <div>{formatTime(nft.time)}</div>
+                      <div>{formatTime(nft.timeTaken)}</div>
                       <div>
                         <Badge variant="outline" className={
                           nft.rarity === "Common" ? "text-green-600 bg-green-50" : 
@@ -590,9 +582,11 @@ const Dashboard: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-500 mb-2">
                       Most Active Day
                     </h3>
-                    <div className="text-xl font-bold mb-1">Wednesday</div>
+                    <div className="text-xl font-bold mb-1">
+                      {userStats?.mostActiveDay || 'N/A'}
+                    </div>
                     <div className="text-sm text-gray-500">
-                      15 puzzles solved
+                      {userStats?.mostActiveDayCount || 0} puzzles solved
                     </div>
                   </div>
                   
@@ -600,9 +594,11 @@ const Dashboard: React.FC = () => {
                     <h3 className="text-sm font-medium text-gray-500 mb-2">
                       Fastest Solution
                     </h3>
-                    <div className="text-xl font-bold mb-1">{formatTime(45)}</div>
+                    <div className="text-xl font-bold mb-1">
+                      {userStats?.fastestSolve ? formatTime(userStats.fastestSolve) : 'N/A'}
+                    </div>
                     <div className="text-sm text-gray-500">
-                      on March 27, 2025
+                      {userStats?.fastestSolveDate || 'N/A'}
                     </div>
                   </div>
                 </div>

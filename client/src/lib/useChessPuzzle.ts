@@ -10,13 +10,14 @@ export function useChessPuzzle() {
   const { connected, walletAddress } = useWallet();
   const { toast } = useToast();
   
-  // All state hooks need to be called before any other hooks or logic
+  // Core state
   const [selectedMove, setSelectedMove] = useState<string | null>(null);
   const [currentAttempt, setCurrentAttempt] = useState<number>(1);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [isLoadingState, setIsLoadingState] = useState(true);
   const [showRecommendation, setShowRecommendation] = useState<boolean>(false);
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
   
   // Achievement tracking
   const [showAchievement, setShowAchievement] = useState<boolean>(false);
@@ -24,154 +25,85 @@ export function useChessPuzzle() {
   const [totalSolved, setTotalSolved] = useState<number>(0);
   const [latestAttempt, setLatestAttempt] = useState<Attempt | null>(null);
   
-  // Various chess positions for a more dynamic experience
-  const chessPuzzles = [
-    {
-      id: 1,
-      fen: 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3',
-      difficulty: 'medium',
-      toMove: 'w'
+  // Fetch daily puzzle with automatic refetch
+  const {
+    data: puzzleData,
+    isLoading: isPuzzleLoading,
+    refetch: refetchPuzzle,
+    error: puzzleError
+  } = useQuery({
+    queryKey: ['/api/puzzles/today'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzles/today');
+      if (!response.ok) throw new Error('Failed to fetch daily puzzle');
+      const puzzle = await response.json();
+      const { solution, ...puzzleWithoutSolution } = puzzle;
+      return puzzleWithoutSolution;
     },
-    {
-      id: 2,
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',
-      difficulty: 'easy',
-      toMove: 'w'
-    },
-    {
-      id: 3,
-      fen: 'rnbqkb1r/pp2pppp/2p2n2/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4',
-      difficulty: 'hard',
-      toMove: 'w'
-    },
-    {
-      id: 4,
-      fen: 'r1bqk2r/ppp2ppp/2n1pn2/3p4/1bPP4/2NBP3/PP3PPP/R1BQK1NR b KQkq - 1 5',
-      difficulty: 'medium',
-      toMove: 'b'
-    },
-    {
-      id: 5,
-      fen: 'r3kb1r/pp3ppp/2pp1n2/4p3/8/3P1N2/PPP2PPP/R1B1K2R b KQkq - 0 10',
-      difficulty: 'hard',
-      toMove: 'b'
-    },
-  ];
-  
-  // Generate a dynamic puzzle based on wallet address
-  const generatePuzzle = (): PuzzleWithoutSolution => {
-    if (!walletAddress) {
-      return chessPuzzles[0];
-    }
-    
-    // Use the wallet address to get a consistent puzzle (but different per user)
-    const addressSeed = walletAddress ? 
-      parseInt(walletAddress.substring(walletAddress.length - 4), 16) : 0;
-    
-    // Choose a puzzle based on the wallet address
-    const puzzleIndex = addressSeed % chessPuzzles.length;
-    return chessPuzzles[puzzleIndex];
-  };
-  
-  // Dynamic puzzle based on wallet address
-  const samplePuzzle: PuzzleWithoutSolution = generatePuzzle();
-  
-  // Simulate loading delay
+    enabled: connected,
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    staleTime: 4 * 60 * 1000, // Consider data stale after 4 minutes
+  });
+
+  const puzzle = !isPuzzleLoading ? puzzleData : null;
+
+  // Simulate loading delay with proper cleanup
   useEffect(() => {
-    // Always set loading state to false after a delay, whether connected or not
     const timer = setTimeout(() => {
       setIsLoadingState(false);
-      console.log('Loading state set to false');
     }, 1000);
     return () => clearTimeout(timer);
   }, [connected]);
-  
-  // Fetch today's puzzle - using sample data for development
-  // In production this would use the actual API
-  /*
-  const {
-    data: puzzleData,
-    isLoading,
-    refetch: refetchPuzzle
-  } = useQuery({
-    queryKey: ['/api/puzzles/today'],
-    enabled: connected,
-  });
-  */
-  
-  // Development version
-  // Provide a puzzle based on connection status
-  const puzzleData = !isLoadingState ? (connected ? samplePuzzle : null) : null;
-  const isLoading = isLoadingState;
-  const refetchPuzzle = () => console.log('Refetching puzzle...');
-  
-  // Type assertion for puzzle
-  const puzzle = (puzzleData || {}) as PuzzleWithoutSolution;
 
-  // Get a random difficulty for testing purposes
-  const getRandomDifficulty = (): 'easy' | 'medium' | 'hard' => {
-    const difficulties: ('easy' | 'medium' | 'hard')[] = ['easy', 'medium', 'hard'];
-    return difficulties[Math.floor(Math.random() * difficulties.length)];
-  };
-  
-  // Generate dynamic attempts for development based on connected wallet
-  const generateAttempts = (): Attempt[] => {
-    if (!connected || !walletAddress) return [];
-    
-    // Use the wallet address to get a consistent number (but different per user)
-    const addressSeed = walletAddress ? 
-      parseInt(walletAddress.substring(walletAddress.length - 6), 16) : 0;
-    
-    // Determine number of attempts (0-3) based on the wallet address
-    const numAttempts = addressSeed % 4; // 0, 1, 2, or 3 attempts
-    
-    // Generate attempts
-    const attempts: Attempt[] = [];
-    
-    for (let i = 0; i < numAttempts; i++) {
-      const isCorrect = i === numAttempts - 1; // Last attempt is correct
-      const possibleMoves = ['d4', 'e5', 'Nf3', 'Qh5', 'Bc4'];
+  // Fetch attempts with real-time updates
+  const {
+    data: attemptsData,
+    refetch: refetchAttempts,
+    error: attemptsError
+  } = useQuery({
+    queryKey: ['/api/attempts', walletAddress, puzzle?.id],
+    queryFn: async () => {
+      if (!walletAddress || !puzzle?.id) return [];
+      const response = await apiRequest('GET', `/api/attempts?walletAddress=${walletAddress}&puzzleId=${puzzle.id}`);
+      if (!response.ok) throw new Error('Failed to fetch attempts');
+      return await response.json();
+    },
+    enabled: !!walletAddress && !!puzzle?.id,
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    staleTime: 15 * 1000, // Consider data stale after 15 seconds
+  });
+
+  // Keep attempts state in sync with backend
+  useEffect(() => {
+    if (attemptsData) {
+      setAttempts(attemptsData);
+      // Update achievement stats
+      const correctAttempts = attemptsData.filter((a: Attempt) => a.isCorrect).length;
+      setTotalSolved(correctAttempts);
       
-      attempts.push({
-        id: i + 1,
-        puzzleId: 1,
-        userId: walletAddress,
-        move: possibleMoves[i % possibleMoves.length],
-        timeTaken: 20 + (i * 15), // Progressively longer times
-        isCorrect: isCorrect,
-        attemptNumber: i + 1,
-        attemptDate: new Date(Date.now() - (3600000 * (numAttempts - i))), // Spaced out in the past
-        mintedNftAddress: isCorrect && (addressSeed % 7 === 0) ? 
-          `solana${walletAddress.substring(5, 15)}` : null // 1/7 chance of having a minted NFT
-      });
+      // Calculate streak
+      const sortedAttempts = [...attemptsData].sort((a, b) => 
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+      let currentStreak = 0;
+      for (const attempt of sortedAttempts) {
+        if (attempt.isCorrect) currentStreak++;
+        else break;
+      }
+      setStreakCount(currentStreak);
     }
-    
-    return attempts;
-  };
-  
-  // Dynamic attempts based on wallet address
-  const sampleAttempts: Attempt[] = generateAttempts();
-  
-  // Fetch user's attempts for today's puzzle - using sample data for development
-  // In production, this would use the actual API
-  /*
-  const {
-    data: attemptsData = [],
-    refetch: refetchAttempts
-  } = useQuery({
-    queryKey: ['/api/attempts', walletAddress],
-    enabled: connected && !!puzzle?.id && !!walletAddress,
-  });
-  */
-  
-  // Development version
-  const attemptsData = !isLoadingState && walletAddress ? sampleAttempts : [];
-  const refetchAttempts = () => console.log('Refetching attempts...');
+  }, [attemptsData]);
 
-  // Type assertion for attempts
-  const attempts = (attemptsData || []) as Attempt[];
+  // Reset attempts when wallet or puzzle changes
+  useEffect(() => {
+    if (walletAddress && puzzle?.id) {
+      refetchAttempts();
+    } else {
+      setAttempts([]);
+    }
+  }, [walletAddress, puzzle, refetchAttempts]);
 
-  // Get best attempt (correct and fastest)
+  // Get best attempt with proper typing
   const bestAttempt = attempts && attempts.length > 0
     ? attempts.reduce((best: Attempt | null, current: Attempt) => {
         if (!best) return current;
@@ -181,124 +113,79 @@ export function useChessPuzzle() {
       }, null)
     : null;
 
-  // Start timer when puzzle is loaded and wallet is connected
-  useEffect(() => {
-    console.log('Timer state check:', { 
-      connected, 
-      puzzleLoaded: !!puzzle, 
-      attemptsLeft: attempts.length < 3, 
-      bestCorrect: bestAttempt?.isCorrect 
-    });
-    
-    // Always start the timer if connected and puzzle is loaded and no correct solution yet
-    if (connected && puzzle && attempts.length < 3 && !bestAttempt?.isCorrect) {
-      console.log('Starting timer for puzzle solving');
-      setIsTimerRunning(true);
-    } else {
-      console.log('Stopping timer');
-      setIsTimerRunning(false);
-    }
-    
-    // Set current attempt based on attempts history
-    if (attempts.length > 0) {
-      setCurrentAttempt(attempts.length + 1);
-    } else {
-      setCurrentAttempt(1);
-    }
-  }, [connected, puzzle, attempts, bestAttempt]);
-
-  // Timer logic with more reliable timing
+  // Timer management with proper cleanup
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     let previousTime = Date.now();
     let accumulatedTime = elapsedTime;
     
     if (isTimerRunning) {
-      console.log('Timer started running with initial time:', elapsedTime);
-      
-      // Use requestAnimationFrame for more precise timing
       interval = setInterval(() => {
         const currentTime = Date.now();
         const deltaTime = (currentTime - previousTime) / 1000;
         previousTime = currentTime;
-        
-        // Add the elapsed time to our accumulator
         accumulatedTime += deltaTime;
-        
-        // Update the state with the integer value
         setElapsedTime(Math.floor(accumulatedTime));
-      }, 200); // Run frequently to keep the timer smooth
+      }, 200);
     }
     
     return () => {
       if (interval) {
-        console.log('Clearing timer interval, final time:', Math.floor(accumulatedTime));
         clearInterval(interval);
       }
     };
   }, [isTimerRunning, elapsedTime]);
 
-  // Mutation for submitting an attempt
+  // Start/stop timer based on game state
+  useEffect(() => {
+    if (connected && puzzle && attempts.length < 3 && !bestAttempt?.isCorrect) {
+      setIsTimerRunning(true);
+    } else {
+      setIsTimerRunning(false);
+    }
+    
+    setCurrentAttempt(attempts.length + 1);
+  }, [connected, puzzle, attempts, bestAttempt]);
+
+  // Submit attempt mutation with enhanced error handling
   const { mutate: submitAttempt, isPending: isCheckingMove } = useMutation({
     mutationFn: async () => {
-      if (!puzzle || !selectedMove || !walletAddress) return null;
+      if (!puzzle || !selectedMove || !walletAddress) {
+        throw new Error('Missing required data for submission');
+      }
       
-      // This is a temporary simulation for development
-      // In production this would make a real API call
-      console.log("Submitting attempt with move:", selectedMove);
-      
-      // Simulate API response for development
-      return {
-        success: true,
-        isCorrect: true,
-        id: Date.now(),
-        puzzleId: puzzle.id,
-        userId: walletAddress,
-        move: selectedMove,
-        timeTaken: elapsedTime,
-        attemptNumber: currentAttempt,
-        attemptDate: new Date(),
-        mintedNftAddress: null
-      };
-      
-      // Commented out real API call for now
-      /*
       const response = await apiRequest('POST', '/api/attempts', {
         userId: walletAddress,
         puzzleId: puzzle.id,
         move: selectedMove,
         timeTaken: elapsedTime,
-        attemptNumber: currentAttempt
+        attemptNumber: currentAttempt,
+        isCorrect: false // This will be set by the server based on the solution
       });
       
-      return response.json();
-      */
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to submit attempt');
+      }
+      
+      return await response.json();
     },
     onSuccess: (data) => {
-      // Store the attempt data for achievement showcase
       if (data) {
         setLatestAttempt(data);
+        setAttempts(prev => [...prev, data]);
         
-        // Update tracking counters
         if (data.isCorrect) {
-          // Increment streak count for consecutive correct solutions
           setStreakCount(prev => prev + 1);
-          
-          // Increment total solved puzzles
           setTotalSolved(prev => prev + 1);
-          
-          // Show achievement showcase popup
           setShowAchievement(true);
-          
           toast({
             title: "Correct move!",
             description: "You found the best move for this position.",
             variant: "default",
           });
         } else {
-          // Reset streak on incorrect moves
           setStreakCount(0);
-          
           toast({
             title: "Incorrect move",
             description: currentAttempt < 3 
@@ -308,12 +195,8 @@ export function useChessPuzzle() {
           });
         }
       }
-      
-      // Reset timer and selected move
       setIsTimerRunning(false);
       setSelectedMove(null);
-      
-      // Refresh attempts data
       queryClient.invalidateQueries({ queryKey: ['/api/attempts', walletAddress] });
     },
     onError: (error) => {
@@ -322,16 +205,16 @@ export function useChessPuzzle() {
         description: error instanceof Error ? error.message : 'An unknown error occurred',
         variant: "destructive",
       });
+      setIsTimerRunning(false);
     }
   });
 
-  // Reset the board
+  // Reset board with proper cleanup
   const resetBoard = useCallback(() => {
     setSelectedMove(null);
-    // Don't reset timer, let it continue
   }, []);
 
-  // Make an attempt
+  // Make attempt with validation
   const makeAttempt = useCallback(async () => {
     if (currentAttempt > 3) {
       toast({
@@ -354,55 +237,38 @@ export function useChessPuzzle() {
     await submitAttempt();
   }, [currentAttempt, selectedMove, submitAttempt, toast]);
 
-  // Add puzzle recommendation handling
+  // Toggle recommendation with memoization
   const toggleRecommendation = useCallback(() => {
     setShowRecommendation(prev => !prev);
   }, []);
   
-  // Get recommended puzzle (simulation for development)
+  // Get recommended puzzle with proper error handling
   const getRecommendedPuzzle = useCallback(async (): Promise<PuzzleWithoutSolution | null> => {
     if (!connected || !walletAddress) return null;
     
-    // This is a temporary simulation for development
-    // In a real app, this would call the recommendation API
-    const themes = ["fork", "attack", "checkmate", "tactics"];
-    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-    const difficulties = ["easy", "medium", "hard"];
-    const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-    
-    // Return a sample recommended puzzle
-    const recommendedPuzzle: PuzzleWithoutSolution = {
-      id: 999, // Special ID for recommended puzzle
-      fen: samplePuzzle.fen, // Reuse FEN from sample puzzle
-      difficulty: randomDifficulty,
-      toMove: samplePuzzle.toMove,
-      themes: [randomTheme],
-      isRecommended: true,
-      recommendationReason: `This is a ${randomDifficulty} puzzle featuring a ${randomTheme} tactic that matches your skill level.`
-    };
-    
-    return recommendedPuzzle;
-    
-    /* In production, this would be:
     try {
       const response = await apiRequest('GET', `/api/puzzles/recommended?walletAddress=${walletAddress}`);
-      const data = await response.json();
-      return data;
+      if (!response.ok) throw new Error('Failed to get recommended puzzle');
+      return await response.json();
     } catch (error) {
       console.error('Failed to get recommended puzzle:', error);
+      toast({
+        title: "Error fetching recommendation",
+        description: "Could not load puzzle recommendation. Please try again later.",
+        variant: "destructive",
+      });
       return null;
     }
-    */
-  }, [connected, walletAddress, samplePuzzle]);
+  }, [connected, walletAddress, toast]);
   
-  // Add function to toggle achievement showcase visibility 
+  // Close achievement with memoization
   const closeAchievement = useCallback(() => {
     setShowAchievement(false);
   }, []);
   
   return {
     puzzle,
-    isLoading,
+    isLoading: isPuzzleLoading || isLoadingState,
     attempts,
     currentAttempt,
     selectedMove,
@@ -413,16 +279,14 @@ export function useChessPuzzle() {
     isCheckingMove,
     bestAttempt,
     refetchPuzzle,
-    refetchAttempts,
     showRecommendation,
     toggleRecommendation,
     getRecommendedPuzzle,
-    
-    // Achievement related properties
     showAchievement,
     closeAchievement,
     streakCount,
     totalSolved,
-    latestAttempt
+    latestAttempt,
+    error: puzzleError || attemptsError
   };
 }

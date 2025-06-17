@@ -229,32 +229,59 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          ) : connected && puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle ? (
-            <div className="animate-fade-in">
-              <PuzzleCard
-                puzzle={puzzle as PuzzleWithoutSolution}
-                selectedMove={selectedMove}
-                setSelectedMove={setSelectedMove}
-                onReset={resetBoard}
-                onSubmit={handleSubmitMove}
-                elapsedTime={elapsedTime}
-                currentAttempt={currentAttempt || 0}
-                isCheckingMove={isCheckingMove}
-              />
-            </div>
-          ) : (
-            <div className="card-solana p-8 text-center animate-fade-in">
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="text-6xl mb-6 animate-float">🏆</div>
-                <h3 className="text-2xl font-bold mb-4 text-solana-purple">All Done For Today!</h3>
-                <p className="mb-4 text-center max-w-md text-gray-600">
-                  You've completed today's puzzle. Come back tomorrow for a new challenge!
-                </p>
-                <div className="inline-block bg-gray-100 px-4 py-2 rounded-md text-sm text-gray-500">
-                  Next puzzle: {format(new Date(new Date().setDate(new Date().getDate() + 1)), 'MMMM d, yyyy')}
+          ) : ( // Connected
+            (() => {
+              // Debug log for puzzle
+              console.log('Puzzle for rendering:', puzzle);
+              if (
+                puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle
+              ) {
+                // Only show 'All Done For Today!' if user has 3 attempts or solved
+                if (Array.isArray(attempts) && (attempts.length >= 3 || (bestAttempt && bestAttempt.isCorrect))) {
+                  return (
+                    <div className="card-solana p-8 text-center animate-fade-in">
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <div className="text-6xl mb-6 animate-float">🏆</div>
+                        <h3 className="text-2xl font-bold mb-4 text-solana-purple">All Done For Today!</h3>
+                        <p className="mb-4 text-center max-w-md text-gray-600">
+                          You've completed today's puzzle. Come back tomorrow for a new challenge!
+                        </p>
+                        <div className="inline-block bg-gray-100 px-4 py-2 rounded-md text-sm text-gray-500">
+                          Next puzzle: {format(new Date(new Date().setDate(new Date().getDate() + 1)), 'MMMM d, yyyy')}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                // Show the puzzle card
+                return (
+                  <div className="animate-fade-in">
+                    <PuzzleCard
+                      puzzle={puzzle as PuzzleWithoutSolution}
+                      selectedMove={selectedMove}
+                      setSelectedMove={setSelectedMove}
+                      onReset={resetBoard}
+                      onSubmit={handleSubmitMove}
+                      elapsedTime={elapsedTime}
+                      currentAttempt={currentAttempt || 0}
+                      isCheckingMove={isCheckingMove}
+                    />
+                  </div>
+                );
+              }
+              // Show empty state if no valid puzzle
+              return (
+                <div className="card-solana p-8 text-center animate-fade-in">
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <div className="text-6xl mb-6 animate-float">♟️</div>
+                    <h3 className="text-2xl font-bold mb-4 text-solana-purple">Start Your Chess Journey</h3>
+                    <p className="mb-4 text-center max-w-md text-gray-600">
+                      Complete your first puzzle attempt to begin building your chess journey stats.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()
           )}
         </section>
 

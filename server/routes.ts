@@ -1,15 +1,18 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { Express } from 'express';
+import * as http from 'http';
+import { storage } from './storage';
 import { insertAttemptSchema } from "@shared/schema";
 import { getPuzzleOfTheDay, selectPuzzleForDate } from "./puzzles";
-import { mintCNFT, setupSolanaConnection } from "./solana";
 import { ZodError } from "zod";
 import { fromZodError } from 'zod-validation-error';
+import { Attempt, Puzzle, InsertAttempt, PuzzleWithSolution } from '@shared/schema';
+import { Transaction } from '@solana/web3.js';
+import { connection, mintCNFT } from './solana';
+import { Buffer } from 'buffer';
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up Solana connection
-  setupSolanaConnection();
+export async function registerRoutes(app: Express): Promise<http.Server> {
+  // Set a global timeout for all routes (5 minutes)
+  app.set('timeout', 300000);
 
   // API routes
   
@@ -52,8 +55,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "No recommendation available" });
       }
       
-      // Return puzzle without solution
-      const { solution, ...puzzleWithoutSolution } = recommendedPuzzle;
+      // Return puzzle without solution (and with recommendation flags)
+      // Ensure the recommendedPuzzle is correctly typed to include recommendationReason
+      const { solution, ...puzzleWithoutSolution } = recommendedPuzzle as PuzzleWithSolution; // Cast to PuzzleWithSolution
       
       res.json({
         ...puzzleWithoutSolution,
@@ -97,7 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit an attempt
   app.post('/api/attempts', async (req, res) => {
     try {
-      const attemptData = insertAttemptSchema.parse(req.body);
+      const attemptData: InsertAttempt = insertAttemptSchema.parse(req.body);
       
       // Get the puzzle to check the solution
       const puzzle = await storage.getPuzzle(attemptData.puzzleId);
@@ -144,53 +148,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mint NFT from attempt
+  // Mint NFT for an attempt
   app.post('/api/nft/mint', async (req, res) => {
     try {
-      const { attemptId } = req.body;
+      const { attemptId, puzzleId, userWalletAddress } = req.body;
       
-      if (!attemptId) {
-        return res.status(400).json({ message: "Attempt ID is required" });
-      }
-      
-      // Get the attempt
-      const attempt = await storage.getAttempt(attemptId);
-      
-      if (!attempt) {
-        return res.status(404).json({ message: "Attempt not found" });
-      }
-      
-      // Check if attempt is already minted
-      if (attempt.mintedNftAddress) {
+      if (!attemptId || !puzzleId || !userWalletAddress) {
         return res.status(400).json({ 
-          message: "This attempt has already been minted", 
-          txSignature: attempt.mintedNftAddress 
+          success: false, 
+          message: 'Missing required fields' 
         });
       }
-      
-      // Get the puzzle
-      const puzzle = await storage.getPuzzle(attempt.puzzleId);
-      
-      if (!puzzle) {
-        return res.status(404).json({ message: "Puzzle not found" });
+
+      // Get the attempt from storage
+      const attempt = await storage.getAttempt(Number(attemptId));
+      if (!attempt) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Attempt not found' 
+        });
       }
+
+      // Check if attempt is already minted
+      if (attempt.mintedNftAddress) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Attempt already minted',
+          nftAddress: attempt.mintedNftAddress
+        });
+      }
+
+      // Get the puzzle data
+      const puzzle = await storage.getPuzzle(Number(puzzleId));
+      if (!puzzle) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Puzzle not found' 
+        });
+      }
+
+      // Create NFT metadata and mint it directly on the server
+      // Fix: mintCNFT only takes (attempt, puzzle)
+      const nftAddress = await mintCNFT(attempt, puzzle);
       
-      // Mint the NFT
-      const txSignature = await mintCNFT(attempt, puzzle);
-      
-      // Update the attempt with the NFT address
-      await storage.updateAttemptMintStatus(attemptId, txSignature);
-      
-      res.json({ 
-        success: true, 
-        txSignature,
-        message: "NFT minted successfully" 
+      // Update the attempt with the minted NFT address
+      await storage.updateAttemptMintStatus(attempt.id, nftAddress);
+
+      // Return the minted NFT address
+      return res.status(201).json({
+        success: true,
+        nftAddress: nftAddress
       });
     } catch (error) {
-      res.status(500).json({ 
-        success: false,
-        message: "Failed to mint NFT", 
-        error: error instanceof Error ? error.message : "Unknown error" 
+      console.error('Error in /api/nft/mint:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Failed to mint NFT' 
       });
     }
   });
@@ -230,6 +243,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
+  // Confirm NFT minting - THIS ROUTE IS NO LONGER NEEDED FOR SERVER-SIDE MINTING
+  // app.post('/api/nft/confirm', async (req, res) => {
+  //   try {
+  //     const { attemptId, signedTransaction } = req.body;
+  //     
+  //     if (!attemptId || !signedTransaction) {
+  //       return res.status(400).json({ 
+  //         success: false, 
+  //         message: 'Missing required fields' 
+  //       });
+  //     }
+  //
+  //     if (!connection) {
+  //       return res.status(500).json({ 
+  //         success: false, 
+  //         message: 'Solana connection not initialized' 
+  //       });
+  //     }
+  //
+  //     // Deserialize the signed transaction
+  //     const transaction = Transaction.from(Buffer.from(signedTransaction, 'base64'));
+  //
+  //     // Send the transaction
+  //     const txSignature = await connection.sendRawTransaction(transaction.serialize());
+  //
+  //     // Confirm the transaction
+  //     await connection.confirmTransaction(txSignature, 'confirmed');
+  //
+  //     // Update the attempt with the minted NFT address
+  //     await storage.updateAttempt(Number(attemptId), { mintedNftAddress: txSignature });
+  //
+  //     return res.status(200).json({
+  //       success: true,
+  //       txSignature: txSignature,
+  //       message: 'NFT minted and confirmed successfully'
+  //     });
+  //   } catch (error) {
+  //     console.error('Error in /api/nft/confirm:', error);
+  //     return res.status(500).json({ 
+  //       success: false, 
+  //       message: error instanceof Error ? error.message : 'Failed to confirm NFT mint' 
+  //     });
+  //   }
+  // });
+
+  const httpServer = http.createServer(app);
   return httpServer;
 }
