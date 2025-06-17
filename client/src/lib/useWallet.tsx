@@ -3,6 +3,18 @@ import { apiRequest } from './queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { PublicKey, Transaction } from '@solana/web3.js';
 
+// Wallet adapter interface for external wallet providers
+export interface WalletAdapter {
+  publicKey: { toString: () => string };
+  isConnected: boolean;
+  connect: () => Promise<{ publicKey: { toString: () => string } }>;
+  disconnect: () => Promise<void>;
+  signTransaction: (transaction: Transaction) => Promise<Transaction>;
+  signAllTransactions: (transactions: Transaction[]) => Promise<Transaction[]>;
+  on: (event: string, callback: () => void) => void;
+  removeListener: (event: string, callback: () => void) => void;
+}
+
 // Solana wallet interface
 export interface SolanaWallet {
   publicKey: PublicKey;
@@ -50,17 +62,6 @@ const errorMockWallet: SolanaWallet = {
   signTransaction: async (tx) => tx,
   signAllTransactions: async (txs) => txs
 };
-
-export interface WalletAdapter {
-  publicKey: { toString: () => string };
-  isConnected: boolean;
-  connect: () => Promise<{ publicKey: { toString: () => string } }>;
-  disconnect: () => Promise<void>;
-  signTransaction: (transaction: Transaction) => Promise<Transaction>;
-  signAllTransactions: (transactions: Transaction[]) => Promise<Transaction[]>;
-  on: (event: string, callback: () => void) => void;
-  removeListener: (event: string, callback: () => void) => void;
-}
 
 const createWalletAdapter = (wallet: WalletAdapter): SolanaWallet => {
   return {

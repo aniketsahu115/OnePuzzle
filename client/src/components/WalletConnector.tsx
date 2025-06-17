@@ -275,25 +275,10 @@ const WalletConnector: React.FC = () => {
                 throw new Error('Wallet connection failed: Invalid response from wallet');
               }
               
-              // Make sure result.publicKey has toString method
-              if (typeof result.publicKey.toString !== 'function') {
-                console.warn('Wallet returned publicKey without toString method, creating a wrapper');
-                // Create a wrapper with toString
-                return {
-                  publicKey: {
-                    toString: () => {
-                      // If we can access it as a string property, use that
-                      if (typeof result.publicKey === 'string') {
-                        return result.publicKey;
-                      }
-                      // Otherwise use object notation and convert to string
-                      return String(result.publicKey);
-                    }
-                  }
-                };
-              }
-              
-              return result;
+              // Convert the publicKey to a PublicKey object
+              return {
+                publicKey: new PublicKey(result.publicKey.toString())
+              };
             } catch (err) {
               console.error('Error in wallet connect wrapper:', err);
               throw err;
