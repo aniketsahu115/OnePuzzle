@@ -71,7 +71,19 @@ export class MemStorage implements IStorage {
   
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    const user: User = {
+      id,
+      walletAddress: insertUser.walletAddress,
+      username: insertUser.username ?? null,
+      lastPuzzleDate: insertUser.lastPuzzleDate ?? null,
+      sessionKey: insertUser.sessionKey ?? null,
+      skillLevel: insertUser.skillLevel ?? null,
+      preferredDifficulty: insertUser.preferredDifficulty ?? null,
+      successRate: insertUser.successRate ?? null,
+      completedPuzzles: insertUser.completedPuzzles ?? null,
+      preferredThemes: insertUser.preferredThemes ?? null,
+      lastRecommendationDate: insertUser.lastRecommendationDate ?? null,
+    };
     this.users.set(id, user);
     return user;
   }
@@ -163,7 +175,8 @@ export class MemStorage implements IStorage {
     const attempt: Attempt = { 
       ...insertAttempt,
       id,
-      attemptDate: insertAttempt.attemptDate || now
+      attemptDate: insertAttempt.attemptDate || now,
+      mintedNftAddress: insertAttempt.mintedNftAddress ?? null,
     };
     this.attempts.set(id, attempt);
     return attempt;
