@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import { Request, Response, NextFunction, Express } from 'express';
 import * as http from 'http';
 import { storage } from './storage';
 import { insertAttemptSchema } from "@shared/schema";
@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   // API routes
   
   // Get today's puzzle (without solution)
-  app.get('/api/puzzles/today', async (req, res) => {
+  app.get('/api/puzzles/today', async (req: Request, res: Response) => {
     try {
       const puzzle = await getPuzzleOfTheDay();
       
@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
   
   // Get personalized recommended puzzle for user
-  app.get('/api/puzzles/recommended', async (req, res) => {
+  app.get('/api/puzzles/recommended', async (req: Request, res: Response) => {
     try {
       const walletAddress = req.query.walletAddress as string;
       
@@ -73,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Get user's attempts for today's puzzle
-  app.get('/api/attempts', async (req, res) => {
+  app.get('/api/attempts', async (req: Request, res: Response) => {
     try {
       const walletAddress = req.query.walletAddress as string;
       
@@ -99,7 +99,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Submit an attempt
-  app.post('/api/attempts', async (req, res) => {
+  app.post('/api/attempts', async (req: Request, res: Response) => {
     try {
       const attemptData: InsertAttempt = insertAttemptSchema.parse(req.body);
       
@@ -149,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Mint NFT for an attempt
-  app.post('/api/nft/mint', async (req, res) => {
+  app.post('/api/nft/mint', async (req: Request, res: Response) => {
     try {
       const { attemptId, puzzleId, userWalletAddress } = req.body;
       
@@ -209,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Wallet authentication (simulated)
-  app.post('/api/auth/wallet', async (req, res) => {
+  app.post('/api/auth/wallet', async (req: Request, res: Response) => {
     try {
       const { walletAddress } = req.body;
       

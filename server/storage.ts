@@ -71,6 +71,7 @@ export class MemStorage implements IStorage {
   
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
+    // Ensure all nullable fields are set to null if undefined
     const user: User = {
       id,
       walletAddress: insertUser.walletAddress,
@@ -172,7 +173,7 @@ export class MemStorage implements IStorage {
   async createAttempt(insertAttempt: InsertAttempt): Promise<Attempt> {
     const id = this.attemptIdCounter++;
     const now = new Date();
-    const attempt: Attempt = { 
+    const attempt: Attempt = {
       ...insertAttempt,
       id,
       attemptDate: insertAttempt.attemptDate || now,
@@ -181,12 +182,11 @@ export class MemStorage implements IStorage {
     this.attempts.set(id, attempt);
     return attempt;
   }
-  
+
   async updateAttemptMintStatus(attemptId: number, mintedNftAddress: string): Promise<Attempt | undefined> {
     const attempt = await this.getAttempt(attemptId);
     if (!attempt) return undefined;
-    
-    const updatedAttempt: Attempt = { ...attempt, mintedNftAddress };
+    const updatedAttempt: Attempt = { ...attempt, mintedNftAddress: mintedNftAddress ?? null };
     this.attempts.set(attemptId, updatedAttempt);
     return updatedAttempt;
   }
