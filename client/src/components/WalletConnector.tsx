@@ -10,6 +10,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { truncateString } from '@/lib/utils';
 import { MockWallet, createMockWalletProvider } from '@/lib/mockWallet';
+import { PublicKey } from '@solana/web3.js';
+import { WalletAdapter } from '@/lib/useWallet';
 
 // Icons for different wallets
 const PhantomIcon = () => (
@@ -83,13 +85,15 @@ const WalletConnector: React.FC = () => {
       
       // Create a basic mock wallet with minimal API surface
       const simpleWallet = {
-        publicKey: { 
-          toString: () => 'mockWalletAddress123456789' 
-        },
+        publicKey: new PublicKey('mockWalletAddress123456789'), 
+        isConnected: true,
         connect: async () => ({ 
-          publicKey: { toString: () => 'mockWalletAddress123456789' } 
+          publicKey: new PublicKey('mockWalletAddress123456789') 
         }),
         disconnect: async () => {},
+        // Add dummy signTransaction and signAllTransactions for SolanaWallet interface
+        signTransaction: async (tx: any) => tx, 
+        signAllTransactions: async (txs: any[]) => txs, 
       };
       
       // Directly call the connect method on the wallet context
@@ -165,10 +169,13 @@ const WalletConnector: React.FC = () => {
         
         // Now call the real connectWallet function but with a mock wallet
         const mockWallet = {
-          publicKey: { toString: () => simulatedAddress },
+          publicKey: new PublicKey(simulatedAddress),
           isConnected: true,
-          connect: async () => ({ publicKey: { toString: () => simulatedAddress } }),
-          disconnect: async () => {}
+          connect: async () => ({ publicKey: new PublicKey(simulatedAddress) }),
+          disconnect: async () => {},
+          // Add dummy signTransaction and signAllTransactions for SolanaWallet interface
+          signTransaction: async (tx: any) => tx, 
+          signAllTransactions: async (txs: any[]) => txs, 
         };
         
         await connectWallet(mockWallet);
@@ -186,19 +193,19 @@ const WalletConnector: React.FC = () => {
                   `Solflare (${hasSolflare ? 'available' : 'not available'}), ` +
                   `Backpack (${hasBackpack ? 'available' : 'not available'})`);
       
-      let walletProvider: SolanaWalletProvider | undefined = undefined;
+      let walletProvider: WalletAdapter | undefined = undefined;
       
       try {
-        let selectedWalletProvider: SolanaWalletProvider | undefined = undefined;
+        let selectedWalletProvider: WalletAdapter | undefined = undefined;
         
         if (walletName === 'Phantom' && hasPhantom) {
-          selectedWalletProvider = window.phantom?.solana as SolanaWalletProvider;
+          selectedWalletProvider = window.phantom?.solana as WalletAdapter;
           console.log('Using Phantom wallet provider:', selectedWalletProvider);
         } else if (walletName === 'Solflare' && hasSolflare) {
-          selectedWalletProvider = window.solflare as SolanaWalletProvider;
+          selectedWalletProvider = window.solflare as WalletAdapter;
           console.log('Using Solflare wallet provider:', selectedWalletProvider);
         } else if (walletName === 'Backpack' && hasBackpack) {
-          selectedWalletProvider = window.backpack as SolanaWalletProvider;
+          selectedWalletProvider = window.backpack as WalletAdapter;
           console.log('Using Backpack wallet provider:', selectedWalletProvider);
         }
         
@@ -230,10 +237,24 @@ const WalletConnector: React.FC = () => {
         // Create a properly formatted wallet object with extra safety checks
         const walletWrapper = {
           // Safely handle publicKey property which might be undefined
-          publicKey: walletProvider.publicKey,
+          publicKey: walletProvider.publicKey ? new PublicKey(walletProvider.publicKey.toString()) : new PublicKey('11111111111111111111111111111111'),
           
           // Make sure isConnected is a boolean
           isConnected: !!walletProvider.isConnected,
+          
+          // Add dummy signTransaction and signAllTransactions for SolanaWallet interface
+          signTransaction: async (tx: any) => {
+            if (!walletProvider || typeof walletProvider.signTransaction !== 'function') {
+              throw new Error('Wallet provider not available or missing signTransaction method');
+            }
+            return walletProvider.signTransaction(tx);
+          },
+          signAllTransactions: async (txs: any[]) => {
+            if (!walletProvider || typeof walletProvider.signAllTransactions !== 'function') {
+              throw new Error('Wallet provider not available or missing signAllTransactions method');
+            }
+            return walletProvider.signAllTransactions(txs);
+          },
           
           // Enhanced connect method with additional error handling
           connect: async () => {

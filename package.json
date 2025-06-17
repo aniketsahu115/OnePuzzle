@@ -50,6 +50,7 @@
     "@solana/web3.js": "^1.98.2",
     "@tanstack/react-query": "^5.60.5",
     "@types/nanoid": "^3.0.0",
+    "@types/pg": "^8.15.4",
     "chess.js": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

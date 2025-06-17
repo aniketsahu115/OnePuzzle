@@ -116,6 +116,9 @@ importers:
       '@types/nanoid':
         specifier: ^3.0.0
         version: 3.0.0
+      '@types/pg':
+        specifier: ^8.15.4
+        version: 8.15.4
       chess.js:
         specifier: ^1.1.0
         version: 1.4.0

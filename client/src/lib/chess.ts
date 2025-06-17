@@ -1,4 +1,4 @@
-import { Chess, Move } from 'chess.js';
+import { Chess, Move, Square } from 'chess.js';
 
 // Determines if a user's move is correct compared to solution
 export function isMoveCorrect(fen: string, userMove: string, solution: string): boolean {
@@ -15,11 +15,11 @@ export function isMoveCorrect(fen: string, userMove: string, solution: string): 
 }
 
 // Gets all legal moves for a piece at a specific position
-export function getLegalMoves(fen: string, square: string): string[] {
+export function getLegalMoves(fen: string, square: Square): string[] {
   try {
     const chess = new Chess(fen);
     const moves = chess.moves({ square, verbose: true });
-    return moves.map(move => `${move.from}${move.to}`);
+    return moves.map((move: Move) => `${move.from}${move.to}`);
   } catch (error) {
     console.error('Error getting legal moves:', error);
     return [];

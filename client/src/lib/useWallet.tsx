@@ -51,7 +51,7 @@ const errorMockWallet: SolanaWallet = {
   signAllTransactions: async (txs) => txs
 };
 
-interface WalletAdapter {
+export interface WalletAdapter {
   publicKey: { toString: () => string };
   isConnected: boolean;
   connect: () => Promise<{ publicKey: { toString: () => string } }>;
