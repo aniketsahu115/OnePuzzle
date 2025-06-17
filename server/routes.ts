@@ -10,6 +10,17 @@ import { Transaction } from '@solana/web3.js';
 import { connection, mintCNFT } from './solana';
 import { Buffer } from 'buffer';
 
+// Define custom types for request body
+interface AttemptRequestBody {
+  attemptId: string;
+  puzzleId: string;
+  userWalletAddress: string;
+}
+
+interface WalletAuthRequestBody {
+  walletAddress: string;
+}
+
 export async function registerRoutes(app: Express): Promise<http.Server> {
   // Set a global timeout for all routes (5 minutes)
   app.set('timeout', 300000);
@@ -56,8 +67,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
       }
       
       // Return puzzle without solution (and with recommendation flags)
-      // Ensure the recommendedPuzzle is correctly typed to include recommendationReason
-      const { solution, ...puzzleWithoutSolution } = recommendedPuzzle as PuzzleWithSolution; // Cast to PuzzleWithSolution
+      const { solution, ...puzzleWithoutSolution } = recommendedPuzzle as PuzzleWithSolution;
       
       res.json({
         ...puzzleWithoutSolution,
@@ -149,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Mint NFT for an attempt
-  app.post('/api/nft/mint', async (req: Request, res: Response) => {
+  app.post('/api/nft/mint', async (req: Request<{}, {}, AttemptRequestBody>, res: Response) => {
     try {
       const { attemptId, puzzleId, userWalletAddress } = req.body;
       
@@ -188,7 +198,6 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
       }
 
       // Create NFT metadata and mint it directly on the server
-      // Fix: mintCNFT only takes (attempt, puzzle)
       const nftAddress = await mintCNFT(attempt, puzzle);
       
       // Update the attempt with the minted NFT address
@@ -209,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Wallet authentication (simulated)
-  app.post('/api/auth/wallet', async (req: Request, res: Response) => {
+  app.post('/api/auth/wallet', async (req: Request<{}, {}, WalletAuthRequestBody>, res: Response) => {
     try {
       const { walletAddress } = req.body;
       
