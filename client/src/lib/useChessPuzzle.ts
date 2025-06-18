@@ -41,8 +41,8 @@ export function useChessPuzzle() {
       return puzzleWithoutSolution;
     },
     enabled: connected,
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    staleTime: 4 * 60 * 1000, // Consider data stale after 4 minutes
+    refetchInterval: 15 * 60 * 1000, // Refetch every 15 minutes
+    staleTime: 10 * 60 * 1000, // Consider data stale after 10 minutes
   });
 
   const puzzle = !isPuzzleLoading ? puzzleData : null;
@@ -69,8 +69,8 @@ export function useChessPuzzle() {
       return await response.json();
     },
     enabled: !!walletAddress && !!puzzle?.id,
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
-    staleTime: 15 * 1000, // Consider data stale after 15 seconds
+    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
+    staleTime: 60 * 1000, // Consider data stale after 1 minute
   });
 
   // Keep attempts state in sync with backend
