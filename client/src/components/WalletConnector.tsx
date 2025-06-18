@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { truncateString } from '@/lib/utils';
 import { MockWallet, createMockWalletProvider } from '@/lib/mockWallet';
 import { PublicKey } from '@solana/web3.js';
-import { WalletAdapter } from '@/lib/useWallet';
+import type { WalletAdapter } from '@/lib/useWallet';
 
 // Icons for different wallets
 const PhantomIcon = () => (
