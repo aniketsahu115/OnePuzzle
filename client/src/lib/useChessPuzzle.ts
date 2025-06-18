@@ -170,7 +170,7 @@ export function useChessPuzzle() {
       
       return await response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       if (data) {
         setLatestAttempt(data);
         setAttempts(prev => [...prev, data]);
@@ -199,7 +199,7 @@ export function useChessPuzzle() {
       setSelectedMove(null);
       queryClient.invalidateQueries({ queryKey: ['/api/attempts', walletAddress] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error submitting move",
         description: error instanceof Error ? error.message : 'An unknown error occurred',
