@@ -1,12 +1,12 @@
 import { createServer } from "./main";
+import { serveStatic } from "./static";
 import { log } from "./logger";
 
 (async () => {
   try {
     const { app, server } = await createServer();
     
-    const { setupVite } = await import("./vite");
-    await setupVite(app, server);
+    serveStatic(app);
 
     const port = process.env.PORT || 4001;
     server.listen({
@@ -19,4 +19,4 @@ import { log } from "./logger";
     console.error('Failed to start server:', error);
     process.exit(1);
   }
-})();
+})(); 

@@ -10,6 +10,16 @@
     "allowImportingTsExtensions": false,
     "jsx": "react-jsx"
   },
-  "include": ["server", "shared"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "client", "server/vite.ts"]
+  "files": [
+    "server/prod.ts",
+    "server/main.ts",
+    "server/routes.ts",
+    "server/solana.ts",
+    "server/static.ts",
+    "server/logger.ts",
+    "server/db.ts",
+    "server/puzzles.ts",
+    "server/storage.ts",
+    "shared/schema.ts"
+  ]
 } 
