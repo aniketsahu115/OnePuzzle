@@ -4,7 +4,12 @@
     "noEmit": false,
     "outDir": "dist",
     "module": "commonjs",
-    "rootDir": "."
+    "rootDir": ".",
+    "lib": ["esnext"],
+    "types": ["node"],
+    "allowImportingTsExtensions": false,
+    "jsx": "react-jsx"
   },
-  "include": ["server", "shared"]
+  "include": ["server", "shared"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "client"]
 } 
