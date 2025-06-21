@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { serveStatic, log } from "./vite";
+import { serveStatic } from "./static";
+import { log } from "./logger";
 import { setupSolanaConnection } from "./solana";
 
 const app = express();
@@ -57,7 +58,7 @@ app.use((req, res, next) => {
     // importantly only setup vite in development and after
     // setting up all the other routes so the catch-all route
     // doesn't interfere with the other routes
-    if (process.env.NODE_ENV === "development") {
+    if (app.get("env") === "development") {
       const { setupVite } = await import("./vite");
       await setupVite(app, server);
     } else {
