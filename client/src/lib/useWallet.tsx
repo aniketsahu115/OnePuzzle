@@ -43,7 +43,9 @@ const WalletContext = createContext<WalletContextType>({
   wallet: null,
 });
 
-export const useWallet = () => useContext(WalletContext);
+export function useWallet() {
+  return useContext(WalletContext);
+}
 
 const fallbackMockWallet: SolanaWallet = {
   publicKey: new PublicKey('11111111111111111111111111111111'),
@@ -70,12 +72,10 @@ const createWalletAdapter = (wallet: WalletAdapter): SolanaWallet => {
     connect: async () => ({ publicKey: new PublicKey(wallet.publicKey.toString()) }),
     disconnect: async () => {},
     signTransaction: async (tx: Transaction) => {
-      const signedTx = await wallet.signTransaction(tx);
-      return Transaction.from(signedTx.serialize());
+      return await wallet.signTransaction(tx);
     },
     signAllTransactions: async (txs: Transaction[]) => {
-      const signedTxs = await wallet.signAllTransactions(txs);
-      return signedTxs.map(tx => Transaction.from(tx.serialize()));
+      return await wallet.signAllTransactions(txs);
     }
   };
 };
@@ -93,51 +93,60 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
 
-  const connectWallet = useCallback(async () => {
+  const connectWallet = useCallback(async (walletProvider?: SolanaWallet) => {
     try {
       setIsConnecting(true);
 
-      if (!window.solana) {
-        toast({
-          title: "Wallet not found",
-          description: "Please install Phantom wallet to continue",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Check if already connected
-      if (window.solana.isConnected) {
-        const publicKey = window.solana.publicKey.toString();
-        const wallet = createWalletAdapter(window.solana);
-        setCurrentWallet(wallet);
-        setWalletAddress(publicKey);
-        setConnected(true);
-        return;
-      }
-
-      // Connect to wallet
-      await window.solana.connect();
-      const publicKey = window.solana.publicKey.toString();
-      const wallet = createWalletAdapter(window.solana);
+      let connectedWallet: SolanaWallet;
       
-      setCurrentWallet(wallet);
-      setWalletAddress(publicKey);
+      if (walletProvider) {
+        // Scenario 1: A wallet provider is passed in from our WalletConnector component.
+        // We must call its connect method to get the real public key.
+        const { publicKey: connectedPublicKey } = await walletProvider.connect();
+        
+        if (!connectedPublicKey) {
+          throw new Error('Wallet connection failed: Public key not returned.');
+        }
+
+        // The provided wallet object is now fully ready.
+        connectedWallet = {
+          ...walletProvider,
+          publicKey: connectedPublicKey,
+          isConnected: true,
+        };
+
+      } else {
+        // Scenario 2: Default connection logic (e.g., for auto-reconnection)
+        const solana = window.solana;
+        if (!solana) {
+          throw new Error('Wallet not found. Please install a Solana wallet.');
+        }
+
+        if (!solana.isConnected) {
+          await solana.connect();
+        }
+        connectedWallet = createWalletAdapter(solana);
+      }
+      
+      const publicKeyStr = connectedWallet.publicKey.toString();
+      setCurrentWallet(connectedWallet);
+      setWalletAddress(publicKeyStr);
       setConnected(true);
 
       toast({
         title: "Wallet connected",
-        description: "Successfully connected to Phantom wallet",
+        description: `Successfully connected to wallet: ${publicKeyStr.slice(0, 4)}...${publicKeyStr.slice(-4)}`,
       });
 
       // Verify with server
       try {
         await apiRequest('POST', '/api/auth/wallet', {
-          walletAddress: publicKey
+          walletAddress: publicKeyStr
         });
       } catch (error) {
         console.warn('Server verification failed:', error);
       }
+
     } catch (error) {
       console.error('Error connecting wallet:', error);
       toast({
@@ -178,8 +187,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const solana = window.solana;
     if (solana?.isConnected) {
       const publicKey = solana.publicKey.toString();
-      const wallet = createWalletAdapter(solana);
-      setCurrentWallet(wallet);
+      const walletAdapter = createWalletAdapter(solana);
+      setCurrentWallet(walletAdapter);
       setWalletAddress(publicKey);
       setConnected(true);
     }
@@ -192,8 +201,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const handleConnect = () => {
       const publicKey = solana.publicKey.toString();
-      const wallet = createWalletAdapter(solana);
-      setCurrentWallet(wallet);
+      const walletAdapter = createWalletAdapter(solana);
+      setCurrentWallet(walletAdapter);
       setWalletAddress(publicKey);
       setConnected(true);
     };

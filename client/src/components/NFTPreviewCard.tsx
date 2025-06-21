@@ -13,7 +13,7 @@ interface NFTPreviewCardProps {
 }
 
 const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }) => {
-  const { connected, walletAddress } = useWallet();
+  const { connected, walletAddress, wallet } = useWallet();
   const [isMinting, setIsMinting] = React.useState(false);
   const [mintedNftAddress, setMintedNftAddress] = React.useState<string | null>(bestAttempt?.mintedNftAddress || null);
   
@@ -32,7 +32,8 @@ const NFTPreviewCard: React.FC<NFTPreviewCardProps> = ({ bestAttempt, attempts }
     if (!bestOrFirstAttempt || !walletAddress) return;
     try {
       setIsMinting(true);
-      const txSignature = await mintNFT(bestOrFirstAttempt, walletAddress);
+      // Pass the wallet object to mintNFT for client-side signing
+      const txSignature = await mintNFT(bestOrFirstAttempt, walletAddress, wallet || undefined);
       toast({
         title: 'NFT Minted! (Simulation)',
         description: `Your puzzle attempt has been minted as an NFT. Transaction: ${txSignature.substring(0, 12)}...`,

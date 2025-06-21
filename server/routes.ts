@@ -252,50 +252,67 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
     }
   });
 
-  // Confirm NFT minting - THIS ROUTE IS NO LONGER NEEDED FOR SERVER-SIDE MINTING
-  // app.post('/api/nft/confirm', async (req, res) => {
-  //   try {
-  //     const { attemptId, signedTransaction } = req.body;
-  //     
-  //     if (!attemptId || !signedTransaction) {
-  //       return res.status(400).json({ 
-  //         success: false, 
-  //         message: 'Missing required fields' 
-  //       });
-  //     }
-  //
-  //     if (!connection) {
-  //       return res.status(500).json({ 
-  //         success: false, 
-  //         message: 'Solana connection not initialized' 
-  //       });
-  //     }
-  //
-  //     // Deserialize the signed transaction
-  //     const transaction = Transaction.from(Buffer.from(signedTransaction, 'base64'));
-  //
-  //     // Send the transaction
-  //     const txSignature = await connection.sendRawTransaction(transaction.serialize());
-  //
-  //     // Confirm the transaction
-  //     await connection.confirmTransaction(txSignature, 'confirmed');
-  //
-  //     // Update the attempt with the minted NFT address
-  //     await storage.updateAttempt(Number(attemptId), { mintedNftAddress: txSignature });
-  //
-  //     return res.status(200).json({
-  //       success: true,
-  //       txSignature: txSignature,
-  //       message: 'NFT minted and confirmed successfully'
-  //     });
-  //   } catch (error) {
-  //     console.error('Error in /api/nft/confirm:', error);
-  //     return res.status(500).json({ 
-  //       success: false, 
-  //       message: error instanceof Error ? error.message : 'Failed to confirm NFT mint' 
-  //     });
-  //   }
-  // });
+  // Confirm NFT minting - for client-side minting with wallet signing
+  app.post('/api/nft/confirm', async (req, res) => {
+    try {
+      const { attemptId, signedTransaction } = req.body;
+      
+      if (!attemptId || !signedTransaction) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Missing required fields' 
+        });
+      }
+
+      if (!connection) {
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Solana connection not initialized' 
+        });
+      }
+
+      // Get the attempt to verify it exists and isn't already minted
+      const attempt = await storage.getAttempt(Number(attemptId));
+      if (!attempt) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Attempt not found' 
+        });
+      }
+
+      if (attempt.mintedNftAddress) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Attempt already minted',
+          txSignature: attempt.mintedNftAddress
+        });
+      }
+
+      // Deserialize the signed transaction
+      const transaction = Transaction.from(Buffer.from(signedTransaction, 'base64'));
+
+      // Send the transaction
+      const txSignature = await connection.sendRawTransaction(transaction.serialize());
+
+      // Confirm the transaction
+      await connection.confirmTransaction(txSignature, 'confirmed');
+
+      // Update the attempt with the transaction signature
+      await storage.updateAttemptMintStatus(attempt.id, txSignature);
+
+      return res.status(200).json({
+        success: true,
+        txSignature: txSignature,
+        message: 'NFT minted and confirmed successfully'
+      });
+    } catch (error) {
+      console.error('Error in /api/nft/confirm:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Failed to confirm NFT mint' 
+      });
+    }
+  });
 
   const httpServer = http.createServer(app);
   return httpServer;

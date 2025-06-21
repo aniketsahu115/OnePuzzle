@@ -236,8 +236,9 @@ const WalletConnector: React.FC = () => {
         
         // Create a properly formatted wallet object with extra safety checks
         const walletWrapper = {
-          // Safely handle publicKey property which might be undefined
-          publicKey: walletProvider.publicKey ? new PublicKey(walletProvider.publicKey.toString()) : new PublicKey('11111111111111111111111111111111'),
+          // The public key will be populated after the wallet is connected.
+          // For now, we can use a placeholder, but the real key will come from the connect() result.
+          publicKey: new PublicKey('11111111111111111111111111111111'),
           
           // Make sure isConnected is a boolean
           isConnected: !!walletProvider.isConnected,

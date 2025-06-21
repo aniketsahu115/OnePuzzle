@@ -19,7 +19,17 @@ export async function apiRequest(
     credentials: "include",
   });
 
-  await throwIfResNotOk(res);
+  if (!res.ok) {
+    let errorData;
+    try {
+      errorData = await res.json();
+    } catch (e) {
+      const text = await res.text();
+      console.error("Non-JSON API response:", text);
+      errorData = { message: `Unexpected error. Server response: ${text.substring(0, 200)}...` };
+    }
+    throw new Error(errorData.message || `API request failed: ${res.statusText}`);
+  }
   return res;
 }
 
