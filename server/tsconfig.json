@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "../dist",
-    "module": "commonjs",
+    "module": "esnext",
     "composite": true,
     "lib": ["esnext"],
     "types": ["node"],
@@ -17,8 +17,5 @@
   "include": [
     ".",
     "../shared"
-  ],
-  "exclude": [
-    "vite.ts"
   ]
-} 
+}

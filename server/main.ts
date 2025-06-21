@@ -5,7 +5,7 @@ import { log } from "./logger";
 import { setupSolanaConnection } from "./solana";
 import { initializePuzzles } from "./puzzles";
 
-export async function createServer() {
+export async function createServer(): Promise<{ app: express.Express; server: http.Server }> {
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
@@ -61,4 +61,4 @@ export async function createServer() {
   });
 
   return { app, server };
-} 
+}
