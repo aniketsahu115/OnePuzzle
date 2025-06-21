@@ -1,0 +1,24 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "../dist",
+    "module": "commonjs",
+    "composite": true,
+    "lib": ["esnext"],
+    "types": ["node"],
+    "allowImportingTsExtensions": false,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
+  },
+  "include": [
+    ".",
+    "../shared"
+  ],
+  "exclude": [
+    "vite.ts"
+  ]
+} 

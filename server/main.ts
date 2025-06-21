@@ -3,6 +3,7 @@ import http from "http";
 import { registerRoutes } from "./routes";
 import { log } from "./logger";
 import { setupSolanaConnection } from "./solana";
+import { initializePuzzles } from "./puzzles";
 
 export async function createServer() {
   const app = express();
@@ -43,6 +44,11 @@ export async function createServer() {
   log('Initializing Solana connection...');
   await setupSolanaConnection();
   log('Solana connection initialized successfully');
+
+  // Initialize Puzzles
+  log('Initializing puzzles...');
+  await initializePuzzles();
+  log('Puzzles initialized successfully');
   
   const server = await registerRoutes(app);
 
