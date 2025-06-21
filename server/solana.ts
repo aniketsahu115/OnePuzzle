@@ -1,5 +1,4 @@
 import { Attempt, Puzzle } from "@shared/schema";
-import { formatTime } from "../client/src/lib/utils";
 import { Connection, Keypair, PublicKey, clusterApiUrl, Transaction, SystemProgram } from '@solana/web3.js';
 import { Metaplex, keypairIdentity, toMetaplexFile } from '@metaplex-foundation/js';
 import dotenv from 'dotenv';
