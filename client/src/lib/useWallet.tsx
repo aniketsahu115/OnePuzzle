@@ -1,37 +1,42 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { apiRequest } from './queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { PublicKey, Transaction } from '@solana/web3.js';
+import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 
-// Wallet adapter interface for external wallet providers
-export interface WalletAdapter {
-  publicKey: { toString: () => string };
-  isConnected: boolean;
-  connect: () => Promise<{ publicKey: { toString: () => string } }>;
+// This is the interface that wallet adapter libraries like Umi expect.
+// It's more generic to handle different transaction types.
+export interface CompatibleWalletAdapter {
+  publicKey: PublicKey | null;
+  connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  signTransaction: (transaction: Transaction) => Promise<Transaction>;
-  signAllTransactions: (transactions: Transaction[]) => Promise<Transaction[]>;
-  on: (event: string, callback: () => void) => void;
-  removeListener: (event: string, callback: () => void) => void;
+  signTransaction: <T extends Transaction | VersionedTransaction>(transaction: T) => Promise<T>;
+  signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>;
+  // We'll keep the `on` and `removeListener` from the original adapter for event handling
+  on: (event: string, callback: (...args: any[]) => void) => void;
+  removeListener: (event: string, callback: (...args: any[]) => void) => void;
 }
 
-// Solana wallet interface
+
+// This will be our app's internal wallet interface.
+// It's slightly simplified for our use case.
 export interface SolanaWallet {
   publicKey: PublicKey;
   isConnected: boolean;
   connect: () => Promise<{ publicKey: PublicKey }>;
   disconnect: () => Promise<void>;
-  signTransaction: (transaction: Transaction) => Promise<Transaction>;
-  signAllTransactions: (transactions: Transaction[]) => Promise<Transaction[]>;
+  signTransaction: <T extends Transaction | VersionedTransaction>(transaction: T) => Promise<T>;
+  signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>;
 }
 
 interface WalletContextType {
   connected: boolean;
   walletAddress: string | null;
-  connectWallet: (wallet?: SolanaWallet) => Promise<void>;
+  connectWallet: (walletProvider?: SolanaWallet) => Promise<void>;
   disconnectWallet: () => Promise<void>;
   isConnecting: boolean;
   wallet: SolanaWallet | null;
+  mintedNfts: string[];
+  addMintedNft: (mint: string) => void;
 }
 
 const WalletContext = createContext<WalletContextType>({
@@ -41,6 +46,8 @@ const WalletContext = createContext<WalletContextType>({
   disconnectWallet: async () => {},
   isConnecting: false,
   wallet: null,
+  mintedNfts: [],
+  addMintedNft: () => {},
 });
 
 export function useWallet() {
@@ -65,24 +72,25 @@ const errorMockWallet: SolanaWallet = {
   signAllTransactions: async (txs) => txs
 };
 
-const createWalletAdapter = (wallet: WalletAdapter): SolanaWallet => {
+const createWalletAdapter = (wallet: CompatibleWalletAdapter): SolanaWallet => {
   return {
-    publicKey: new PublicKey(wallet.publicKey.toString()),
-    isConnected: true,
-    connect: async () => ({ publicKey: new PublicKey(wallet.publicKey.toString()) }),
-    disconnect: async () => {},
-    signTransaction: async (tx: Transaction) => {
-      return await wallet.signTransaction(tx);
+    // We know the public key will be available after connection.
+    publicKey: wallet.publicKey!,
+    isConnected: !!wallet.publicKey,
+    connect: async () => {
+      if (!wallet.publicKey) await wallet.connect();
+      return { publicKey: wallet.publicKey! };
     },
-    signAllTransactions: async (txs: Transaction[]) => {
-      return await wallet.signAllTransactions(txs);
-    }
+    disconnect: wallet.disconnect,
+    signTransaction: wallet.signTransaction,
+    signAllTransactions: wallet.signAllTransactions,
   };
 };
 
 declare global {
   interface Window {
-    solana?: WalletAdapter;
+    // The global solana object can be any wallet that conforms to this compatible adapter.
+    solana?: CompatibleWalletAdapter;
   }
 }
 
@@ -91,7 +99,12 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [currentWallet, setCurrentWallet] = useState<SolanaWallet | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [mintedNfts, setMintedNfts] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const addMintedNft = useCallback((mint: string) => {
+    setMintedNfts(prev => Array.from(new Set([...prev, mint])));
+  }, []);
 
   const connectWallet = useCallback(async (walletProvider?: SolanaWallet) => {
     try {
@@ -122,7 +135,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           throw new Error('Wallet not found. Please install a Solana wallet.');
         }
 
-        if (!solana.isConnected) {
+        if (!solana.publicKey) {
           await solana.connect();
         }
         connectedWallet = createWalletAdapter(solana);
@@ -185,7 +198,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Check if wallet is already connected on mount
   useEffect(() => {
     const solana = window.solana;
-    if (solana?.isConnected) {
+    if (solana?.publicKey) {
       const publicKey = solana.publicKey.toString();
       const walletAdapter = createWalletAdapter(solana);
       setCurrentWallet(walletAdapter);
@@ -200,11 +213,13 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!solana) return;
 
     const handleConnect = () => {
-      const publicKey = solana.publicKey.toString();
-      const walletAdapter = createWalletAdapter(solana);
-      setCurrentWallet(walletAdapter);
-      setWalletAddress(publicKey);
-      setConnected(true);
+      if (solana.publicKey) {
+        const publicKey = solana.publicKey.toString();
+        const walletAdapter = createWalletAdapter(solana);
+        setCurrentWallet(walletAdapter);
+        setWalletAddress(publicKey);
+        setConnected(true);
+      }
     };
 
     const handleDisconnect = () => {
@@ -230,6 +245,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       disconnectWallet,
       isConnecting,
       wallet: currentWallet,
+      mintedNfts,
+      addMintedNft,
     }}>
       {children}
     </WalletContext.Provider>

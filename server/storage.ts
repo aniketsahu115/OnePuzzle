@@ -3,7 +3,8 @@ import {
   type User, type InsertUser, 
   type Puzzle, type InsertPuzzle, type PuzzleWithSolution,
   type Attempt, type InsertAttempt,
-  type DailyPuzzle, type InsertDailyPuzzle 
+  type DailyPuzzle, type InsertDailyPuzzle,
+  type AttemptWithPuzzle
 } from "@shared/schema";
 
 // Interface for storage operations
@@ -26,8 +27,10 @@ export interface IStorage {
   getAttempt(id: number): Promise<Attempt | undefined>;
   getAttemptsByUserAndPuzzle(userId: string, puzzleId: number): Promise<Attempt[]>;
   getAllAttemptsByUser(userId: string): Promise<Attempt[]>;
+  getAllAttemptsByUserWithPuzzle(userId: string): Promise<AttemptWithPuzzle[]>;
   createAttempt(attempt: InsertAttempt): Promise<Attempt>;
   updateAttemptMintStatus(attemptId: number, mintedNftAddress: string): Promise<Attempt | undefined>;
+  getMintedAttemptsForUser(userId: string): Promise<Attempt[]>;
   
   // Daily puzzle operations
   getDailyPuzzleByDate(dateStr: string): Promise<DailyPuzzle | undefined>;
@@ -169,6 +172,34 @@ export class MemStorage implements IStorage {
       (attempt) => attempt.userId === userId
     );
   }
+
+  async getAllAttemptsByUserWithPuzzle(userId: string): Promise<AttemptWithPuzzle[]> {
+    const userAttempts = Array.from(this.attempts.values()).filter(
+      (attempt) => attempt.userId === userId
+    );
+
+    return userAttempts.map(attempt => {
+      const puzzle = this.puzzles.get(attempt.puzzleId);
+      return {
+        ...attempt,
+        puzzle: puzzle || { 
+          id: attempt.puzzleId, 
+          fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+          solution: '', 
+          themes: ['unknown'],
+          difficulty: 'Medium',
+          rating: 1500,
+          pgn: '',
+          dateAssigned: new Date(),
+          toMove: 'w',
+          popularity: 0,
+          successPercentage: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        } 
+      };
+    });
+  }
   
   async createAttempt(insertAttempt: InsertAttempt): Promise<Attempt> {
     const id = this.attemptIdCounter++;
@@ -189,6 +220,13 @@ export class MemStorage implements IStorage {
     const updatedAttempt: Attempt = { ...attempt, mintedNftAddress: mintedNftAddress ?? null };
     this.attempts.set(attemptId, updatedAttempt);
     return updatedAttempt;
+  }
+  
+  async getMintedAttemptsForUser(userId: string): Promise<Attempt[]> {
+    const userAttempts = Array.from(this.attempts.values()).filter(
+      (attempt) => attempt.userId === userId && attempt.mintedNftAddress
+    );
+    return userAttempts;
   }
   
   // Daily puzzle operations

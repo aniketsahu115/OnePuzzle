@@ -82,6 +82,57 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
     }
   });
 
+  // Get user's overall stats
+  app.get('/api/stats', async (req: Request, res: Response) => {
+    try {
+      const walletAddress = req.query.walletAddress as string;
+
+      if (!walletAddress) {
+        return res.status(400).json({ message: "Wallet address is required" });
+      }
+
+      // Fetch all attempts for the user
+      const allAttempts = await storage.getAllAttemptsByUser(walletAddress);
+
+      if (allAttempts.length === 0) {
+        return res.json({
+          totalPuzzles: 0,
+          correctPuzzles: 0,
+          successRate: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+          avgSolveTime: 0,
+        });
+      }
+
+      // Calculate stats
+      const totalPuzzles = allAttempts.length;
+      const correctPuzzles = allAttempts.filter(a => a.isCorrect).length;
+      const successRate = totalPuzzles > 0 ? Math.round((correctPuzzles / totalPuzzles) * 100) : 0;
+      const avgSolveTime = allAttempts.reduce((acc, a) => acc + a.timeTaken, 0) / totalPuzzles;
+
+      // NOTE: Streak calculations would require more complex logic and daily tracking
+      // For now, we'll return placeholder values.
+      const currentStreak = 0; 
+      const longestStreak = 0;
+
+      res.json({
+        totalPuzzles,
+        correctPuzzles,
+        successRate,
+        currentStreak,
+        longestStreak,
+        avgSolveTime,
+      });
+
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to get user stats", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
   // Get user's attempts for today's puzzle
   app.get('/api/attempts', async (req: Request, res: Response) => {
     try {
@@ -91,13 +142,8 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
         return res.status(400).json({ message: "Wallet address is required" });
       }
       
-      const dailyPuzzle = await getPuzzleOfTheDay();
-      
-      if (!dailyPuzzle) {
-        return res.status(404).json({ message: "No puzzle available for today" });
-      }
-      
-      const attempts = await storage.getAttemptsByUserAndPuzzle(walletAddress, dailyPuzzle.id);
+      // Use the new method to get attempts with puzzle data
+      const attempts = await storage.getAllAttemptsByUserWithPuzzle(walletAddress);
       
       res.json(attempts);
     } catch (error) {
@@ -310,6 +356,51 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
       return res.status(500).json({ 
         success: false, 
         message: error instanceof Error ? error.message : 'Failed to confirm NFT mint' 
+      });
+    }
+  });
+
+  // Associate a minted NFT with an attempt
+  app.post('/api/nft/associate', async (req, res) => {
+    try {
+      const { attemptId, mintAddress } = req.body;
+
+      if (!attemptId || !mintAddress) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+      }
+
+      await storage.updateAttemptMintStatus(Number(attemptId), mintAddress);
+
+      return res.status(200).json({
+        success: true,
+        message: 'NFT address associated with attempt successfully'
+      });
+    } catch (error) {
+      console.error('Error in /api/nft/associate:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Failed to associate NFT' 
+      });
+    }
+  });
+
+  // Get all of a user's minted NFTs
+  app.get('/api/nfts/:walletAddress', async (req: Request, res: Response) => {
+    try {
+      const { walletAddress } = req.params;
+      if (!walletAddress) {
+        return res.status(400).json({ message: "Wallet address is required" });
+      }
+
+      // This storage method should return all attempts that have a mint address
+      const mintedAttempts = await storage.getMintedAttemptsForUser(walletAddress);
+      
+      res.json({ nfts: mintedAttempts });
+
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to get user's NFTs", 
+        error: error instanceof Error ? error.message : "Unknown error" 
       });
     }
   });

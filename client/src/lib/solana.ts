@@ -3,22 +3,79 @@ import { apiRequest } from './queryClient';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import type { SolanaWallet } from './useWallet.tsx';
 import { Buffer } from 'buffer';
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters';
+import { createNft, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
+import { generateSigner, percentAmount } from '@metaplex-foundation/umi';
+import { irysUploader } from '@metaplex-foundation/umi-uploader-irys';
 
 // Function to mint an NFT from the best attempt using the connected wallet
-export async function mintNFT(attempt: Attempt, walletAddress: string, wallet?: SolanaWallet): Promise<string> {
+export async function mintNFT(
+  attempt: Attempt, 
+  wallet: SolanaWallet,
+  addMintedNft: (mint: string) => void
+): Promise<string> {
   try {
-    if (!attempt.id) throw new Error('Attempt is missing a valid id');
-    if (!walletAddress) throw new Error('Wallet address is required');
+    if (!wallet) throw new Error('Wallet not connected');
+
+    console.log('Using client-side minting with Umi...');
+    const endpoint = import.meta.env.VITE_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     
-    // If we have a wallet object, use client-side minting with wallet signing
-    if (wallet) {
-      return await mintNFTWithWallet(attempt, walletAddress, wallet);
-    }
+    // Create an Umi instance and register the Irys uploader
+    const umi = createUmi(endpoint)
+      .use(walletAdapterIdentity(wallet))
+      .use(mplTokenMetadata())
+      .use(irysUploader());
+
+    const uri = await umi.uploader.uploadJson({
+      name: `OnePuzzle #${attempt.id}`,
+      description: `A record of a chess puzzle attempt on OnePuzzle solved on ${new Date(attempt.attemptDate).toLocaleDateString()}.`,
+      image: 'https://i.ibb.co/F8D1xX3/generated-icon.png', // Using a placeholder image for now
+      attributes: [
+        { trait_type: 'Move', value: attempt.move },
+        { trait_type: 'Time Taken', value: `${attempt.timeTaken}s` },
+        { trait_type: 'Result', value: attempt.isCorrect ? 'Correct' : 'Incorrect' },
+        { trait_type: 'Attempt Number', value: String(attempt.attemptNumber) },
+      ],
+    });
+
+    console.log('Metadata uploaded. URI:', uri);
+
+    const mint = generateSigner(umi);
+
+    const builder = createNft(umi, {
+      mint,
+      name: `OnePuzzle #${attempt.id}`,
+      uri: uri,
+      sellerFeeBasisPoints: percentAmount(0), // 0%
+      isCollection: false,
+    });
+
+    console.log('Sending transaction to wallet for signing...');
+    const result = await builder.sendAndConfirm(umi, { confirm: { commitment: 'finalized' } });
+
+    // The signature is directly available in the result object.
+    const signature = result.signature;
+    console.log('NFT minted successfully!', {
+      signature,
+      mintAddress: mint.publicKey,
+    });
     
-    // Fallback to server-side minting if no wallet object provided
-    return await mintNFTWithServer(attempt, walletAddress);
+    // Associate the mint with the attempt in our database
+    await apiRequest('POST', '/api/nft/associate', {
+      attemptId: String(attempt.id),
+      mintAddress: mint.publicKey,
+    });
+
+    const mintAddressString = mint.publicKey.toString();
+
+    // Add the new mint to our global context state
+    addMintedNft(mintAddressString);
+
+    return mintAddressString;
+
   } catch (error) {
-    console.error('Error minting NFT:', error);
+    console.error('Error in client-side minting:', error);
     throw error;
   }
 }
