@@ -24,6 +24,7 @@ export function useChessPuzzle() {
   const [streakCount, setStreakCount] = useState<number>(0);
   const [totalSolved, setTotalSolved] = useState<number>(0);
   const [latestAttempt, setLatestAttempt] = useState<Attempt | null>(null);
+  const [resetCounter, setResetCounter] = useState(0);
   
   // Fetch daily puzzle with automatic refetch
   const {
@@ -212,6 +213,7 @@ export function useChessPuzzle() {
   // Reset board with proper cleanup
   const resetBoard = useCallback(() => {
     setSelectedMove(null);
+    setResetCounter(c => c + 1);
   }, []);
 
   // Make attempt with validation
@@ -287,6 +289,7 @@ export function useChessPuzzle() {
     streakCount,
     totalSolved,
     latestAttempt,
-    error: puzzleError || attemptsError
+    error: puzzleError || attemptsError,
+    resetCounter
   };
 }

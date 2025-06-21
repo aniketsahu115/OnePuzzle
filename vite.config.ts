@@ -26,6 +26,14 @@ export default defineConfig({
       '/api': 'http://localhost:4001',
     },
   },
+  optimizeDeps: {
+    include: [
+      '@solana/web3.js',
+      '@metaplex-foundation/js',
+      '@metaplex-foundation/mpl-token-metadata',
+      'buffer'
+    ],
+  },
   define: {
     'global': 'window',
   }

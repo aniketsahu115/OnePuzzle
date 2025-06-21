@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatTime } from '@/lib/utils';
 import ChessBoard from './ChessBoard';
 import { PuzzleWithoutSolution } from '@shared/schema';
@@ -14,6 +14,7 @@ interface PuzzleCardProps {
   elapsedTime: number;
   currentAttempt: number;
   isCheckingMove: boolean;
+  resetCounter: number;
 }
 
 const PuzzleCard: React.FC<PuzzleCardProps> = ({
@@ -24,7 +25,8 @@ const PuzzleCard: React.FC<PuzzleCardProps> = ({
   onSubmit,
   elapsedTime: propElapsedTime,
   currentAttempt,
-  isCheckingMove
+  isCheckingMove,
+  resetCounter
 }) => {
   // Add local timer state as backup
   const [localElapsedTime, setLocalElapsedTime] = useState<number>(propElapsedTime || 0);
@@ -219,6 +221,7 @@ const PuzzleCard: React.FC<PuzzleCardProps> = ({
 
       {/* Chess Board */}
       <ChessBoard 
+        key={`${currentAttempt}-${resetCounter}`}
         fen={puzzle.fen} 
         orientation={puzzle.toMove === 'w' ? 'white' : 'black'}
         onMove={setSelectedMove}

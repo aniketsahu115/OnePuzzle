@@ -179,7 +179,8 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
       }
       
       // Check if the move is correct
-      const isCorrect = attemptData.move.toLowerCase() === puzzle.solution.toLowerCase();
+      const normalizeMove = (move: string) => move.toLowerCase().replace(/[+#]/g, '');
+      const isCorrect = normalizeMove(attemptData.move) === normalizeMove(puzzle.solution);
       
       // Create the attempt
       const attempt = await storage.createAttempt({

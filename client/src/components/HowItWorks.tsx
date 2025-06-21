@@ -89,15 +89,7 @@ const HowItWorks: React.FC = () => {
           <p className="text-gray-600 mb-6">
             Start building your on-chain chess reputation with just a few minutes each day
           </p>
-          <div className="inline-block">
-            <Button
-              className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl"
-              onClick={() => document.getElementById('wallet-connector')?.querySelector('button')?.click()}
-            >
-              <span className="mr-3 text-xl">♟</span>
-              <span className="group-hover:translate-x-1 transition-transform">Connect Wallet to Begin</span>
-            </Button>
-          </div>
+          
         </div>
       </div>
     </section>

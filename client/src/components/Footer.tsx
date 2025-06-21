@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import solanaLogo from '../assets/solana-logo.png';
+import { GeometricPattern } from './SVGBackgrounds';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -30,21 +31,31 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-solana-dark pt-16 pb-8">
-      <div className="container-solana">
+    <footer className="relative bg-gradient-to-br from-solana-dark via-purple-900/50 to-indigo-900/50 pt-16 pb-8 overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <GeometricPattern animated={true} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+      </div>
+      
+      <div className="container-solana relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Logo and About */}
           <div className="col-span-1 md:col-span-1 animate-slide-up">
             <div className="flex items-center mb-4 group">
-              <div className="w-10 h-10 bg-solana-gradient rounded-full flex items-center justify-center text-white mr-3 text-xl shadow-lg">
-                ♟
+              <div className="relative w-12 h-12 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center text-white mr-3 text-xl shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-2xl animate-pulse-very-slow"></div>
+                <div className="relative z-10">♟</div>
+                {/* Sparkle effects */}
+                <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-sparkle"></div>
+                <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-sparkle" style={{ animationDelay: '0.5s' }}></div>
               </div>
               <div className="font-bold text-xl tracking-tight">
-                <span className="text-solana-gradient">One</span>
+                <span className="text-solana-gradient neon-glow-purple">One</span>
                 <span className="text-white">Puzzle</span>
               </div>
             </div>
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Daily chess puzzles with NFT achievements on Solana. Improve your
               skills one puzzle at a time.
             </p>
@@ -54,11 +65,11 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
-                className="unstyled"
+                className="unstyled group"
               >
-                <div className="w-10 h-10 bg-[#232D42] hover:bg-[#323E54] rounded-full flex items-center justify-center transition-all duration-300 hover:ring-solana-glow">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 hover:from-purple-800/70 hover:to-indigo-800/70 rounded-2xl flex items-center justify-center transition-all duration-500 hover:ring-solana-glow hover:scale-110 hover:rotate-3 border border-purple-500/30">
                   <svg
-                    className="h-5 w-5 text-gray-300"
+                    className="h-6 w-6 text-gray-300 group-hover:text-white transition-colors"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -71,11 +82,11 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Discord"
-                className="unstyled"
+                className="unstyled group"
               >
-                <div className="w-10 h-10 bg-[#232D42] hover:bg-[#323E54] rounded-full flex items-center justify-center transition-all duration-300 hover:ring-solana-glow">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 hover:from-purple-800/70 hover:to-indigo-800/70 rounded-2xl flex items-center justify-center transition-all duration-500 hover:ring-solana-glow hover:scale-110 hover:rotate-3 border border-purple-500/30">
                   <svg
-                    className="h-5 w-5 text-gray-300"
+                    className="h-6 w-6 text-gray-300 group-hover:text-white transition-colors"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -88,11 +99,11 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="unstyled"
+                className="unstyled group"
               >
-                <div className="w-10 h-10 bg-[#232D42] hover:bg-[#323E54] rounded-full flex items-center justify-center transition-all duration-300 hover:ring-solana-glow">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 hover:from-purple-800/70 hover:to-indigo-800/70 rounded-2xl flex items-center justify-center transition-all duration-500 hover:ring-solana-glow hover:scale-110 hover:rotate-3 border border-purple-500/30">
                   <svg
-                    className="h-5 w-5 text-gray-300"
+                    className="h-6 w-6 text-gray-300 group-hover:text-white transition-colors"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -105,52 +116,52 @@ const Footer: React.FC = () => {
 
           {/* Resources */}
           <div className="col-span-1 animate-slide-up delay-100">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
               Resources
             </h3>
             <ul className="space-y-3">
               <li className="animate-slide-up delay-100">
                 <Link
                   href="/tutorials"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Tutorials</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-200">
                 <Link
                   href="/resources"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Chess Library</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-300">
                 <Link
                   href="/learn"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Learning Hub</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-400">
                 <Link
                   href="/faq"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>FAQ</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-500">
                 <Link
                   href="/support"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Support</span>
                 </Link>
               </li>
@@ -159,52 +170,52 @@ const Footer: React.FC = () => {
 
           {/* Community */}
           <div className="col-span-1 animate-slide-up delay-200">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
               Community
             </h3>
             <ul className="space-y-3">
               <li className="animate-slide-up delay-100">
                 <Link
                   href="/about"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>About Us</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-200">
                 <Link
                   href="/blog"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Blog</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-300">
                 <Link
                   href="/careers"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Support</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-400">
                 <Link
                   href="/privacy"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Privacy Policy</span>
                 </Link>
               </li>
               <li className="animate-slide-up delay-500">
                 <Link
                   href="/terms"
-                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center"
+                  className="text-gray-300 hover:text-solana-green transition-all duration-300 flex items-center group hover:scale-105"
                 >
-                  <span className="mr-2 text-solana-purple">▸</span>
+                  <span className="mr-2 text-solana-purple group-hover:scale-110 transition-transform">▸</span>
                   <span>Terms of Service</span>
                 </Link>
               </li>
@@ -212,54 +223,44 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter */}
-          <div className="col-span-1 md:col-span-1 animate-slide-up delay-300">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-[#343e54] pb-2">
-              Subscribe
+          <div className="col-span-1 animate-slide-up delay-300">
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
+              Stay Updated
             </h3>
-            <p className="text-gray-300 mb-5">
-              Get the latest updates and news about chess puzzles and Solana
-              NFTs.
+            <p className="text-gray-300 mb-4">
+              Get the latest chess puzzles and updates delivered to your inbox.
             </p>
-            <form
-              onSubmit={handleSubscribe}
-              className="flex flex-col space-y-3"
-            >
-              <Input
-                type="email"
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-[#232D42] border-[#343e54] text-white focus:border-solana-purple"
-              />
-              <Button type="submit" className="btn-solana-gradient w-full">
+            <form onSubmit={handleSubscribe} className="space-y-3">
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 border-purple-500/30 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-purple-500/50 backdrop-blur-sm"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-md blur-sm -z-10"></div>
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
                 Subscribe
               </Button>
             </form>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#343e54] flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-6 md:mb-0 animate-fade-in">
-            <p className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} OnePuzzle. All rights reserved.
-            </p>
-          </div>
-          <div className="flex items-center animate-fade-in">
-            <span className="text-gray-400 text-sm flex items-center">
-              <span>Powered by</span>
-              <a
-                href="https://solana.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-2 flex items-center group hover:text-white text-solana-purple transition-all duration-300 unstyled"
-              >
-                <img
-                  src= {solanaLogo}
-                  alt="Solana Logo"
-                  className="h-5 w-15 ml-1 group-hover:text-solana-green transition-all duration-300"
-                />
-              </a>
-            </span>
+        {/* Bottom section */}
+        <div className="mt-12 pt-8 border-t border-purple-500/30">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 text-sm mb-4 md:mb-0">
+              © 2024 OnePuzzle. All rights reserved.
+            </div>
+            <div className="flex items-center space-x-4">
+              <img src={solanaLogo} alt="Solana" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
+              <span className="text-gray-400 text-sm">Powered by Solana</span>
+            </div>
           </div>
         </div>
       </div>

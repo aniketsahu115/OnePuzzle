@@ -41,7 +41,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
   // Update the chess position when the FEN string changes
   useEffect(() => {
     try {
-      setChess(new Chess(fen));
+      const newChess = new Chess(fen);
+      setChess(newChess);
       // Reset game state when position changes
       setSelectedPiece(null);
       setPossibleMoves([]);
@@ -136,17 +137,27 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
       
       // If clicking a possible move square, make the move
       if (possibleMoves.includes(square)) {
-        const move = {
+        // Create move object with proper structure for chess.js v1.1.0
+        const moveObj: any = {
           from: selectedPiece,
-          to: square,
-          promotion: 'q' // Auto-queen for simplicity
+          to: square
         };
         
+        // Check if this is a pawn promotion move
+        const pieceAtFrom = chess.get(selectedPiece);
+        if (pieceAtFrom && pieceAtFrom.type === 'p') {
+          // Check if pawn is moving to the last rank
+          const rank = square.charAt(1);
+          if ((pieceAtFrom.color === 'w' && rank === '8') || (pieceAtFrom.color === 'b' && rank === '1')) {
+            moveObj.promotion = 'q'; // Auto-queen for simplicity
+          }
+        }
+        
         try {
-          const moveResult = chess.move(move);
+          const moveResult = chess.move(moveObj);
           
-          // Record the move in history
           if (moveResult) {
+            // Record the move in history
             const newMove = { from: selectedPiece, to: square };
             setMoveHistory(prevHistory => [...prevHistory, newMove]);
             setHighlightedMove(newMove);
@@ -168,8 +179,19 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
             
             // Call the parent's onMove callback if provided
             if (onMove) {
-              onMove(`${selectedPiece}${square}`);
+              console.log('Move made:', {
+                from: selectedPiece,
+                to: square,
+                coordinateNotation: `${selectedPiece}${square}`,
+                algebraicNotation: moveResult.san,
+                moveResult
+              });
+              onMove(moveResult.san);
             }
+          } else {
+            // Move was not successful
+            playSound('error');
+            console.error('Move failed');
           }
         } catch (e) {
           // Play error sound for invalid moves
@@ -191,9 +213,14 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
       setSelectedPiece(square);
       
       // Find possible moves for this piece
-      const moves = chess.moves({ square, verbose: true });
-      const validSquares = moves.map(move => move.to as Square);
-      setPossibleMoves(showMoveHints ? validSquares : []);
+      try {
+        const moves = chess.moves({ square, verbose: true });
+        const validSquares = moves.map(move => move.to as Square);
+        setPossibleMoves(showMoveHints ? validSquares : []);
+      } catch (e) {
+        console.error('Error getting moves for square:', square, e);
+        setPossibleMoves([]);
+      }
     }
   };
 

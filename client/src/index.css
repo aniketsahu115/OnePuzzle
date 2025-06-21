@@ -131,6 +131,27 @@
   background-color: var(--solana-light-bg);
 }
 
+/* Enhanced gradient backgrounds */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-gradient-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
 /* Gradient text effects */
 .text-solana-gradient {
   background: linear-gradient(to right, var(--solana-purple), var(--solana-green));
@@ -162,7 +183,7 @@
   color: var(--solana-dark);
 }
 
-/* Animations */
+/* Enhanced Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -202,86 +223,171 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes float-slow {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
 }
 
 @keyframes float-slow-reverse {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(-3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(3px); }
 }
 
 @keyframes rotateGlow {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Animation classes */
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0,0,0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(153, 69, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(153, 69, 255, 0.8), 0 0 30px rgba(153, 69, 255, 0.6);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+@keyframes morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .animate-slide-up {
-  animation: slideInUp 0.5s ease-out;
+  animation: slideInUp 0.8s ease-out;
 }
 
 .animate-slide-left {
-  animation: slideInLeft 0.5s ease-out;
+  animation: slideInLeft 0.8s ease-out;
 }
 
 .animate-slide-right {
-  animation: slideInRight 0.5s ease-out;
+  animation: slideInRight 0.8s ease-out;
 }
 
 .animate-pulse-slow {
-  animation: pulse 2s infinite ease-in-out;
+  animation: pulse 3s ease-in-out infinite;
 }
 
 .animate-float {
-  animation: float 4s infinite ease-in-out;
+  animation: float 3s ease-in-out infinite;
 }
 
 .animate-float-slow {
-  animation: float-slow 6s infinite ease-in-out;
+  animation: float-slow 6s ease-in-out infinite;
 }
 
 .animate-float-slow-reverse {
-  animation: float-slow-reverse 6s infinite ease-in-out;
+  animation: float-slow-reverse 8s ease-in-out infinite;
 }
 
 .animate-glow {
-  animation: rotateGlow 8s infinite linear;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-morph {
+  animation: morph 8s ease-in-out infinite;
 }
 
 .shimmer {
-  background: linear-gradient(90deg, 
-    rgba(255,255,255,0) 0%, 
-    rgba(255,255,255,0.2) 50%, 
-    rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   animation: shimmer 2s infinite;
 }
 
-/* Delay utilities */
 .delay-100 {
   animation-delay: 0.1s;
 }
@@ -302,179 +408,240 @@
   animation-delay: 0.5s;
 }
 
-/* Button styles with Solana colors */
+/* Enhanced Button Styles */
 .btn-solana-primary {
-  @apply bg-[#9945FF] text-white hover:bg-[#7A29F9] transition-all;
+  @apply bg-solana-gradient text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
 }
 
 .btn-solana-secondary {
-  @apply bg-[#14F195] text-[#232D42] hover:bg-[#0DD584] transition-all;
+  @apply bg-white font-bold py-3 px-6 rounded-lg border-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
+  color: var(--solana-purple);
+  border-color: var(--solana-purple);
 }
 
 .btn-solana-blue {
-  @apply bg-[#00C2FF] text-white hover:bg-[#00A3DF] transition-all;
+  @apply bg-solana-blue text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
 }
 
 .btn-solana-gradient {
-  background: linear-gradient(to right, #9945FF, #14F195);
-  @apply text-white transition-all duration-300;
+  @apply bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 relative overflow-hidden;
 }
 
 .btn-solana-gradient:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+  @apply shadow-2xl;
+  box-shadow: 0 20px 40px rgba(153, 69, 255, 0.3);
 }
 
 .btn-solana-gradient-alt {
-  background: linear-gradient(to right, #00C2FF, #19FB9B);
-  @apply text-white transition-all duration-300;
+  @apply bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105;
 }
 
 .btn-solana-gradient-alt:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+  @apply shadow-2xl;
+  box-shadow: 0 20px 40px rgba(20, 241, 149, 0.3);
 }
 
-/* Card and container styling */
+/* Enhanced Card Styles */
 .card-solana {
-  @apply bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-all duration-300;
+  @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-300;
 }
 
 .card-solana:hover {
-  @apply shadow-md;
-  transform: translateY(-2px);
+  @apply shadow-xl transform scale-105;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
 }
 
 .card-solana-accent {
-  @apply border-l-4 border-l-[#9945FF];
+  @apply bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl shadow-lg border border-purple-200 dark:border-purple-700 transition-all duration-300;
 }
 
 .container-solana {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Visual effects */
 .border-solana-accent {
-  border-color: #9945FF;
+  @apply border-2 border-purple-500/30;
 }
 
 .ring-solana-glow {
-  box-shadow: 0 0 15px rgba(153, 69, 255, 0.4);
+  box-shadow: 0 0 20px rgba(153, 69, 255, 0.5);
 }
 
 .ring-solana-glow-green {
-  box-shadow: 0 0 15px rgba(20, 241, 149, 0.4);
+  box-shadow: 0 0 20px rgba(20, 241, 149, 0.5);
 }
 
 .ring-solana-glow-blue {
-  box-shadow: 0 0 15px rgba(0, 194, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 194, 255, 0.5);
 }
 
-/* NFT Card specific styles */
+/* Enhanced NFT Card Styles */
 .nft-card {
-  @apply relative overflow-hidden rounded-xl bg-white shadow-md border border-gray-100;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease, box-shadow 0.6s ease;
+  @apply bg-gradient-to-br from-purple-900/40 via-indigo-900/50 to-blue-900/40 rounded-2xl p-6 border border-purple-500/30 backdrop-blur-sm transition-all duration-500;
 }
 
 .nft-card:hover {
-  transform: rotateY(10deg) translateZ(10px);
-  box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.1);
+  @apply transform scale-105 shadow-2xl;
+  box-shadow: 0 25px 50px rgba(153, 69, 255, 0.3);
 }
 
 .nft-card-image {
-  @apply relative overflow-hidden;
-  height: 240px;
+  @apply relative overflow-hidden rounded-xl mb-4;
 }
 
 .nft-card-image img {
-  @apply w-full h-full object-cover;
-  transition: transform 0.5s ease;
+  @apply w-full h-48 object-cover transition-transform duration-500;
 }
 
 .nft-card:hover .nft-card-image img {
-  transform: scale(1.05);
+  @apply transform scale-110;
 }
 
 .nft-card-badge {
-  @apply absolute top-3 right-3 z-10 px-2 py-1 text-xs rounded-full font-medium;
-  background: rgba(153, 69, 255, 0.9);
-  color: white;
-  box-shadow: 0 2px 10px rgba(153, 69, 255, 0.3);
+  @apply absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1 rounded-full text-sm font-bold;
 }
 
 .nft-card-content {
-  @apply p-4;
+  @apply space-y-3;
 }
 
 .nft-card-title {
-  @apply text-lg font-bold mb-2;
-  color: var(--solana-dark);
+  @apply text-xl font-bold text-white mb-2;
 }
 
 .nft-card-details {
-  @apply space-y-2 text-sm;
+  @apply space-y-2;
 }
 
 .nft-card-detail {
-  @apply flex justify-between items-center;
+  @apply flex justify-between text-sm;
 }
 
 .nft-card-detail-label {
-  @apply text-gray-500;
+  @apply text-gray-300;
 }
 
 .nft-card-detail-value {
-  @apply font-medium;
+  @apply text-white font-semibold;
 }
 
 .nft-card-footer {
-  @apply p-4 pt-0 flex justify-between items-center;
+  @apply mt-4 pt-4 border-t border-purple-500/30;
 }
 
-/* Chess specific styles */
+/* Enhanced Chess Move Styles */
 .chess-move {
-  @apply px-2 py-1 rounded-md text-sm font-mono;
-  background: rgba(153, 69, 255, 0.1);
-  color: var(--solana-purple);
-  border: 1px solid rgba(153, 69, 255, 0.2);
+  @apply bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 rounded-lg p-3 mb-2 transition-all duration-300 hover:scale-105;
 }
 
 .chess-move.correct {
-  background: rgba(20, 241, 149, 0.1);
-  color: var(--solana-green);
-  border: 1px solid rgba(20, 241, 149, 0.2);
+  @apply bg-gradient-to-r from-green-600/20 to-emerald-600/20 border-green-500/30;
+  animation: glow 2s ease-in-out infinite;
 }
 
 .chess-move.incorrect {
-  background: rgba(255, 69, 69, 0.1);
-  color: #ff4545;
-  border: 1px solid rgba(255, 69, 69, 0.2);
+  @apply bg-gradient-to-r from-red-600/20 to-pink-600/20 border-red-500/30;
+  animation: wiggle 0.5s ease-in-out;
 }
 
 .chess-board-wrapper {
-  @apply relative rounded-lg overflow-hidden shadow-md border border-gray-200;
-  transition: all 0.3s ease;
+  @apply bg-gradient-to-br from-indigo-950 to-gray-900 rounded-xl shadow-2xl overflow-hidden border-2 border-purple-500/30 transition-all duration-300;
 }
 
 .chess-board-wrapper:hover {
-  @apply shadow-lg border-gray-300;
+  @apply shadow-purple-500/25;
+  box-shadow: 0 25px 50px rgba(153, 69, 255, 0.2);
 }
 
-/* Wallet connection styles */
+/* Enhanced Wallet Button Styles */
 .wallet-button {
-  @apply flex items-center px-4 py-2 rounded-lg font-medium transition-all;
-  background: linear-gradient(45deg, var(--solana-purple), var(--solana-blue));
-  color: white;
-  box-shadow: 0 4px 10px rgba(153, 69, 255, 0.3);
+  @apply bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 relative overflow-hidden;
 }
 
 .wallet-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(153, 69, 255, 0.4);
+  @apply shadow-2xl;
+  box-shadow: 0 20px 40px rgba(153, 69, 255, 0.3);
 }
 
 .wallet-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(153, 69, 255, 0.3);
+  @apply transform scale-95;
+}
+
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Particle effects */
+.particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.particles::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(153, 69, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(20, 241, 149, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(0, 194, 255, 0.1) 0%, transparent 50%);
+  animation: float-slow 10s ease-in-out infinite;
+}
+
+/* Neon glow effects */
+.neon-glow {
+  text-shadow: 
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 15px currentColor,
+    0 0 20px currentColor;
+}
+
+.neon-glow-purple {
+  color: #9945FF;
+  text-shadow: 
+    0 0 5px #9945FF,
+    0 0 10px #9945FF,
+    0 0 15px #9945FF,
+    0 0 20px #9945FF;
+}
+
+.neon-glow-green {
+  color: #14F195;
+  text-shadow: 
+    0 0 5px #14F195,
+    0 0 10px #14F195,
+    0 0 15px #14F195,
+    0 0 20px #14F195;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #9945FF, #14F195);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #7A29F9, #0DD584);
 }

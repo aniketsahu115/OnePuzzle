@@ -13,6 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Attempt, PuzzleWithoutSolution } from '@shared/schema';
 import { formatTime } from '@/lib/utils';
+import AnimatedBackground from '@/components/AnimatedBackground';
+import GradientCard from '@/components/GradientCard';
+import ChessPieceIcon from '@/components/ChessPieceIcon';
+import { WavePattern, ParticleField, FloatingShapes } from '@/components/SVGBackgrounds';
 
 export default function Home() {
   console.log("Rendering Home component");
@@ -38,7 +42,8 @@ export default function Home() {
     closeAchievement,
     streakCount,
     totalSolved,
-    latestAttempt
+    latestAttempt,
+    resetCounter
   } = useChessPuzzle();
   
   console.log("Chess puzzle state:", { 
@@ -73,64 +78,71 @@ export default function Home() {
   const attemptResult = bestAttempt ? (bestAttempt as Attempt).isCorrect : null;
 
   return (
-    <main className="py-10 bg-gradient-to-b from-[#1C1929] via-[#231e3e] to-[#282256] text-white animate-fade-in">
-      <div className="container-solana">
+    <AnimatedBackground variant="hero" className="min-h-screen">
+      {/* Additional SVG backgrounds */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <WavePattern animated={true} />
+        <ParticleField animated={true} />
+        <FloatingShapes animated={true} />
+      </div>
+      
+      <div className="container-solana relative z-10">
         {/* Hero Section with Puzzle of the Day */}
         <section className="text-center mb-16 animate-slide-up relative">
-          {/* Decorative elements */}
+          {/* Enhanced decorative elements */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-purple-500 opacity-10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 right-10 w-48 h-48 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
+            <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float-slow"></div>
+            <div className="absolute bottom-0 right-10 w-48 h-48 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float-slow-reverse"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse-very-slow"></div>
           </div>
           
           <div className="inline-block mb-6 relative">
-            <h1 className="text-4xl md:text-7xl font-extrabold mb-6 leading-tight">
-              Daily Chess <span className="text-solana-gradient font-black">Puzzle</span>
+            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight neon-glow-purple">
+              Daily Chess <span className="text-solana-gradient font-black animate-pulse-slow">Puzzle</span>
             </h1>
-            <div className="h-1.5 w-48 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full"></div>
+            <div className="h-2 w-64 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full animate-glow shadow-lg"></div>
           </div>
-          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-xl mx-auto">{currentDate} • Challenge your chess skills and earn NFTs with each correct solution</p>
+          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-2xl mx-auto leading-relaxed">
+            {currentDate} • Challenge your chess skills and earn NFTs with each correct solution
+          </p>
+          
+          {/* Floating chess pieces */}
+          <div className="absolute top-20 left-20 animate-float-slow">
+            <ChessPieceIcon piece="♔" size="lg" animated={true} />
+          </div>
+          <div className="absolute top-32 right-20 animate-float-slow-reverse">
+            <ChessPieceIcon piece="♛" size="lg" animated={true} />
+          </div>
         </section>
 
         {/* Chess Puzzle Card */}
         <section className="mb-16 max-w-4xl mx-auto animate-slide-up">
           {isLoading ? (
-            <div className="card-solana p-8 text-center">
+            <GradientCard variant="primary" className="p-8 text-center">
               <div className="flex flex-col items-center justify-center p-12">
                 <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full animate-spin mb-6"></div>
-                <p className="text-lg">Loading today's puzzle...</p>
+                <p className="text-lg text-white">Loading today's puzzle...</p>
               </div>
-            </div>
+            </GradientCard>
           ) : !connected ? (
-            <div className="card-solana p-6 shadow-xl border border-purple-600/30 animate-fade-in relative overflow-hidden backdrop-blur-sm rounded-2xl">
-              {/* Enhanced background elements */}
-              <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30">
-                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-purple-800 via-indigo-900 to-transparent rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-blue-800 via-violet-900 to-transparent rounded-full blur-3xl"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-lg"></div>
-                {/* Animated chess piece silhouettes in background */}
-                <div className="absolute top-10 left-10 text-white/10 text-9xl opacity-20 animate-float-slow">♞</div>
-                <div className="absolute bottom-10 right-10 text-white/10 text-9xl opacity-20 animate-float-slow-reverse">♜</div>
-                <div className="absolute top-1/2 left-1/4 text-white/10 text-8xl opacity-20 animate-float">♛</div>
-              </div>
-
+            <GradientCard variant="primary" className="p-6 shadow-xl border border-purple-600/30 animate-fade-in relative overflow-hidden backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center justify-between py-6 relative z-10 gap-8">
                 {/* Left side content */}
                 <div className="flex flex-col items-center md:items-start md:flex-1 text-left">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-6 shadow-lg transform rotate-3">
-                    <div className="text-6xl animate-pulse-slow">♟</div>
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center mb-6 shadow-lg transform rotate-3 animate-float-slow">
+                    <ChessPieceIcon piece="♟" size="lg" animated={true} />
                   </div>
                   
-                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300">
+                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 neon-glow-purple">
                     Challenge Your Mind
                   </h3>
                   
-                  <p className="mb-8 text-indigo-50 text-lg max-w-md">
+                  <p className="mb-8 text-indigo-50 text-lg max-w-md leading-relaxed">
                     Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess mastery!
                   </p>
                   
                   <Button 
-                    className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl w-full md:w-auto"
+                    className="btn-solana-gradient px-8 py-6 text-lg font-bold group shadow-lg hover:shadow-xl transition-all rounded-xl w-full md:w-auto animate-bounce"
                     onClick={() => document.getElementById('wallet-connector')?.querySelector('button')?.click()}
                   >
                     <svg className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -200,26 +212,16 @@ export default function Home() {
                         }
                         
                         return (
-                          <div 
-                            key={index} 
-                            className={`${isLight ? 'bg-purple-100/20' : 'bg-purple-900/50'} flex items-center justify-center relative group cursor-pointer hover:bg-indigo-700/30 transition-colors duration-200`}
+                          <div
+                            key={index}
+                            className={`flex items-center justify-center ${
+                              isLight ? 'bg-amber-200' : 'bg-amber-800'
+                            } transition-colors duration-300 hover:bg-opacity-80`}
                           >
                             {piece && (
-                              <div className={`text-2xl ${row < 2 ? 'text-indigo-400' : 'text-slate-200'} opacity-80 group-hover:scale-110 group-hover:opacity-100 transition-all ${(row === 1 || row === 6) ? 'animate-float-slow' : 'animate-pulse-very-slow'} drop-shadow-md`}>
-                                <div className="relative z-10">
-                                  {piece}
-                                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-full blur-sm -z-10 group-hover:from-purple-500/20 group-hover:to-blue-500/20 transition-all"></div>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Add visual cue for valid moves on hover */}
-                            {!piece && (
-                              <div className="w-2 h-2 rounded-full bg-purple-400/0 group-hover:bg-purple-400/40 transition-all duration-200"></div>
-                            )}
-                            {/* Add enhanced glow effect on corner squares */}
-                            {((row === 0 || row === 7) && (col === 0 || col === 7)) && (
-                              <div className="absolute w-10 h-10 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-400/10 animate-pulse-slow blur-md"></div>
+                              <span className="text-2xl md:text-3xl animate-float-slow">
+                                {piece}
+                              </span>
                             )}
                           </div>
                         );
@@ -228,32 +230,42 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-          ) : ( // Connected
+            </GradientCard>
+          ) : (
             (() => {
-              // Debug log for puzzle
-              console.log('Puzzle for rendering:', puzzle);
               if (
-                puzzle && typeof puzzle === 'object' && puzzle !== null && 'id' in puzzle && 'fen' in puzzle
+                puzzle &&
+                typeof puzzle === "object" &&
+                puzzle !== null &&
+                "id" in puzzle &&
+                "fen" in puzzle
               ) {
-                // Only show 'All Done For Today!' if user has 3 attempts or solved
-                if (Array.isArray(attempts) && (attempts.length >= 3 || (bestAttempt && bestAttempt.isCorrect))) {
+                if (
+                  Array.isArray(attempts) &&
+                  (attempts.length >= 3 || (bestAttempt && bestAttempt.isCorrect))
+                ) {
                   return (
-                    <div className="card-solana p-8 text-center animate-fade-in">
+                    <GradientCard variant="primary" className="p-8 text-center">
                       <div className="flex flex-col items-center justify-center py-12">
                         <div className="text-6xl mb-6 animate-float">🏆</div>
-                        <h3 className="text-2xl font-bold mb-4 text-solana-purple">All Done For Today!</h3>
-                        <p className="mb-4 text-center max-w-md text-gray-600">
-                          You've completed today's puzzle. Come back tomorrow for a new challenge!
+                        <h3 className="text-2xl font-bold mb-4 text-solana-purple">
+                          All Done For Today!
+                        </h3>
+                        <p className="mb-4 text-center max-w-md text-indigo-200">
+                          You've completed today's puzzle. Come back tomorrow
+                          for a new challenge!
                         </p>
-                        <div className="inline-block bg-gray-100 px-4 py-2 rounded-md text-sm text-gray-500">
-                          Next puzzle: {format(new Date(new Date().setDate(new Date().getDate() + 1)), 'MMMM d, yyyy')}
+                        <div className="inline-block bg-purple-900/50 px-4 py-2 rounded-md text-sm text-indigo-200">
+                          Next puzzle:{" "}
+                          {format(
+                            new Date(new Date().setDate(new Date().getDate() + 1)),
+                            "MMMM d, yyyy"
+                          )}
                         </div>
                       </div>
-                    </div>
+                    </GradientCard>
                   );
                 }
-                // Show the puzzle card
                 return (
                   <div className="animate-fade-in">
                     <PuzzleCard
@@ -265,21 +277,24 @@ export default function Home() {
                       elapsedTime={elapsedTime}
                       currentAttempt={currentAttempt || 0}
                       isCheckingMove={isCheckingMove}
+                      resetCounter={resetCounter}
                     />
                   </div>
                 );
               }
-              // Show empty state if no valid puzzle
               return (
-                <div className="card-solana p-8 text-center animate-fade-in">
+                <GradientCard variant="primary" className="p-8 text-center">
                   <div className="flex flex-col items-center justify-center py-12">
                     <div className="text-6xl mb-6 animate-float">♟️</div>
-                    <h3 className="text-2xl font-bold mb-4 text-solana-purple">Start Your Chess Journey</h3>
-                    <p className="mb-4 text-center max-w-md text-gray-600">
-                      Complete your first puzzle attempt to begin building your chess journey stats.
+                    <h3 className="text-2xl font-bold mb-4 text-solana-purple">
+                      Start Your Chess Journey
+                    </h3>
+                    <p className="mb-4 text-center max-w-md text-indigo-200">
+                      Complete your first puzzle attempt to begin building your
+                      chess journey stats.
                     </p>
                   </div>
-                </div>
+                </GradientCard>
               );
             })()
           )}
@@ -467,6 +482,6 @@ export default function Home() {
         streakCount={streakCount}
         totalSolved={totalSolved}
       />
-    </main>
+    </AnimatedBackground>
   );
 }

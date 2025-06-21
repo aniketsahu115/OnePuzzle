@@ -199,13 +199,10 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     const solana = window.solana;
     if (solana?.publicKey) {
-      const publicKey = solana.publicKey.toString();
-      const walletAdapter = createWalletAdapter(solana);
-      setCurrentWallet(walletAdapter);
-      setWalletAddress(publicKey);
-      setConnected(true);
+      // Automatically connect if the wallet is already available
+      connectWallet();
     }
-  }, []);
+  }, [connectWallet]);
 
   // Listen for wallet connection changes
   useEffect(() => {
