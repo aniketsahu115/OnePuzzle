@@ -11,5 +11,5 @@
     "jsx": "react-jsx"
   },
   "include": ["server", "shared"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "client"]
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "client", "server/vite.ts"]
 } 
