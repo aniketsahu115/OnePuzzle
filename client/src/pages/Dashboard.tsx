@@ -250,8 +250,8 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-lg mx-auto">
           <div className="mb-8 text-7xl">♟️</div>
-          <h1 className="text-3xl font-bold mb-4">Connect Your Wallet</h1>
-          <p className="text-gray-600 mb-8">
+          <h1 className="text-3xl font-bold mb-4 text-crisp-bold">Connect Your Wallet</h1>
+          <p className="text-gray-600 mb-8 text-crisp">
             Please connect your Solana wallet to view your personal dashboard, track your puzzle history, and manage your NFT collection.
           </p>
           <Button variant="outline" className="bg-primary text-white px-6">Connect Wallet</Button>
@@ -265,8 +265,8 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-lg mx-auto">
           <div className="mb-8 text-7xl">♟️</div>
-          <h1 className="text-3xl font-bold mb-4">Loading Dashboard...</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold mb-4 text-crisp-bold">Loading Dashboard...</h1>
+          <p className="text-gray-600 text-crisp">
             Please wait while we fetch your data.
           </p>
         </div>
@@ -277,8 +277,8 @@ const Dashboard: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-12">
-        <h1 className="text-3xl font-bold mb-2">Player Dashboard</h1>
-        <div className="flex items-center text-gray-500">
+        <h1 className="text-3xl font-bold mb-2 text-crisp-bold">Player Dashboard</h1>
+        <div className="flex items-center text-gray-500 text-crisp">
           <span className="font-mono">{truncateString(walletAddress || '', 12)}</span>
           <span className="mx-2">•</span>
           <span className="flex items-center text-green-500">

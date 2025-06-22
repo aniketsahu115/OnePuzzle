@@ -50,12 +50,12 @@ const Footer: React.FC = () => {
                 <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-sparkle"></div>
                 <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-sparkle" style={{ animationDelay: '0.5s' }}></div>
               </div>
-              <div className="font-bold text-xl tracking-tight">
+              <div className="font-bold text-xl tracking-tight text-crisp-black">
                 <span className="text-solana-gradient neon-glow-purple">One</span>
                 <span className="text-white">Puzzle</span>
               </div>
             </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-6 leading-relaxed text-crisp">
               Daily chess puzzles with NFT achievements on Solana. Improve your
               skills one puzzle at a time.
             </p>
@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
 
           {/* Resources */}
           <div className="col-span-1 animate-slide-up delay-100">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple text-crisp-bold">
               Resources
             </h3>
             <ul className="space-y-3">
@@ -170,7 +170,7 @@ const Footer: React.FC = () => {
 
           {/* Community */}
           <div className="col-span-1 animate-slide-up delay-200">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
+            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple text-crisp-bold">
               Community
             </h3>
             <ul className="space-y-3">

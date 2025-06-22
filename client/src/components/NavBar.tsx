@@ -34,7 +34,7 @@ const NavBar: React.FC = () => {
               <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-sparkle"></div>
               <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-sparkle" style={{ animationDelay: '0.5s' }}></div>
             </div>
-            <div className="font-bold text-2xl tracking-tight">
+            <div className="font-bold text-2xl tracking-tight text-crisp-black">
               <span className="text-solana-gradient neon-glow-purple">One</span>
               <span className="text-solana-dark dark:text-gray-200">Puzzle</span>
             </div>
@@ -43,19 +43,19 @@ const NavBar: React.FC = () => {
         
         <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-10 items-center">
           <div className="flex space-x-6 animate-slide-up">
-            <Link href="/" className={`${isActive('/')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10`}>
+            <Link href="/" className={`${isActive('/')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10 text-crisp`}>
               Home
             </Link>
-            <Link href="/learn" className={`${isActive('/learn')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10`}>
+            <Link href="/learn" className={`${isActive('/learn')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10 text-crisp`}>
               Learn
             </Link>
-            <Link href="/resources" className={`${isActive('/resources')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10`}>
+            <Link href="/resources" className={`${isActive('/resources')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10 text-crisp`}>
               Resources
             </Link>
-            <Link href="/dashboard" className={`${isActive('/dashboard')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10`}>
+            <Link href="/dashboard" className={`${isActive('/dashboard')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10 text-crisp`}>
               Dashboard
             </Link>
-            <Link href="/blog" className={`${isActive('/blog')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10`}>
+            <Link href="/blog" className={`${isActive('/blog')} py-2 px-3 rounded-lg transition-all duration-300 hover:bg-purple-500/10 text-crisp`}>
               Blog
             </Link>
           </div>

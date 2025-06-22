@@ -6,14 +6,15 @@
     "module": "ESNext",
     "composite": true,
     "lib": ["esnext"],
-    "types": ["node", "vite/client"],
+    "types": ["node", "express", "vite/client"],
     "allowImportingTsExtensions": false,
     "jsx": "react-jsx",
     "baseUrl": ".",
     "rootDir": "..",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "paths": {
       "@shared/*": ["../shared/*"]
     }

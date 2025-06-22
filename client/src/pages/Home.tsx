@@ -97,12 +97,12 @@ export default function Home() {
           </div>
           
           <div className="inline-block mb-6 relative">
-            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight neon-glow-purple">
+            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight neon-glow-purple hero-text">
               Daily Chess <span className="text-solana-gradient font-black animate-pulse-slow">Puzzle</span>
             </h1>
             <div className="h-2 w-64 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full animate-glow shadow-lg"></div>
           </div>
-          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-2xl mx-auto leading-relaxed text-crisp">
             {currentDate} • Challenge your chess skills and earn NFTs with each correct solution
           </p>
           
@@ -133,11 +133,11 @@ export default function Home() {
                     <ChessPieceIcon piece="♟" size="lg" animated={true} />
                   </div>
                   
-                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 neon-glow-purple">
+                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 neon-glow-purple hero-text">
                     Challenge Your Mind
                   </h3>
                   
-                  <p className="mb-8 text-indigo-50 text-lg max-w-md leading-relaxed">
+                  <p className="mb-8 text-indigo-50 text-lg max-w-md leading-relaxed text-crisp">
                     Connect your Solana wallet to access today's puzzle and start earning NFT achievements for your chess mastery!
                   </p>
                   

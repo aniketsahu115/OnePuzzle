@@ -309,7 +309,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Confirm NFT minting - for client-side minting with wallet signing
-  app.post('/api/nft/confirm', async (req, res) => {
+  app.post('/api/nft/confirm', async (req: Request, res: Response) => {
     try {
       const { attemptId, signedTransaction } = req.body;
       
@@ -371,7 +371,7 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   });
 
   // Associate a minted NFT with an attempt
-  app.post('/api/nft/associate', async (req, res) => {
+  app.post('/api/nft/associate', async (req: Request, res: Response) => {
     try {
       const { attemptId, mintAddress } = req.body;
 
