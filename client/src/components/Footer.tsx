@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
       description: "Thank you for subscribing to our newsletter",
     });
 
-    setEmail("");
+    setEmail("")
   };
 
   return (
