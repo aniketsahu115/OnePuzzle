@@ -22,7 +22,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:4001',
+      '/api': 'https://onepuzzle-2.onrender.com',
     },
   },
   optimizeDeps: {
