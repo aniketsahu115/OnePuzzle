@@ -66,4 +66,4 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   );
 };
 
-export default AnimatedBackground; 
+export default AnimatedBackground
