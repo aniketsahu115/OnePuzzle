@@ -4,11 +4,19 @@ import { registerRoutes } from "./routes";
 import { log } from "./logger";
 import { setupSolanaConnection } from "./solana";
 import { initializePuzzles } from "./puzzles";
+import cors from 'cors';
 
 export async function createServer(): Promise<{ app: express.Express; server: http.Server }> {
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.use(cors({
+    origin: [
+      'http://localhost:5173',
+      'https://one-puzzle-fe.vercel.app'
+    ],
+    credentials: true
+  }));
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     const start = Date.now();
