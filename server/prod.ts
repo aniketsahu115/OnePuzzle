@@ -7,8 +7,8 @@ import { log } from "./logger";
     log('Starting production server...');
     const { app, server } = await createServer();
     
-    log('Setting up static file serving...');
-    serveStatic(app);
+    // log('Setting up static file serving...');
+    // serveStatic(app);
 
     const port = parseInt(process.env.PORT || '4001', 10);
     const host = '0.0.0.0';

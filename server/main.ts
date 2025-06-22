@@ -50,7 +50,7 @@ export async function createServer(): Promise<{ app: express.Express; server: ht
   await initializePuzzles();
   log('Puzzles initialized successfully');
   
-  const server = await registerRoutes(app);
+  registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -60,5 +60,6 @@ export async function createServer(): Promise<{ app: express.Express; server: ht
     throw err;
   });
 
+  const server = http.createServer(app);
   return { app, server };
 }

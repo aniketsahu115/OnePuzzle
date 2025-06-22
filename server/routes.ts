@@ -21,7 +21,7 @@ interface WalletAuthRequestBody {
   walletAddress: string;
 }
 
-export async function registerRoutes(app: Express): Promise<http.Server> {
+export function registerRoutes(app: Express): void {
   // Set a global timeout for all routes (5 minutes)
   app.set('timeout', 300000);
 
@@ -414,7 +414,4 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
       });
     }
   });
-
-  const httpServer = http.createServer(app);
-  return httpServer;
 }
