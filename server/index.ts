@@ -5,7 +5,7 @@ import { log } from "./logger";
   try {
     const { app, server } = await createServer();
     
-    const { setupVite } = await import("./vite");
+    const { setupVite } = await import("./vite-server");
     await setupVite(app, server);
 
     const port = process.env.PORT || 4001;

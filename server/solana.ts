@@ -160,7 +160,6 @@ export async function mintCNFT(attempt: Attempt, puzzle: Puzzle): Promise<string
       name: `OnePuzzle #${attempt.id}`,
       sellerFeeBasisPoints: 0,
       symbol: '1PZL',
-      maxSupply: 1,
       isMutable: false,
       updateAuthority: keypair,
     });

@@ -3,25 +3,26 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "../dist",
-    "module": "commonjs",
+    "module": "ESNext",
     "composite": true,
     "lib": ["esnext"],
     "types": ["node"],
     "allowImportingTsExtensions": false,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "rootDir": ".",
+    "rootDir": "..",
+    "moduleResolution": "node",
     "paths": {
       "@shared/*": ["../shared/*"]
     }
   },
   "include": [
     "./**/*.ts",
-    "../shared/**/*.ts"
+    "../shared/**/*.ts",
+    "../vite.config.ts"
   ],
   "exclude": [
-    "vite.ts",
-    "vite.config.ts",
-    "../vite.config.ts"
+    "node_modules",
+    "dist"
   ]
 }

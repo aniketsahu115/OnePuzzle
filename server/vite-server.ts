@@ -28,6 +28,10 @@ export async function setupVite(app: Express, server: Server) {
         log(msg, "vite");
         process.exit(1);
       },
+      warnOnce: (msg: string) => log(msg, "vite"),
+      clearScreen: () => {},
+      hasErrorLogged: () => false,
+      hasWarned: false,
     },
     server: serverOptions,
     appType: "custom",
