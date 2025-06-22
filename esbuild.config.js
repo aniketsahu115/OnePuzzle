@@ -1,11 +1,11 @@
 const esbuild = require('esbuild');
 
 esbuild.build({
-  entryPoints: ['server/netlify.ts'],
+  entryPoints: ['server/prod.ts'],
   bundle: true,
   platform: 'node',
   target: 'node18',
-  outfile: 'dist/server/netlify.js',
+  outfile: 'dist/server/prod.js',
   alias: {
     '@shared': './shared'
   },
