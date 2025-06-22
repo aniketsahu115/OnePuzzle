@@ -25,6 +25,15 @@ export async function registerRoutes(app: Express): Promise<http.Server> {
   // Set a global timeout for all routes (5 minutes)
   app.set('timeout', 300000);
 
+  // Health check endpoint for Render
+  app.get('/health', (req: Request, res: Response) => {
+    res.status(200).json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+
   // API routes
   
   // Get today's puzzle (without solution)

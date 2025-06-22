@@ -10,18 +10,19 @@ import { log } from "./logger";
     log('Setting up static file serving...');
     serveStatic(app);
 
-    const port = process.env.PORT || 4001;
+    const port = parseInt(process.env.PORT || '4001', 10);
     const host = '0.0.0.0';
     
     log(`Attempting to bind server to ${host}:${port}`);
+    log(`Current working directory: ${process.cwd()}`);
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     
-    server.listen({
-      port,
-      host
-    }, () => {
+    // Explicitly set the server to listen on all interfaces
+    server.listen(port, host, () => {
       log(`✅ Production server started successfully on ${host}:${port}`);
       log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       log(`Process ID: ${process.pid}`);
+      log(`Server is ready to accept connections`);
     });
     
     // Add error handling for the server
@@ -29,8 +30,19 @@ import { log } from "./logger";
       log(`❌ Server error: ${error.message}`);
       if (error.code === 'EADDRINUSE') {
         log(`Port ${port} is already in use`);
+      } else if (error.code === 'EACCES') {
+        log(`Permission denied to bind to port ${port}`);
       }
       process.exit(1);
+    });
+    
+    // Handle graceful shutdown
+    process.on('SIGTERM', () => {
+      log('Received SIGTERM, shutting down gracefully...');
+      server.close(() => {
+        log('Server closed');
+        process.exit(0);
+      });
     });
     
   } catch (error) {

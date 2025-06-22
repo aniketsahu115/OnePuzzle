@@ -106,21 +106,35 @@ To deploy to Render, use the following configuration:
 pnpm build
 ```
 
-**Start Command:**
+**Start Command (Option 1 - Recommended):**
 ```bash
-pnpm start
+./start.sh
+```
+
+**Start Command (Option 2 - Alternative):**
+```bash
+NODE_ENV=production node dist/server/prod.js
 ```
 
 **Environment Variables:**
-- `NODE_ENV=production`
+- `NODE_ENV=production` (required)
 - `PORT` (Render will set this automatically)
 - `VITE_SOLANA_RPC_URL` - Your Solana RPC endpoint
 - Database connection variables (DATABASE_URL, etc.)
 
+**Health Check URL:**
+- `https://your-app.onrender.com/health`
+
 **Important Notes:**
-- Make sure to set `NODE_ENV=production` in your environment variables
-- The server will automatically bind to `0.0.0.0` on the port provided by Render
+- The server automatically binds to `0.0.0.0` on the port provided by Render
 - The production server serves static files from the `dist/public` directory
+- Make sure to set `NODE_ENV=production` in your environment variables
+- The server includes a health check endpoint at `/health` for monitoring
+
+**Troubleshooting:**
+- If you see "No open ports detected on 0.0.0.0", make sure you're using the production start command, not the development one
+- Check the logs for any error messages during startup
+- Verify that the build completed successfully before deployment
 
 ### Vercel Deployment
 
