@@ -2,6 +2,7 @@
   command = "pnpm build"
   publish = "dist/public"
   functions = "dist/server"
+  environment = { NETLIFY_NEXT_PLUGIN_SKIP = "true" }
 
 [[redirects]]
   from = "/api/*"
