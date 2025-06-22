@@ -13,7 +13,8 @@ export async function createServer(): Promise<{ app: express.Express; server: ht
   app.use(cors({
     origin: [
       'http://localhost:5173',
-      'https://one-puzzle-fe.vercel.app'
+      'https://one-puzzle-fe.vercel.app',
+      'https://onepuzzle-3.onrender.com'
     ],
     credentials: true
   }));
