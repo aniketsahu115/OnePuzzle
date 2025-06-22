@@ -7,7 +7,7 @@
     "dev:all": "concurrently \"pnpm:server\" \"pnpm:dev\"",
     "build": "rm -rf dist && pnpm build:client && pnpm build:server",
     "build:client": "vite build",
-    "build:server": "tsc -p tsconfig.build.json",
+    "build:server": "esbuild server/netlify.ts --bundle --platform=node --outfile=dist/server/netlify.js --alias:@shared=./shared",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "tsx watch server/index.ts",
