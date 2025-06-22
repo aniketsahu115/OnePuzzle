@@ -11,5 +11,5 @@ esbuild.build({
   },
   // Mark these as external to avoid the bundling issue with Irys SDK.
   // Netlify will provide these at runtime from your package.json dependencies.
-  external: ['csv-parse', 'csv-stringify', '@solana/web3.js', '@metaplex-foundation/js'],
+  external: ['csv-parse', 'csv-stringify'],
 }).catch(() => process.exit(1)); 

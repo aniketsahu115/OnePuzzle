@@ -18,29 +18,14 @@ let keypair: Keypair | null = null;
 // Initialize Solana connection
 export async function setupSolanaConnection() {
   try {
-    // Load keypair from environment variable or file for persistence
-    let secret;
-    if (process.env.SOLANA_PRIVATE_KEY) {
-      secret = JSON.parse(process.env.SOLANA_PRIVATE_KEY);
-      keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
-      console.log('Loaded Solana keypair from SOLANA_PRIVATE_KEY env variable.');
-    } else if (process.env.SOLANA_KEYPAIR_PATH) {
-      const keypairPath = process.env.SOLANA_KEYPAIR_PATH;
-      secret = JSON.parse(readFileSync(keypairPath, 'utf8'));
-      keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
-      console.log('Loaded Solana keypair from file:', keypairPath);
-    } else {
-      // Default to Solana CLI wallet path
-      const keypairPath = '/Users/harshsharma/.config/solana/id.json';
-      try {
-        secret = JSON.parse(readFileSync(keypairPath, 'utf8'));
-        keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
-        console.log('Loaded Solana keypair from default CLI path:', keypairPath);
-      } catch (error) {
-        console.error('Failed to load keypair from default path:', error);
-        throw new Error('No valid Solana keypair found. Please set SOLANA_PRIVATE_KEY or SOLANA_KEYPAIR_PATH environment variable.');
-      }
+    // Load keypair from environment variable
+    if (!process.env.SOLANA_PRIVATE_KEY) {
+      throw new Error('No valid Solana keypair found. Please set the SOLANA_PRIVATE_KEY environment variable.');
     }
+
+    const secret = JSON.parse(process.env.SOLANA_PRIVATE_KEY);
+    keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+    console.log('Loaded Solana keypair from SOLANA_PRIVATE_KEY env variable.');
 
     if (!keypair) {
       throw new Error('Failed to initialize Solana keypair');
