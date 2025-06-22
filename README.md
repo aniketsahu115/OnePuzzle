@@ -81,3 +81,54 @@ This Project is under developement so if you want to contribute come up and deve
 2. Create a new branch
 3. Make your changes
 4. Submit a pull request
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev:all
+
+# Build for production
+pnpm build
+```
+
+## Deployment
+
+### Render Deployment
+
+To deploy to Render, use the following configuration:
+
+**Build Command:**
+```bash
+pnpm build
+```
+
+**Start Command:**
+```bash
+pnpm start
+```
+
+**Environment Variables:**
+- `NODE_ENV=production`
+- `PORT` (Render will set this automatically)
+- `VITE_SOLANA_RPC_URL` - Your Solana RPC endpoint
+- Database connection variables (DATABASE_URL, etc.)
+
+**Important Notes:**
+- Make sure to set `NODE_ENV=production` in your environment variables
+- The server will automatically bind to `0.0.0.0` on the port provided by Render
+- The production server serves static files from the `dist/public` directory
+
+### Vercel Deployment
+
+The project is configured for Vercel deployment with the `vercel.json` file.
+
+## Project Structure
+
+- `client/` - React frontend with Vite
+- `server/` - Express.js backend
+- `shared/` - Shared TypeScript types and schemas
+- `dist/` - Production build output

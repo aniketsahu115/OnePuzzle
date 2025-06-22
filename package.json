@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "server": "tsx watch server/index.ts",
     "server:prod": "NODE_ENV=production node dist/server/prod.js",
+    "start": "NODE_ENV=production node dist/server/prod.js",
     "db:generate": "drizzle-kit generate:pg",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio"
