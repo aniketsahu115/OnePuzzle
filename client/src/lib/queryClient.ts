@@ -1,5 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 
+const BASE_API_URL = 'https://onepuzzle-2.onrender.com';
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -12,7 +14,8 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const fullUrl = url.startsWith('http') ? url : BASE_API_URL + url;
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
