@@ -11,6 +11,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.81.2
         version: 5.81.2(react@18.3.1)
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -649,6 +652,9 @@ packages:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
     engines: {node: '>=4'}
     hasBin: true
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
@@ -2065,6 +2071,8 @@ snapshots:
       randomfill: 1.0.4
 
   cssesc@3.0.0: {}
+
+  date-fns@4.1.0: {}
 
   debug@4.4.1:
     dependencies:
