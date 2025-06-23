@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Award, Star, TrendingUp, Trophy } from 'lucide-react';
 import { Attempt } from '@shared/schema';
 import { useChessAudio } from '@/lib/useChessAudio';
@@ -131,123 +130,77 @@ const AchievementShowcase: React.FC<AchievementShowcaseProps> = ({
   const currentAchievement = achievements[currentIndex];
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
-        >
-          {/* Confetti effect */}
-          {showConfetti && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              {Array.from({ length: 50 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  className={`absolute w-3 h-3 rounded-full ${
-                    ['bg-primary', 'bg-accent', 'bg-yellow-400', 'bg-green-400', 'bg-blue-400'][
-                      Math.floor(Math.random() * 5)
-                    ]
-                  }`}
-                  initial={{
-                    x: Math.random() * window.innerWidth,
-                    y: -20,
-                    scale: Math.random() * 0.5 + 0.5,
-                  }}
-                  animate={{
-                    y: window.innerHeight + 20,
-                    rotate: Math.random() * 360,
-                  }}
-                  transition={{
-                    duration: Math.random() * 2 + 2,
-                    ease: 'easeOut',
-                    delay: Math.random() * 0.5,
-                  }}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Achievement card */}
-          <motion.div
-            initial={{ scale: 0.8, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.8, y: 20 }}
-            className="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-md mx-4"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className={`${currentAchievement.color} p-6 flex justify-center`}>
-              <motion.div
-                initial={{ rotate: -10, scale: 0.9 }}
-                animate={{ rotate: 0, scale: 1 }}
-                transition={{ 
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 20
-                }}
-                className="bg-white p-4 rounded-full shadow-lg"
-              >
-                {currentAchievement.icon}
-              </motion.div>
-            </div>
-            
-            <div className="p-6 text-center">
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl font-bold mb-2"
-              >
-                {currentAchievement.title}
-              </motion.h3>
-              
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-gray-600 mb-4"
-              >
-                {currentAchievement.description}
-              </motion.p>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 }}
-                className="flex justify-center"
-              >
-                <Award className="w-12 h-12 text-primary" />
-              </motion.div>
-            </div>
-            
-            {/* Pagination dots */}
-            {achievements.length > 1 && (
-              <div className="flex justify-center pb-4">
-                {achievements.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 mx-1 rounded-full ${
-                      index === currentIndex ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-            
-            <div className="p-4 border-t border-gray-200 flex justify-center">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
-              >
-                Continue
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      {/* Confetti effect */}
+      {showConfetti && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-3 h-3 rounded-full ${
+                ['bg-primary', 'bg-accent', 'bg-yellow-400', 'bg-green-400', 'bg-blue-400'][
+                  Math.floor(Math.random() * 5)
+                ]
+              }`}
+            />
+          ))}
+        </div>
       )}
-    </AnimatePresence>
+
+      {/* Achievement card */}
+      <div
+        className="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-md mx-4"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className={`${currentAchievement.color} p-6 flex justify-center`}>
+          <div
+            className="bg-white p-4 rounded-full shadow-lg"
+          >
+            {currentAchievement.icon}
+          </div>
+        </div>
+        
+        <div className="p-6 text-center">
+          <h3 className="text-xl font-bold mb-2">
+            {currentAchievement.title}
+          </h3>
+          
+          <p className="text-gray-600 mb-4">
+            {currentAchievement.description}
+          </p>
+          
+          <div className="flex justify-center">
+            <Award className="w-12 h-12 text-primary" />
+          </div>
+        </div>
+        
+        {/* Pagination dots */}
+        {achievements.length > 1 && (
+          <div className="flex justify-center pb-4">
+            {achievements.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 mx-1 rounded-full ${
+                  index === currentIndex ? 'bg-primary' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+        
+        <div className="p-4 border-t border-gray-200 flex justify-center">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

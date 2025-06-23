@@ -41,6 +41,12 @@
   /* Styling for common HTML elements */
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold animate-fade-in;
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(0,0,0,0.12);
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: initial !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -49,29 +55,18 @@
 
   h1 {
     @apply text-4xl md:text-5xl mb-6 font-black;
-    background: linear-gradient(to right, var(--solana-purple), var(--solana-blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
   h2 {
     @apply text-3xl md:text-4xl mb-4 font-extrabold;
-    color: var(--solana-purple);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+    color: #121212 !important;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12);
   }
 
   h3 {
     @apply text-2xl md:text-3xl mb-3 font-bold;
-    color: var(--solana-navy);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
+    color: #121212 !important;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12);
   }
 
   p, span, div, a, button, input, textarea, label {

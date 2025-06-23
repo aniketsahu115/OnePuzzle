@@ -118,9 +118,9 @@ const AttemptCard: React.FC<AttemptCardProps> = ({
 
   return (
     <Card className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-primary p-4 text-white flex justify-between items-center">
-        <h3 className="font-bold">Current Attempt</h3>
-        <span className="text-sm bg-white/20 rounded px-2 py-0.5">{currentAttempt}/3</span>
+      <div className="bg-primary p-4 flex justify-between items-center">
+        <h3 className="font-bold text-black" style={{textShadow: '0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12)'}}>Current Attempt</h3>
+        <span className="text-sm bg-white/20 rounded px-2 py-0.5 text-black" style={{textShadow: '0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12)'}}>{currentAttempt}/3</span>
       </div>
       <CardContent className="p-4">
         <div className="flex justify-between mb-4">
@@ -140,7 +140,7 @@ const AttemptCard: React.FC<AttemptCardProps> = ({
         {/* Previous Attempts History */}
         {previousAttempts.length > 0 && (
           <div className="border-t border-slate-200 pt-4">
-            <h4 className="text-sm font-medium text-slate-700 mb-3">Previous Attempts</h4>
+            <h4 className="text-sm font-medium text-black mb-3" style={{textShadow: '0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12)'}}>Previous Attempts</h4>
             <div className="space-y-2">
               {previousAttempts.map((attempt, index) => (
                 <div key={attempt.id} className="flex items-center justify-between text-sm bg-slate-50 rounded p-2">

@@ -78,49 +78,29 @@ export default function Home() {
   const attemptResult = bestAttempt ? (bestAttempt as Attempt).isCorrect : null;
 
   return (
-    <AnimatedBackground variant="hero" className="min-h-screen">
-      {/* Additional SVG backgrounds */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <WavePattern animated={true} />
-        <ParticleField animated={true} />
-        <FloatingShapes animated={true} />
-      </div>
-      
+    <div className="min-h-screen bg-solana-gradient">
       <div className="container-solana relative z-10">
         {/* Hero Section with Puzzle of the Day */}
-        <section className="text-center mb-16 animate-slide-up relative">
-          {/* Enhanced decorative elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-float-slow"></div>
-            <div className="absolute bottom-0 right-10 w-48 h-48 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-float-slow-reverse"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse-very-slow"></div>
-          </div>
+        <section className="text-center mb-16 relative">
+          {/* Removed floating and animated background elements for minimalism */}
           
           <div className="inline-block mb-6 relative">
-            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight neon-glow-purple hero-text">
-              Daily Chess <span className="text-solana-gradient font-black animate-pulse-slow">Puzzle</span>
+            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight">
+              Daily Chess <span className="text-solana-gradient font-black">Puzzle</span>
             </h1>
-            <div className="h-2 w-64 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full animate-glow shadow-lg"></div>
+            <div className="h-2 w-64 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full shadow-lg"></div>
           </div>
-          <p className="text-xl text-indigo-100 mb-6 animate-fade-in max-w-2xl mx-auto leading-relaxed text-crisp">
+          <p className="text-xl text-indigo-100 mb-6 max-w-2xl mx-auto leading-relaxed text-crisp">
             {currentDate} • Challenge your chess skills and earn NFTs with each correct solution
           </p>
-          
-          {/* Floating chess pieces */}
-          <div className="absolute top-20 left-20 animate-float-slow">
-            <ChessPieceIcon piece="♔" size="lg" animated={true} />
-          </div>
-          <div className="absolute top-32 right-20 animate-float-slow-reverse">
-            <ChessPieceIcon piece="♛" size="lg" animated={true} />
-          </div>
         </section>
 
         {/* Chess Puzzle Card */}
-        <section className="mb-16 max-w-4xl mx-auto animate-slide-up">
+        <section className="mb-16 max-w-4xl mx-auto">
           {isLoading ? (
             <GradientCard variant="primary" className="p-8 text-center">
               <div className="flex flex-col items-center justify-center p-12">
-                <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full animate-spin mb-6"></div>
+                <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full mb-6"></div>
                 <p className="text-lg text-white">Loading today's puzzle...</p>
               </div>
             </GradientCard>
@@ -303,7 +283,7 @@ export default function Home() {
         {/* Results & History Section */}
         {connected && puzzle && typeof puzzle === 'object' && puzzle !== null && (
           <section className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
-            <div className="animate-slide-left">
+            <div>
               <AttemptCard 
                 selectedMove={selectedMove} 
                 elapsedTime={elapsedTime}
@@ -313,7 +293,7 @@ export default function Home() {
                 attempts={Array.isArray(attempts) ? attempts : []}
               />
             </div>
-            <div className="animate-slide-right">
+            <div>
               <NFTPreviewCard 
                 bestAttempt={bestAttempt} 
                 attempts={Array.isArray(attempts) ? attempts : []}
@@ -482,6 +462,6 @@ export default function Home() {
         streakCount={streakCount}
         totalSolved={totalSolved}
       />
-    </AnimatedBackground>
+    </div>
   );
 }

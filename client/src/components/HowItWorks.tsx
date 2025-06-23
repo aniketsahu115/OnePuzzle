@@ -5,7 +5,7 @@ const HowItWorks: React.FC = () => {
   return (
     <section className="py-16 bg-white rounded-xl shadow-md">
       <div className="container-solana">
-        <div className="text-center mb-12 animate-slide-up">
+        <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-6">How it Works</h2>
           <div className="h-1 w-24 bg-solana-gradient mx-auto rounded-full"></div>
           <p className="mt-6 text-gray-600 max-w-2xl mx-auto">
@@ -15,7 +15,7 @@ const HowItWorks: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="card-solana p-8 text-center animate-slide-up delay-100">
+          <div className="card-solana p-8 text-center">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-purple rounded-full flex items-center justify-center">
@@ -30,7 +30,7 @@ const HowItWorks: React.FC = () => {
                   </svg>
                 </div>
               </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-purple rounded-full flex items-center justify-center text-white animate-pulse-slow">
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-purple rounded-full flex items-center justify-center text-white">
                 ♟
               </div>
             </div>
@@ -41,7 +41,7 @@ const HowItWorks: React.FC = () => {
           </div>
           
           {/* Step 2 */}
-          <div className="card-solana p-8 text-center animate-slide-up delay-200">
+          <div className="card-solana p-8 text-center">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-green rounded-full flex items-center justify-center">
@@ -51,7 +51,7 @@ const HowItWorks: React.FC = () => {
                   </svg>
                 </div>
               </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-green rounded-full flex items-center justify-center text-white animate-pulse-slow">
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-green rounded-full flex items-center justify-center text-white">
                 ♟
               </div>
             </div>
@@ -62,7 +62,7 @@ const HowItWorks: React.FC = () => {
           </div>
           
           {/* Step 3 */}
-          <div className="card-solana p-8 text-center animate-slide-up delay-300">
+          <div className="card-solana p-8 text-center">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-blue bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-blue rounded-full flex items-center justify-center">
@@ -73,7 +73,7 @@ const HowItWorks: React.FC = () => {
                   </svg>
                 </div>
               </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-blue rounded-full flex items-center justify-center text-white animate-pulse-slow">
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-solana-blue rounded-full flex items-center justify-center text-white">
                 ♟
               </div>
             </div>
@@ -85,7 +85,7 @@ const HowItWorks: React.FC = () => {
         </div>
         
         {/* Call to Action */}
-        <div className="text-center mt-12 animate-slide-up delay-400">
+        <div className="text-center mt-12">
           <p className="text-gray-600 mb-6">
             Start building your on-chain chess reputation with just a few minutes each day
           </p>
