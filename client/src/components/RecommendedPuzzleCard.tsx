@@ -59,7 +59,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
     <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 shadow-md">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(0,0,0,0.12)'}}>Your Recommended Puzzle</CardTitle>
+          <CardTitle className="text-xl text-indigo-900 dark:text-white">Your Recommended Puzzle</CardTitle>
           <Button
             variant="outline"
             size="sm"
@@ -98,7 +98,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <h3 className="font-medium text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(0,0,0,0.12)'}}>Difficulty Level</h3>
+                <h3 className="font-medium text-indigo-900 dark:text-white">Difficulty Level</h3>
                 <Badge
                   variant={
                     recommendedPuzzle.difficulty === 'easy' ? 'default' :
@@ -113,7 +113,7 @@ export function RecommendedPuzzleCard({ getRecommendedPuzzle, onSelect }: Recomm
 
               {recommendedPuzzle.themes && recommendedPuzzle.themes.length > 0 && (
                 <div className="space-y-1 sm:text-right">
-                  <h3 className="font-medium text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(0,0,0,0.12)'}}>Puzzle Theme</h3>
+                  <h3 className="font-medium text-indigo-900 dark:text-white">Puzzle Theme</h3>
                   <div className="flex gap-1 sm:justify-end flex-wrap">
                     {recommendedPuzzle.themes.slice(0, 2).map((theme, i) => (
                       <Badge key={i} variant="outline" className="capitalize bg-white truncate max-w-[100px]">

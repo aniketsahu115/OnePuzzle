@@ -119,8 +119,8 @@ const AttemptCard: React.FC<AttemptCardProps> = ({
   return (
     <Card className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="bg-primary p-4 flex justify-between items-center">
-        <h3 className="font-bold text-black" style={{textShadow: '0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12)'}}>Current Attempt</h3>
-        <span className="text-sm bg-white/20 rounded px-2 py-0.5 text-black" style={{textShadow: '0 2px 8px rgba(255,255,255,0.18), 0 1px 0 rgba(255,255,255,0.12)'}}>{currentAttempt}/3</span>
+        <h3 className="font-bold text-white">Current Attempt</h3>
+        <span className="text-sm bg-white/20 rounded px-2 py-0.5 text-white" style={{textShadow: '0 2px 8px rgba(0,0,0,0.18), 0 1px 0 rgba(0,0,0,0.12)'}}>{currentAttempt}/3</span>
       </div>
       <CardContent className="p-4">
         <div className="flex justify-between mb-4">

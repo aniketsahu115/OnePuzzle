@@ -1,9 +1,10 @@
-import { Attempt, Puzzle } from "@shared/schema";
+import { Attempt, Puzzle } from '../shared/schema';
 import { Connection, Keypair, PublicKey, clusterApiUrl, Transaction, SystemProgram } from '@solana/web3.js';
 import { Metaplex, keypairIdentity, toMetaplexFile } from '@metaplex-foundation/js';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import BN from 'bn.js';
 dotenv.config();
 
 // Configuration for Solana connection
@@ -18,14 +19,29 @@ let keypair: Keypair | null = null;
 // Initialize Solana connection
 export async function setupSolanaConnection() {
   try {
-    // Load keypair from environment variable
-    if (!process.env.SOLANA_PRIVATE_KEY) {
-      throw new Error('No valid Solana keypair found. Please set the SOLANA_PRIVATE_KEY environment variable.');
+    // Load keypair from environment variable or file for persistence
+    let secret;
+    if (process.env.SOLANA_PRIVATE_KEY) {
+      secret = JSON.parse(process.env.SOLANA_PRIVATE_KEY);
+      keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+      console.log('Loaded Solana keypair from SOLANA_PRIVATE_KEY env variable.');
+    } else if (process.env.SOLANA_KEYPAIR_PATH) {
+      const keypairPath = process.env.SOLANA_KEYPAIR_PATH;
+      secret = JSON.parse(readFileSync(keypairPath, 'utf8'));
+      keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+      console.log('Loaded Solana keypair from file:', keypairPath);
+    } else {
+      // Default to Solana CLI wallet path
+      const keypairPath = '/Users/harshsharma/.config/solana/id.json';
+      try {
+        secret = JSON.parse(readFileSync(keypairPath, 'utf8'));
+        keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
+        console.log('Loaded Solana keypair from default CLI path:', keypairPath);
+      } catch (error) {
+        console.error('Failed to load keypair from default path:', error);
+        throw new Error('No valid Solana keypair found. Please set SOLANA_PRIVATE_KEY or SOLANA_KEYPAIR_PATH environment variable.');
+      }
     }
-
-    const secret = JSON.parse(process.env.SOLANA_PRIVATE_KEY);
-    keypair = Keypair.fromSecretKey(Uint8Array.from(secret));
-    console.log('Loaded Solana keypair from SOLANA_PRIVATE_KEY env variable.');
 
     if (!keypair) {
       throw new Error('Failed to initialize Solana keypair');
@@ -145,6 +161,7 @@ export async function mintCNFT(attempt: Attempt, puzzle: Puzzle): Promise<string
       name: `OnePuzzle #${attempt.id}`,
       sellerFeeBasisPoints: 0,
       symbol: '1PZL',
+      maxSupply: new BN(1),
       isMutable: false,
       updateAuthority: keypair,
     });

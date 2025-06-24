@@ -100,7 +100,7 @@ export default function Home() {
           {isLoading ? (
             <GradientCard variant="primary" className="p-8 text-center">
               <div className="flex flex-col items-center justify-center p-12">
-                <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full mb-6"></div>
+                <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full mb-6 animate-spin"></div>
                 <p className="text-lg text-white">Loading today's puzzle...</p>
               </div>
             </GradientCard>

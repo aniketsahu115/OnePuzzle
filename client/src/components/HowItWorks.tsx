@@ -3,19 +3,19 @@ import { Button } from '@/components/ui/button';
 
 const HowItWorks: React.FC = () => {
   return (
-    <section className="py-16 bg-white rounded-xl shadow-md">
+    <section className="py-16 bg-white dark:bg-gray-900 rounded-xl shadow-md">
       <div className="container-solana">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-6">How it Works</h2>
+          <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">How it Works</h2>
           <div className="h-1 w-24 bg-solana-gradient mx-auto rounded-full"></div>
-          <p className="mt-6 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-6 text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
             OnePuzzle combines chess training with on-chain achievements in an elegant, simple format
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="card-solana p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-100 dark:border-gray-700">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-purple bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-purple rounded-full flex items-center justify-center">
@@ -34,14 +34,14 @@ const HowItWorks: React.FC = () => {
                 ♟
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-3">One Puzzle Daily</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold mb-3 text-black dark:text-white">One Puzzle Daily</h3>
+            <p className="text-gray-700 dark:text-gray-300">
               Each day, a new chess puzzle of random difficulty awaits. Just one per day - quality over quantity.
             </p>
           </div>
           
           {/* Step 2 */}
-          <div className="card-solana p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-100 dark:border-gray-700">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-green bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-green rounded-full flex items-center justify-center">
@@ -55,14 +55,14 @@ const HowItWorks: React.FC = () => {
                 ♟
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-3">Three Attempts</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Three Attempts</h3>
+            <p className="text-gray-700 dark:text-gray-300">
               You get three chances to solve each puzzle. The system records your best performance for minting.
             </p>
           </div>
           
           {/* Step 3 */}
-          <div className="card-solana p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center border border-gray-100 dark:border-gray-700">
             <div className="relative mb-6">
               <div className="w-24 h-24 bg-solana-blue bg-opacity-10 rounded-full flex items-center justify-center mx-auto overflow-hidden">
                 <div className="w-20 h-20 bg-solana-blue rounded-full flex items-center justify-center">
@@ -77,8 +77,8 @@ const HowItWorks: React.FC = () => {
                 ♟
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-3">Mint Your Result</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Mint Your Result</h3>
+            <p className="text-gray-700 dark:text-gray-300">
               Your best attempt is automatically minted as a compressed NFT on Solana, creating your permanent chess history.
             </p>
           </div>
@@ -86,7 +86,7 @@ const HowItWorks: React.FC = () => {
         
         {/* Call to Action */}
         <div className="text-center mt-12">
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
             Start building your on-chain chess reputation with just a few minutes each day
           </p>
           

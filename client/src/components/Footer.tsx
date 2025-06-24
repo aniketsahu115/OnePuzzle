@@ -31,27 +31,19 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative bg-gradient-to-br from-solana-dark via-purple-900/50 to-indigo-900/50 pt-16 pb-8 overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <GeometricPattern animated={true} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-      </div>
+    <footer className="relative bg-solana-dark pt-16 pb-8 overflow-hidden">
+      {/* Removed animated geometric background for minimalism */}
       
       <div className="container-solana relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Logo and About */}
           <div className="col-span-1 md:col-span-1 animate-slide-up">
-            <div className="flex items-center mb-4 group">
-              <div className="relative w-12 h-12 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-2xl flex items-center justify-center text-white mr-3 text-xl shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-2xl animate-pulse-very-slow"></div>
-                <div className="relative z-10">♟</div>
-                {/* Sparkle effects */}
-                <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-sparkle"></div>
-                <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-sparkle" style={{ animationDelay: '0.5s' }}></div>
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 bg-solana-purple rounded-2xl flex items-center justify-center text-white mr-3 text-xl shadow-lg">
+                <span className="z-10">♟</span>
               </div>
-              <div className="font-bold text-xl tracking-tight text-crisp-black">
-                <span className="text-solana-gradient neon-glow-purple">One</span>
+              <div className="font-bold text-xl tracking-tight">
+                <span className="text-solana-purple">One</span>
                 <span className="text-white">Puzzle</span>
               </div>
             </div>
@@ -116,7 +108,7 @@ const Footer: React.FC = () => {
 
           {/* Resources */}
           <div className="col-span-1 animate-slide-up delay-100">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple text-crisp-bold">
+            <h3 className="text-solana-purple font-bold text-lg mb-5 border-b border-purple-500/30 pb-2">
               Resources
             </h3>
             <ul className="space-y-3">
@@ -170,7 +162,7 @@ const Footer: React.FC = () => {
 
           {/* Community */}
           <div className="col-span-1 animate-slide-up delay-200">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple text-crisp-bold">
+            <h3 className="text-solana-green font-bold text-lg mb-5 border-b border-green-500/30 pb-2">
               Community
             </h3>
             <ul className="space-y-3">
@@ -224,7 +216,7 @@ const Footer: React.FC = () => {
 
           {/* Newsletter */}
           <div className="col-span-1 animate-slide-up delay-300">
-            <h3 className="text-white font-bold text-lg mb-5 border-b border-purple-500/30 pb-2 neon-glow-purple">
+            <h3 className="text-solana-blue font-bold text-lg mb-5 border-b border-blue-500/30 pb-2">
               Stay Updated
             </h3>
             <p className="text-gray-300 mb-4">
