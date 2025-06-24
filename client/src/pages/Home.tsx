@@ -113,7 +113,7 @@ export default function Home() {
                     <ChessPieceIcon piece="♟" size="lg" animated={true} />
                   </div>
                   
-                  <h3 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-300 neon-glow-purple hero-text">
+                  <h3 className="text-4xl font-black mb-4 text-indigo-900 dark:text-white">
                     Challenge Your Mind
                   </h3>
                   
