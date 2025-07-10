@@ -277,29 +277,36 @@ export function registerRoutes(app: Express): void {
   app.post('/api/auth/wallet', async (req: Request<{}, {}, WalletAuthRequestBody>, res: Response) => {
     try {
       const { walletAddress } = req.body;
-      
       if (!walletAddress) {
         return res.status(400).json({ 
           message: "Wallet address is required" 
         });
       }
-      
-      // In a real implementation, this would verify with Seed Vault
-      // For now, just check if the user exists or create a new one
       let user = await storage.getUserByWalletAddress(walletAddress);
-      
       if (!user) {
+        // Fill all required fields for user creation
         user = await storage.createUser({
           walletAddress,
-          sessionKey: 'simulated-session-key', // In real app, would use Gum session key
+          username: null,
+          lastPuzzleDate: null,
+          sessionKey: 'simulated-session-key',
+          skillLevel: 'beginner',
+          preferredDifficulty: 'medium',
+          successRate: 0,
+          completedPuzzles: 0,
+          preferredThemes: null,
+          lastRecommendationDate: null,
         });
+        console.log('Created new user:', user);
+      } else {
+        console.log('User already exists:', user);
       }
-      
       res.json({ 
         verified: true, 
         user 
       });
     } catch (error) {
+      console.error('Error in /api/auth/wallet:', error);
       res.status(500).json({ 
         verified: false,
         message: "Failed to verify wallet", 
