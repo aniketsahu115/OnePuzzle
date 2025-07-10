@@ -247,7 +247,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-purple-500/30">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 OnePuzzle. All rights reserved.
+              © 2025 OnePuzzle. All rights reserved.
             </div>
             <div className="flex items-center space-x-4">
               <img src={solanaLogo} alt="Solana" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
