@@ -347,7 +347,9 @@ const Dashboard: React.FC = () => {
               <Badge variant="outline" className="px-2 py-1">Collection</Badge>
             </div>
             <h3 className="text-lg font-medium text-gray-500">NFTs Minted</h3>
-            <div className="text-3xl font-bold">{nftCollection?.length || 0}</div>
+            <div className="text-3xl font-bold">
+              {recentAttempts ? recentAttempts.filter(a => a.mintedNftAddress).length : 0}
+            </div>
             <div className="flex items-center mt-2 text-sm text-gray-500">
               <span>Latest: {nftCollection?.[0]?.name || 'N/A'}</span>
             </div>
@@ -433,7 +435,7 @@ const Dashboard: React.FC = () => {
                       <div className="font-mono">{attempt.move}</div>
                       <div>{formatTime(attempt.timeTaken)}</div>
                       <div>
-                        {attempt.nftAddress ? (
+                        {attempt.mintedNftAddress ? (
                           <span className="flex items-center text-blue-600">
                             <span className="w-2 h-2 rounded-full bg-blue-600 mr-2"></span>
                             Minted
@@ -443,11 +445,11 @@ const Dashboard: React.FC = () => {
                         )}
                       </div>
                       <div className="text-right">
-                        {attempt.nftAddress ? (
+                        {attempt.mintedNftAddress ? (
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => window.open(`https://explorer.solana.com/address/${attempt.nftAddress}`, '_blank')}
+                            onClick={() => window.open(`https://explorer.solana.com/address/${attempt.mintedNftAddress}`, '_blank')}
                           >
                             View NFT
                             <ChevronRight className="w-4 h-4 ml-1" />
