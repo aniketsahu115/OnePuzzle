@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import Learn from "@/pages/Learn";
 import Resources from "@/pages/Resources";
 import Profile from "@/pages/Profile";
+import Terms from "@/pages/Terms";
 import { WalletProvider } from "./lib/useWallet";
 import { ThemeProvider } from "./lib/useTheme";
 import NavBar from "@/components/NavBar";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/learn" component={Learn} />
       <Route path="/resources" component={Resources} />
       <Route path="/profile" component={Profile} />
+      <Route path="/terms" component={Terms} />
       <Route component={NotFound} />
     </Switch>
   );

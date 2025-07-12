@@ -16,7 +16,7 @@ import { formatTime } from '@/lib/utils';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GradientCard from '@/components/GradientCard';
 import ChessPieceIcon from '@/components/ChessPieceIcon';
-import { WavePattern, ParticleField, FloatingShapes } from '@/components/SVGBackgrounds';
+import { WavePattern, ParticleField, FloatingShapes, CircuitPattern } from '@/components/SVGBackgrounds';
 
 export default function Home() {
   console.log("Rendering Home component");
@@ -78,19 +78,27 @@ export default function Home() {
   const attemptResult = bestAttempt ? (bestAttempt as Attempt).isCorrect : null;
 
   return (
-    <div className="min-h-screen bg-solana-gradient">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#00FFA3]/10 via-[#9945FF]/10 to-[#19FB9B]/10 animate-pulse-very-slow"></div>
+      
+      {/* Floating Solana particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#00FFA3]/5 rounded-full blur-3xl animate-float-slow"></div>
+        <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-[#9945FF]/5 rounded-full blur-3xl animate-float-slow-reverse"></div>
+        <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-[#19FB9B]/5 rounded-full blur-2xl animate-float"></div>
+      </div>
+
       <div className="container-solana relative z-10">
         {/* Hero Section with Puzzle of the Day */}
-        <section className="text-center mb-16 relative">
-          {/* Removed floating and animated background elements for minimalism */}
-          
+        <section className="text-center mb-16 relative pt-20">
           <div className="inline-block mb-6 relative">
-            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight">
-              Daily Chess <span className="text-solana-gradient font-black">Puzzle</span>
+            <h1 className="text-5xl md:text-8xl font-extrabold mb-6 leading-tight text-white">
+              Daily Chess <span className="bg-gradient-to-r from-[#00FFA3] to-[#19FB9B] bg-clip-text text-transparent font-black">Puzzle</span>
             </h1>
-            <div className="h-2 w-64 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 mx-auto rounded-full shadow-lg"></div>
+            <div className="h-2 w-64 bg-gradient-to-r from-[#00FFA3] via-[#9945FF] to-[#19FB9B] mx-auto rounded-full shadow-lg shadow-[#00FFA3]/25"></div>
           </div>
-          <p className="text-xl text-indigo-100 mb-6 max-w-2xl mx-auto leading-relaxed text-crisp">
+          <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto leading-relaxed">
             {currentDate} • Challenge your chess skills and earn NFTs with each correct solution
           </p>
         </section>

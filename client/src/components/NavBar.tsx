@@ -32,22 +32,22 @@ const NavBar: React.FC = () => {
         
         <div className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-10 items-center">
           <div className="flex space-x-6">
-            <Link href="/" className={`${isActive('/')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/" className={`${isActive('/')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Home
             </Link>
-            <Link href="/learn" className={`${isActive('/learn')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/learn" className={`${isActive('/learn')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Learn
             </Link>
-            <Link href="/resources" className={`${isActive('/resources')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/resources" className={`${isActive('/resources')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Resources
             </Link>
-            <Link href="/dashboard" className={`${isActive('/dashboard')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/dashboard" className={`${isActive('/dashboard')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Dashboard
             </Link>
-            <Link href="/blog" className={`${isActive('/blog')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/blog" className={`${isActive('/blog')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Blog
             </Link>
-            <Link href="/profile" className={`${isActive('/profile')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+            <Link href="/profile" className={`${isActive('/profile')} py-2 px-3 rounded-lg bg-white text-slate-900 font-semibold shadow-sm hover:shadow-lg transition-all duration-300`}>
               Profile
             </Link>
           </div>
