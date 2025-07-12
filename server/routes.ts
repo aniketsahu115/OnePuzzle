@@ -421,4 +421,31 @@ export function registerRoutes(app: Express): void {
       });
     }
   });
+
+  app.post('/api/profile/update', async (req, res) => {
+    try {
+      const { walletAddress, username } = req.body;
+      if (!walletAddress) return res.status(400).json({ message: "Wallet address required" });
+      let user = await storage.getUserByWalletAddress(walletAddress);
+      if (!user) {
+        user = await storage.createUser({
+          walletAddress,
+          username,
+          lastPuzzleDate: null,
+          sessionKey: 'simulated-session-key',
+          skillLevel: 'beginner',
+          preferredDifficulty: 'medium',
+          successRate: 0,
+          completedPuzzles: 0,
+          preferredThemes: null,
+          lastRecommendationDate: null,
+        });
+      } else {
+        user = await storage.updateUserPreferences(walletAddress, { username });
+      }
+      res.json({ success: true, user });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update profile", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
 }

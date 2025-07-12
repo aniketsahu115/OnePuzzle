@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { apiRequest } from './queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
+import ProfileModal from "@/components/ProfileModal";
 
 // This is the interface that wallet adapter libraries like Umi expect.
 // It's more generic to handle different transaction types.
@@ -100,6 +101,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [currentWallet, setCurrentWallet] = useState<SolanaWallet | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [mintedNfts, setMintedNfts] = useState<string[]>([]);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const { toast } = useToast();
 
   const addMintedNft = useCallback((mint: string) => {
@@ -160,6 +162,15 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.warn('Server verification failed:', error);
       }
 
+      // After connecting, check if profile exists
+      if (walletAddress) {
+        const res = await apiRequest("POST", "/api/auth/wallet", { walletAddress });
+        const data = await res.json();
+        if (!data.user || !data.user.username) {
+          setShowProfileModal(true);
+        }
+      }
+
     } catch (error) {
       console.error('Error connecting wallet:', error);
       toast({
@@ -170,7 +181,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } finally {
       setIsConnecting(false);
     }
-  }, [toast]);
+  }, [walletAddress, toast]);
 
   const disconnectWallet = useCallback(async () => {
     try {
@@ -235,17 +246,20 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   return (
-    <WalletContext.Provider value={{
-      connected,
-      walletAddress,
-      connectWallet,
-      disconnectWallet,
-      isConnecting,
-      wallet: currentWallet,
-      mintedNfts,
-      addMintedNft,
-    }}>
-      {children}
-    </WalletContext.Provider>
+    <>
+      <WalletContext.Provider value={{
+        connected,
+        walletAddress,
+        connectWallet,
+        disconnectWallet,
+        isConnecting,
+        wallet: currentWallet,
+        mintedNfts,
+        addMintedNft,
+      }}>
+        {children}
+      </WalletContext.Provider>
+      <ProfileModal open={showProfileModal} onClose={() => setShowProfileModal(false)} walletAddress={walletAddress} />
+    </>
   );
 };

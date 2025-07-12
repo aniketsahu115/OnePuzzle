@@ -47,6 +47,9 @@ const NavBar: React.FC = () => {
             <Link href="/blog" className={`${isActive('/blog')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
               Blog
             </Link>
+            <Link href="/profile" className={`${isActive('/profile')} py-2 px-3 rounded-lg transition-all duration-300 text-white`}>
+              Profile
+            </Link>
           </div>
           
           <div className="flex items-center space-x-3">
